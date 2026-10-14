@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>Ayu☻</title>
     <meta name="description" content="Ayu/ayu_11039の推し活ノート。イベンターノートの参加記録を年・出演者ごとに整理。">
-    <meta name="theme-color" content="#d8f4ff">
+    <meta name="theme-color" content="#060817">
+    <meta name="color-scheme" content="dark">
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%234CC3F0'/%3E%3Ccircle cx='50' cy='50' r='16' fill='white'/%3E%3C/svg%3E">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,9 +24,7 @@
             --ok: #1b7f5c;
             --future: #d36b2b;
             --radius: 22px;
-            --bg-sky: linear-gradient(180deg,#eefaff 0%,#d4f1fb 34%,#a9ddf4 58%,#d8f2fb 80%,#eefaff 100%);
             --bg-dusk: linear-gradient(180deg,#0b2236 0%,#154d70 35%,#123b5a 65%,#0b2236 100%);
-            --bg-dots: radial-gradient(rgba(76,195,240,.55) 1.5px,transparent 1.8px) 0 0/22px 22px,#eaf7fc;
             --font: "Zen Maru Gothic","Hiragino Maru Gothic ProN","Hiragino Sans","Yu Gothic UI","Meiryo",sans-serif;
         }
 
@@ -56,6 +55,18 @@
         body[data-theme="dark"] .bg { background: #0b1020; }
         body[data-theme="dark"] .bg::before { background: linear-gradient(140deg,#10182c 0%,#20234b 50%,#10182c 100%); }
         body[data-theme="dark"] .orbs i { opacity: .28; }
+        
+        
+        body[data-theme="dark"][data-bg="custom"] .bg::after { background: rgba(8,12,26,.68); }
+        /* 動く光の玉は、明るい文字(夜の水色)のうしろでは弱くして、文字が白く飛ばないようにする */
+        body[data-bg="dusk"] .orbs i { opacity: .16; }
+        /* 好きな画像の背景は場所によって明るさが違うので、見出しなどに薄い縁取りをつける */
+        body[data-bg="custom"] .block h2, body[data-bg="custom"] .lead, body[data-bg="custom"] .filter-title,
+        body[data-bg="custom"] .count, body[data-bg="custom"] .year-head, body[data-bg="custom"] footer,
+        body[data-bg="custom"] .hero .id, body[data-bg="custom"] .hero .bio, body[data-bg="custom"] .hero .tip { text-shadow: 0 0 8px rgba(255,255,255,.85), 0 0 2px rgba(255,255,255,.85); }
+        body[data-theme="dark"][data-bg="custom"] .block h2, body[data-theme="dark"][data-bg="custom"] .lead, body[data-theme="dark"][data-bg="custom"] .filter-title,
+        body[data-theme="dark"][data-bg="custom"] .count, body[data-theme="dark"][data-bg="custom"] .year-head, body[data-theme="dark"][data-bg="custom"] footer,
+        body[data-theme="dark"][data-bg="custom"] .hero .id, body[data-theme="dark"][data-bg="custom"] .hero .bio, body[data-theme="dark"][data-bg="custom"] .hero .tip { text-shadow: 0 0 8px rgba(8,12,26,.9), 0 0 2px rgba(8,12,26,.9); }
         body[data-theme="dark"] .btn:not(.soft):not(.ghost),
         body[data-theme="dark"] .fab button { color: #15122b; }
         body, .nav, .stat, .ticket, .tile, .panel, .btn, .pill {
@@ -113,7 +124,7 @@
                 position: absolute;
                 inset: -30% 0;
                 height: 160%;
-                background: var(--bg-sky);
+                background: #0a1033;
                 animation: slide 44s ease-in-out infinite alternate
             }
 
@@ -121,23 +132,17 @@
             background: var(--bg-dusk)
         }
 
-        body[data-bg="dots"] .bg {
-            background: var(--bg-dots)
-        }
+        
 
-            body[data-bg="dots"] .bg::before, body[data-bg="white"] .bg::before, body[data-bg="custom"] .bg::before {
-                display: none
-            }
+            
 
-        body[data-bg="white"] .bg {
-            background: #fff
-        }
+        
 
         body[data-bg="custom"] .bg::after {
             content: "";
             position: absolute;
             inset: 0;
-            background: rgba(255,255,255,.56)
+            background: rgba(255,255,255,.74)
         }
 
         body[data-bg="dusk"] .bg::after {
@@ -182,6 +187,59 @@
                     bottom: -22vmax;
                     animation: drift3 52s ease-in-out infinite alternate
                 }
+
+        /* =====================================================
+           背景(すべて暗い背景。文字は明るい色なので、必ず暗い背景にする)
+           aurora=オーロラ / stars=星空 / grid=ネオン / dusk=夜の水色 / custom=好きな画像
+           ===================================================== */
+        body[data-bg="custom"] .bg::before { display: none }
+
+        /* --- オーロラ(初期設定): 色の光がゆっくり流れ、細いカーテンのような光が揺れる --- */
+        body[data-bg="aurora"] .bg { background: #060817 }
+        body[data-bg="aurora"] .bg::before {
+            background:
+                radial-gradient(54% 36% at 16% 26%, rgba(56,189,248,.42), transparent 70%),
+                radial-gradient(48% 40% at 84% 16%, rgba(139,92,246,.50), transparent 70%),
+                radial-gradient(52% 34% at 62% 84%, rgba(236,72,153,.28), transparent 72%),
+                radial-gradient(42% 28% at 24% 88%, rgba(45,212,191,.26), transparent 70%),
+                linear-gradient(180deg,#05071a 0%,#0a1033 52%,#0c0a26 100%);
+        }
+        body[data-bg="aurora"] .bg::after {
+            content: "";
+            position: absolute;
+            inset: -10% -15% 35% -15%;
+            background: repeating-linear-gradient(100deg, rgba(56,189,248,0) 0 70px, rgba(56,189,248,.11) 105px, rgba(139,92,246,.13) 150px, rgba(236,72,153,.07) 185px, rgba(56,189,248,0) 240px);
+            -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 32%, transparent 88%);
+            mask-image: linear-gradient(180deg, transparent 0, #000 32%, transparent 88%);
+            animation: curtain 26s ease-in-out infinite alternate;
+            will-change: transform;
+        }
+
+        /* --- 星空: 深い藍色の空に、たくさんの星がまたたく(星は下の canvas が描く) --- */
+        body[data-bg="stars"] .bg { background: radial-gradient(120% 80% at 50% 112%, #2a2670 0%, #0d1233 48%, #050716 100%) }
+        body[data-bg="stars"] .bg::before { display: none }
+
+        /* --- ネオン: 光る格子が奥へ流れていく --- */
+        body[data-bg="grid"] .bg {
+            background: radial-gradient(90% 60% at 50% 0%, rgba(124,58,237,.50), transparent 72%), radial-gradient(70% 50% at 50% 104%, rgba(14,165,233,.30), transparent 72%), #060817;
+        }
+        body[data-bg="grid"] .bg::before {
+            inset: 0;
+            height: 100%;
+            background: linear-gradient(rgba(125,211,252,.30) 1px, transparent 1px) 0 0/54px 54px, linear-gradient(90deg, rgba(125,211,252,.30) 1px, transparent 1px) 0 0/54px 54px;
+            -webkit-mask-image: radial-gradient(ellipse 85% 75% at 50% 38%, #000 8%, transparent 82%);
+            mask-image: radial-gradient(ellipse 85% 75% at 50% 38%, #000 8%, transparent 82%);
+            animation: gridmove 16s linear infinite;
+        }
+
+        /* --- 動く光の玉の色(オーロラ・星空・ネオン) --- */
+        body[data-bg="aurora"] { --o1: rgba(56,189,248,.60); --o2: rgba(139,92,246,.62); --o3: rgba(236,72,153,.45) }
+        body[data-bg="stars"]  { --o1: rgba(99,102,241,.50); --o2: rgba(56,189,248,.34); --o3: rgba(168,85,247,.40) }
+        body[data-bg="grid"]   { --o1: rgba(168,85,247,.55); --o2: rgba(34,211,238,.38); --o3: rgba(236,72,153,.38) }
+        body[data-bg="aurora"] .orbs i:nth-child(1), body[data-bg="stars"] .orbs i:nth-child(1), body[data-bg="grid"] .orbs i:nth-child(1) { background: radial-gradient(circle, var(--o1) 0, transparent 68%) }
+        body[data-bg="aurora"] .orbs i:nth-child(2), body[data-bg="stars"] .orbs i:nth-child(2), body[data-bg="grid"] .orbs i:nth-child(2) { background: radial-gradient(circle, var(--o2) 0, transparent 68%) }
+        body[data-bg="aurora"] .orbs i:nth-child(3), body[data-bg="stars"] .orbs i:nth-child(3), body[data-bg="grid"] .orbs i:nth-child(3) { background: radial-gradient(circle, var(--o3) 0, transparent 68%) }
+        body[data-bg="aurora"] .orbs i, body[data-bg="stars"] .orbs i, body[data-bg="grid"] .orbs i { mix-blend-mode: screen; opacity: .8 }
 
         body[data-bg="custom"] .orbs {
             display: none
@@ -360,7 +418,7 @@
             right: 0;
             bottom: -1px;
             height: var(--wh);
-            background: linear-gradient(180deg,rgba(255,255,255,.55),transparent);
+            background: linear-gradient(180deg,rgba(155,140,255,.30),rgba(56,189,248,.06) 60%,transparent);
             clip-path: ellipse(60% 54% at 50% 100%);
             opacity: .9
         }
@@ -503,7 +561,6 @@
             background: var(--card);
             border: 1px solid var(--line);
             border-radius: 18px;
-            backdrop-filter: blur(10px);
             transition: .25s ease
         }
 
@@ -698,38 +755,17 @@
                 color: #06273a
             }
 
-        .songgroup {
-            max-width: 46em;
-            margin-bottom: 2em
-        }
+        
 
-            .songgroup h3 {
-                margin: 0 0 .35em;
-                font-size: 1.2rem
-            }
+            
 
-        .song {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: baseline;
-            gap: 2px 12px;
-            padding: 13px 0;
-            border-top: 1px solid var(--line)
-        }
+        
 
-            .song b {
-                font-size: 1.08rem
-            }
+            
 
-            .song small {
-                color: var(--muted)
-            }
+            
 
-            .song p {
-                flex-basis: 100%;
-                margin: 0;
-                color: var(--muted)
-            }
+            
 
         details.import {
             margin-top: 24px;
@@ -846,20 +882,20 @@
                 box-shadow: 0 0 0 2px var(--accent)
             }
 
-            .sw[data-k="sky"] i {
-                background: var(--bg-sky)
+            .sw[data-k="aurora"] i {
+                background: radial-gradient(60% 50% at 20% 25%,rgba(56,189,248,.9),transparent 70%),radial-gradient(60% 55% at 85% 20%,rgba(139,92,246,.95),transparent 70%),radial-gradient(60% 45% at 60% 90%,rgba(236,72,153,.7),transparent 72%),#070a1f
+            }
+
+            .sw[data-k="stars"] i {
+                background: radial-gradient(1.5px 1.5px at 22% 28%,#fff,transparent),radial-gradient(1px 1px at 68% 18%,#fff,transparent),radial-gradient(1.5px 1.5px at 80% 62%,#cfe,transparent),radial-gradient(1px 1px at 38% 74%,#fff,transparent),radial-gradient(120% 80% at 50% 110%,#2a2670,#0d1233 55%,#050716)
+            }
+
+            .sw[data-k="grid"] i {
+                background: linear-gradient(rgba(125,211,252,.55) 1px,transparent 1px) 0 0/10px 10px,linear-gradient(90deg,rgba(125,211,252,.55) 1px,transparent 1px) 0 0/10px 10px,radial-gradient(90% 70% at 50% 0%,rgba(124,58,237,.8),#070a1f 80%)
             }
 
             .sw[data-k="dusk"] i {
                 background: var(--bg-dusk)
-            }
-
-            .sw[data-k="dots"] i {
-                background: var(--bg-dots)
-            }
-
-            .sw[data-k="white"] i {
-                background: #fff
             }
 
             .sw[data-k="custom"] i {
@@ -897,51 +933,19 @@
                 opacity: 1
             }
 
-        .wallpaper {
-            overflow: hidden
-        }
+        
 
-        body.wallpaper .nav, body.wallpaper .block, body.wallpaper footer, body.wallpaper .fab, body.wallpaper .panel, body.wallpaper .bio, body.wallpaper .acc, body.wallpaper .tip, body.wallpaper .progress {
-            display: none
-        }
+        
 
-        body.wallpaper .hero {
-            min-height: 100svh;
-            padding: 24px 0
-        }
+        
 
-            body.wallpaper .hero h1 {
-                font-size: clamp(3.3rem,15vw,7rem)
-            }
+            
 
-        body.wallpaper .id {
-            font-size: clamp(1.35rem,5vw,2rem)
-        }
+        
 
-        .hint {
-            display: none
-        }
+        
 
-        body.wallpaper .hint {
-            display: block;
-            position: fixed;
-            left: 0;
-            right: 0;
-            bottom: calc(24px + env(safe-area-inset-bottom));
-            text-align: center;
-            font-size: .8rem;
-            color: var(--muted);
-            animation: hintOut 4s forwards
-        }
-
-        .js .reveal {
-            opacity: 0
-        }
-
-        .reveal.in {
-            animation: rise .65s cubic-bezier(.2,.7,.2,1) both;
-            animation-delay: calc(var(--i,0)*70ms)
-        }
+        
 
         .ch {
             display: inline-block;
@@ -954,6 +958,10 @@
                 opacity: 0;
                 transform: translateY(16px)
             }
+            to {
+                opacity: 1;
+                transform: none
+            }
         }
 
         @keyframes drop {
@@ -962,6 +970,15 @@
                 transform: translateY(-.4em) scale(.92);
                 filter: blur(7px)
             }
+        }
+
+        @keyframes curtain {
+            from { transform: translateX(-5%) skewX(-7deg) }
+            to   { transform: translateX(5%) skewX(7deg) }
+        }
+
+        @keyframes gridmove {
+            to { background-position: 0 54px, 54px 0 }
         }
 
         @keyframes slide {
@@ -994,15 +1011,7 @@
             }
         }
 
-        @keyframes hintOut {
-            0%,70% {
-                opacity: 1
-            }
-
-            100% {
-                opacity: 0
-            }
-        }
+        
 
         @media(max-width:640px) {
             .links {
@@ -1036,13 +1045,10 @@
                 transition: none !important
             }
 
-            .js .reveal {
-                opacity: 1
-            }
         }
     </style>
 </head>
-<body data-bg="sky">
+<body data-bg="aurora" data-theme="dark">
     <div class="bg" aria-hidden="true"></div>
     <div class="orbs" aria-hidden="true"><i></i><i></i><i></i></div>
     <canvas class="bubbles" id="bubbles" aria-hidden="true"></canvas>
@@ -1055,7 +1061,6 @@
                 <a href="#about">自己紹介</a>
                 <a href="#events">参戦イベント</a>
                 <a href="#oshi">推し</a>
-                <a href="#songs">推し曲</a>
             </nav>
         </div>
     </header>
@@ -1069,7 +1074,7 @@
                 <div class="acc" id="acc">
                     <button class="btn ghost" type="button" id="copyHero">IDをコピー</button>
                 </div>
-                <p class="tip">背景変更・待ち受けモードにも対応しています。</p>
+                <p class="tip">右下の「背景」ボタンで、背景を変えられます。</p>
             </div>
             <div class="wave w2" aria-hidden="true"></div>
             <div class="wave" aria-hidden="true"></div>
@@ -1116,24 +1121,16 @@
             </div>
         </section>
 
-        <section class="block" id="songs">
-            <div class="wrap">
-                <h2>推し曲</h2>
-                <div id="songList"></div>
-            </div>
-        </section>
     </main>
 
     <footer class="wrap">
         <p>個人が作った非公式のファンページです。推しのSNSは公開情報へのリンクです。</p>
         <p id="dataInfo"></p>
-        <p><a href="#import">データ更新・手動取り込み</a></p>
+        <p><a href="#import">データ更新・手動取り込み</a> ／ <a href="simple.html">シンプル表示(演出なし)</a></p>
     </footer>
 
     <div class="fab">
-        <button type="button" id="themeBtn" aria-pressed="false">🌙 ダークモード</button>
         <button type="button" id="bgBtn" class="secondary-fab" aria-expanded="false" aria-controls="bgPanel">背景</button>
-        <button type="button" id="wallBtn">待ち受け</button>
     </div>
 
     <div class="panel" id="bgPanel" hidden>
@@ -1143,7 +1140,6 @@
         <small>自分の画像は、このページを開いている間だけ使われます。</small>
     </div>
 
-    <p class="hint">画面をタップでもどる</p>
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
     <script>
@@ -1151,7 +1147,7 @@
         const SITE = {
             title: '推し活ノート',
             bio: '好きな人たちを追いかけて、ライブやイベントに通っています。ここは、参戦したイベントの記録と、推しのことをまとめたノートです。',
-            defaultBg: 'sky'
+            defaultBg: 'aurora'
         };
         const EVENTERNOTE = 'https://www.eventernote.com/users/' + ID + '/events';
         const ACCOUNTS = [
@@ -1179,16 +1175,10 @@
                 ]
             }
         ];
-        const SONGS = [
-            ['伊藤美来', 'ワタシイロ', '—', 'ライブで聴くたびに好きになる一曲。'],
-            ['伊藤美来', 'rotate', '39rpm', '歌詞を追いながら聴くと、より深く刺さる曲。'],
-            ['Pyxis', '（曲名を追加）', '', 'お気に入りの曲をここに追加できます。'],
-            ['豊田萌絵', '（曲名を追加）', '', 'お気に入りの曲をここに追加できます。']
-        ];
 
-        // 2026-10-08 時点で確認したイベンターノート85件のフォールバック。
+        // 2026-10-13 時点のイベンターノート85件(重複なし)のフォールバック。
         // events.jsonが読めれば、そちらを優先して表示します。
-        const FALLBACK_EVENTS = [{ "date": "2027-03-21", "title": "伊藤美来 10th Anniversary Live Tour「39rpm」 東京", "venue": "LINE CUBE SHIBUYA (渋谷公会堂)", "open": "17:00", "start": "18:00", "end": "19:45", "who": ["伊藤美来"], "url": "" }, { "date": "2027-01-16", "title": "伊藤美来 10th Anniversary Live Tour「39rpm」愛知公演", "venue": "COMTEC PORTBASE(コムテックポートベイス)", "open": "17:00", "start": "18:00", "end": "19:30", "who": ["伊藤美来"], "url": "" }, { "date": "2027-01-11", "title": "伊藤美来 10th Anniversary Live Tour「39rpm」 大阪", "venue": "NHK大阪ホール", "open": "17:30", "start": "18:30", "end": "20:00", "who": ["伊藤美来"], "url": "" }, { "date": "2026-12-12", "title": "伊藤美来 10th Anniversary Live Tour「39rpm」香港公演", "venue": "PORTAL", "open": "17:00", "start": "18:00", "end": "20:00", "who": ["伊藤美来"], "url": "" }, { "date": "2026-11-28", "title": "伊藤美来 10th Anniversary Live Tour「39rpm」in Taipei", "venue": "CLAPPER STUDIO", "open": "17:00", "start": "18:00", "end": "19:30", "who": ["伊藤美来"], "url": "" }, { "date": "2026-11-21", "title": "東武鉄道 presents ANIMAX MUSIX 2026 supported by Lemino〖DAY2〗", "venue": "横浜アリーナ", "open": "13:00", "start": "14:30", "end": "21:00", "who": ["伊藤美来"], "url": "" }, { "date": "2026-09-20", "title": "TVアニメ『塩対応の佐藤さんが俺にだけ甘い』先行上映＆舞台挨拶", "venue": "新宿ピカデリー", "open": "-", "start": "18:00", "end": "19:00", "who": ["伊藤美来"], "url": "" }, { "date": "2026-09-19", "title": "〖出演者変更〗NAGANO ANIERA FESTA 2026 DAY1", "venue": "佐久市駒場公園", "open": "10:00", "start": "12:00", "end": "20:00", "who": ["伊藤美来", "愛美"], "url": "" }, { "date": "2026-09-12", "title": "五等分の花嫁 カードゲーム presents ラジオ『五等分の花嫁＊』公開収録イベント(昼の部)", "venue": "スタァライト劇場", "open": "13:00", "start": "14:00", "end": "15:35", "who": ["伊藤美来"], "url": "" }, { "date": "2026-09-12", "title": "五等分の花嫁 カードゲーム presents ラジオ『五等分の花嫁＊』公開収録イベント(夜の部)", "venue": "スタァライト劇場", "open": "16:30", "start": "17:30", "end": "19:00", "who": ["伊藤美来"], "url": "" }, { "date": "2026-08-30", "title": "オルケリア1st LIVE「PRINCESS RESONANCE」昼公演", "venue": "J:COMホール八王子(八王子市民会館)", "open": "13:30", "start": "14:30", "end": "16:45", "who": ["伊藤美来"], "url": "" }, { "date": "2026-08-30", "title": "オルケリア1st LIVE「PRINCESS RESONANCE」夜公演", "venue": "J:COMホール八王子(八王子市民会館)", "open": "17:30", "start": "18:30", "end": "20:30", "who": ["伊藤美来"], "url": "" }, { "date": "2026-07-26", "title": "BLUE TRIP#29@エアポートウォーク名古屋 3Fイベントステージ", "venue": "エアポートウォーク名古屋", "open": "-", "start": "13:30", "end": "15:30", "who": [], "url": "" }, { "date": "2026-07-11", "title": "Animelo Summer Live 2026 -Messenger- DAY2", "venue": "幕張メッセ 国際展示場ホール", "open": "13:00", "start": "15:00", "end": "19:40", "who": ["伊藤美来"], "url": "" }, { "date": "2026-07-05", "title": "朗読劇「星降る街2026」7/5 13:00", "venue": "大手町三井ホール", "open": "12:00", "start": "13:00", "end": "15:00", "who": ["伊藤美来"], "url": "" }, { "date": "2026-07-05", "title": "朗読劇「星降る街2026」7/5 17:00", "venue": "大手町三井ホール", "open": "16:00", "start": "17:00", "end": "19:00", "who": ["伊藤美来"], "url": "" }, { "date": "2026-07-04", "title": "豊田萌絵・伊藤美来のキラキラ大作戦! 番組イベント2026 昼の部", "venue": "科学技術館サイエンスホール", "open": "12:30", "start": "13:30", "end": "15:20", "who": ["Pyxis", "豊田萌絵", "伊藤美来", "愛美"], "url": "" }, { "date": "2026-07-04", "title": "豊田萌絵・伊藤美来のキラキラ大作戦! 番組イベント2026 夜の部", "venue": "科学技術館サイエンスホール", "open": "16:00", "start": "17:00", "end": "18:30", "who": ["Pyxis", "豊田萌絵", "伊藤美来", "愛美"], "url": "" }, { "date": "2026-05-17", "title": "伊藤美来 Orchestra Concert～Prologue to the 10th Anniversary～昼公演", "venue": "川口総合文化センター・リリア フカガワみらいホール(メインホール)", "open": "13:30", "start": "14:30", "end": "16:00", "who": ["伊藤美来"], "url": "" }, { "date": "2026-05-17", "title": "伊藤美来 Orchestra Concert～Prologue to the 10th Anniversary～夜公演", "venue": "川口総合文化センター・リリア フカガワみらいホール(メインホール)", "open": "17:30", "start": "18:30", "end": "20:00", "who": ["伊藤美来"], "url": "" }, { "date": "2026-05-10", "title": "伊藤美来Live Blu-ray「ITO MIKU Live 2025『Birth of Pops』」リリース記念イベント ゲーマーズ回 ＜第二部＞ ミニトーク＆ロングトークお渡し会", "venue": "AKIHABARAゲーマーズ本店", "open": "-", "start": "15:30", "end": "16:30", "who": ["伊藤美来"], "url": "" }, { "date": "2026-05-10", "title": "伊藤美来Live Blu-ray「ITO MIKU Live 2025『Birth of Pops』」リリース記念イベント ゲーマーズ回 ＜第一部＞ ミニトーク＆ロングトークお渡し会", "venue": "AKIHABARAゲーマーズ本店", "open": "-", "start": "13:00", "end": "14:00", "who": ["伊藤美来"], "url": "" }, { "date": "2026-05-02", "title": "五等分の花嫁 SPECIAL EVENT 2026 in TOYOTA ARENA TOKYO", "venue": "TOYOTA ARENA TOKYO(トヨタアリーナ東京)", "open": "15:30", "start": "17:00", "end": "19:35", "who": ["伊藤美来"], "url": "" }, { "date": "2026-04-19", "title": "伊藤美来Live Blu-ray「ITO MIKU Live 2025『Birth of Pops』」リリース記念イベント アニメイト回 第一部〖ミニトーク＆ロングトークお渡し会〗", "venue": "アニメイト秋葉原1号館 7F", "open": "12:30", "start": "13:00", "end": "14:00", "who": ["伊藤美来"], "url": "" }, { "date": "2026-04-05", "title": "TVアニメ「プリンセッション・オーケストラ」SPECIAL TALK SESSION 1回目", "venue": "丸の内ピカデリー", "open": "12:30", "start": "13:00", "end": "14:30", "who": ["伊藤美来"], "url": "" }, { "date": "2026-04-05", "title": "TVアニメ「プリンセッション・オーケストラ」SPECIAL TALK SESSION 2回目", "venue": "丸の内ピカデリー", "open": "15:30", "start": "16:00", "end": "17:30", "who": ["伊藤美来"], "url": "" }, { "date": "2026-04-05", "title": "TVアニメ「プリンセッション・オーケストラ」SPECIAL TALK SESSION 2回目", "venue": "丸の内ピカデリー", "open": "15:30", "start": "16:00", "end": "17:30", "who": ["伊藤美来"], "url": "" }, { "date": "2026-02-28", "title": "BanG Dream! 10th Anniversary LIVE「In the name of BanG Dream!」", "venue": "Kアリーナ横浜", "open": "13:30", "start": "15:00", "end": "20:25", "who": ["伊藤美来", "豊田萌絵", "愛美"], "url": "" }, { "date": "2026-01-10", "title": "伊藤美来 Official Fanclub「all yours」ファンミーティング2026～美来はこたつで丸くなる～ 夜の部", "venue": "CITY HALL & GALLERY GOTANDA", "open": "18:00", "start": "18:30", "end": "20:00", "who": ["伊藤美来"], "url": "" }, { "date": "2025-11-29", "title": "スタンディングライブツアー「AIMI LIVE TOUR 2025“NEW WORLD”」愛知", "venue": "名古屋DIAMOND HALL", "open": "17:15", "start": "18:00", "end": "19:30", "who": ["愛美"], "url": "" }, { "date": "2025-11-09", "title": "『いわて声優フェスタ』〖夜公演〗", "venue": "トーサイクラシックホール岩手(岩手県民会館) 大ホール", "open": "16:15", "start": "17:00", "end": "18:30", "who": ["伊藤美来", "豊田萌絵", "愛美"], "url": "" }, { "date": "2025-11-02", "title": "JR東海 presents 出発進行！バンドリ！10周年記念トークジャーニー！ 大阪公演 1部", "venue": "朝日生命ホール", "open": "12:45", "start": "13:30", "end": "15:30", "who": ["伊藤美来", "豊田萌絵"], "url": "" }, { "date": "2025-11-02", "title": "JR東海 presents 出発進行！バンドリ！10周年記念トークジャーニー！ 大阪公演 2部", "venue": "朝日生命ホール", "open": "16:35", "start": "17:30", "end": "19:30", "who": ["伊藤美来", "豊田萌絵"], "url": "" }, { "date": "2025-10-11", "title": "伊藤美来 Live 2025\"Birth of Pops\"", "venue": "LINE CUBE SHIBUYA (渋谷公会堂)", "open": "17:00", "start": "18:00", "end": "20:20", "who": ["伊藤美来"], "url": "" }, { "date": "2025-10-05", "title": "LAWSON presents TrySail 10th Anniversary Tour 2025 \"BestSail\" 愛知公演 Day2", "venue": "岡谷鋼機名古屋公会堂(名古屋市公会堂)", "open": "15:30", "start": "16:30", "end": "19:00", "who": [], "url": "" }, { "date": "2025-07-13", "title": "Pyxisのキラキラ大作戦！番組イベント2025 昼の部", "venue": "全電通労働会館 多目的ホール", "open": "13:00", "start": "13:30", "end": "15:30", "who": ["Pyxis", "豊田萌絵", "伊藤美来"], "url": "" }, { "date": "2025-07-13", "title": "Pyxisのキラキラ大作戦！番組イベント2025 夜の部", "venue": "全電通労働会館 多目的ホール", "open": "16:30", "start": "17:00", "end": "19:00", "who": ["Pyxis", "豊田萌絵", "伊藤美来"], "url": "" }, { "date": "2025-06-15", "title": "PyxisのTRIP PARTY 2025 in 茨城 DAY2", "venue": "!_茨城県内某所", "open": "-", "start": "-", "end": "-", "who": ["Pyxis", "豊田萌絵", "伊藤美来"], "url": "" }, { "date": "2025-06-14", "title": "PyxisのTRIP PARTY 2025 in 茨城 DAY1", "venue": "!_茨城県内某所", "open": "-", "start": "-", "end": "-", "who": ["Pyxis", "豊田萌絵", "伊藤美来"], "url": "" }, { "date": "2025-05-11", "title": "俊龍F～死ぬほどあのコールさせてやるよ!～", "venue": "カルッツかわさき", "open": "16:30", "start": "17:30", "end": "21:35", "who": ["Pyxis", "豊田萌絵", "伊藤美来"], "url": "" }, { "date": "2025-05-04", "title": "10th ANNIVERSARY Pyxis Celebration Party 2025～ありがとう！おめでとう！10周年！！～ ＜昼公演＞", "venue": "豊洲PIT", "open": "13:45", "start": "14:30", "end": "16:30", "who": ["Pyxis", "豊田萌絵", "伊藤美来"], "url": "" }, { "date": "2025-05-04", "title": "10th ANNIVERSARY Pyxis Celebration Party 2025～ありがとう！おめでとう！10周年！！～ ＜夜公演＞", "venue": "豊洲PIT", "open": "17:45", "start": "18:30", "end": "20:00", "who": ["Pyxis", "豊田萌絵", "伊藤美来"], "url": "" }, { "date": "2025-05-04", "title": "10th ANNIVERSARY Pyxis Celebration Party 2025～ありがとう！おめでとう！10周年！！～ ＜夜公演＞", "venue": "豊洲PIT", "open": "17:45", "start": "18:30", "end": "20:00", "who": ["Pyxis", "豊田萌絵", "伊藤美来"], "url": "" }, { "date": "2024-12-22", "title": "「富田美憂・前田佳織里の“調査のご依頼、お待ちしてます！”」SPイベント 第2部:みっくとクリスマスパーティー", "venue": "CITY HALL & GALLERY GOTANDA", "open": "17:00", "start": "17:30", "end": "19:10", "who": ["伊藤美来"], "url": "" }, { "date": "2024-12-01", "title": "DERAGAYA! 羊宮妃那 × 天希かのん [第1部]", "venue": "東別院テラスホール", "open": "13:30", "start": "14:00", "end": "15:30", "who": [], "url": "" }, { "date": "2024-12-01", "title": "DERAGAYA! 羊宮妃那 × 天希かのん [第2部]", "venue": "東別院テラスホール", "open": "16:30", "start": "17:00", "end": "18:30", "who": [], "url": "" }, { "date": "2024-11-10", "title": "オーイシマサヨシ「ギャンブリングホール」発売記念フリーライブ＠プライムツリー赤池", "venue": "プライムツリー赤池 1Fプライムホール", "open": "-", "start": "14:00", "end": "15:00", "who": [], "url": "" }, { "date": "2024-11-09", "title": "『小倉 唯 LIVE TOUR 2024 ～Bloomy × Meet you!～』愛知公演", "venue": "Niterra日本特殊陶業市民会館 フォレストホール(名古屋市民会館 大ホール)", "open": "15:30", "start": "16:35", "end": "18:55", "who": [], "url": "" }, { "date": "2024-10-20", "title": "伊藤美来 BIRTHDAY EVENT 2024 HOME&NIGHT Party 1部・HOME Party", "venue": "NEW PIER HALL(ニューピアホール)", "open": "13:30", "start": "14:30", "end": "16:30", "who": ["伊藤美来"], "url": "" }, { "date": "2024-10-20", "title": "伊藤美来 BIRTHDAY EVENT 2024 HOME&NIGHT Party 2部・NIGHT Party", "venue": "NEW PIER HALL(ニューピアホール)", "open": "18:00", "start": "19:00", "end": "21:00", "who": ["伊藤美来"], "url": "" }, { "date": "2024-09-22", "title": "劇場アニメーション『がんばっていきまっしょい』完成披露上映会", "venue": "丸の内ピカデリー", "open": "18:00", "start": "18:30", "end": "21:00", "who": ["伊藤美来"], "url": "" }, { "date": "2024-08-31", "title": "Animelo Summer Live 2024 -Stargazer- DAY2", "venue": "GMOアリーナさいたま(さいたまスーパーアリーナ)", "open": "14:00", "start": "16:00", "end": "21:15", "who": ["伊藤美来", "愛美"], "url": "" }, { "date": "2024-08-10", "title": "Pyxisのキラキラ大作戦！番組イベント2024 昼の部", "venue": "[代替]ニッショーホール(旧ヤクルトホール)(閉館)", "open": "12:30", "start": "13:30", "end": "15:00", "who": ["Pyxis", "豊田萌絵", "伊藤美来"], "url": "" }, { "date": "2024-08-10", "title": "Pyxisのキラキラ大作戦！番組イベント2024 夜の部", "venue": "[代替]ニッショーホール(旧ヤクルトホール)(閉館)", "open": "16:00", "start": "17:00", "end": "18:30", "who": ["Pyxis", "豊田萌絵", "伊藤美来"], "url": "" }, { "date": "2024-07-28", "title": "リスアニ！× 802 Palette『リスパレ！LIVE vol.1』7.28", "venue": "心斎橋BIGCAT", "open": "16:15", "start": "17:00", "end": "18:30", "who": ["伊藤美来"], "url": "" }, { "date": "2024-07-15", "title": "伊藤美来 Live Tour 2024 \"from now on\"〖東京公演〗", "venue": "TACHIKAWA STAGE GARDEN", "open": "17:00", "start": "18:00", "end": "20:00", "who": ["伊藤美来"], "url": "" }, { "date": "2024-07-13", "title": "伊藤美来 Live Tour 2024 \"from now on\"〖大阪公演〗", "venue": "NHK大阪ホール", "open": "17:00", "start": "18:00", "end": "20:00", "who": ["伊藤美来"], "url": "" }, { "date": "2024-06-29", "title": "伊藤美来 Live Tour 2024 \"from now on\"〖仙台公演〗", "venue": "東京エレクトロンホール宮城(宮城県民会館)", "open": "17:00", "start": "18:00", "end": "20:00", "who": ["伊藤美来"], "url": "" }, { "date": "2024-06-23", "title": "伊藤美来 Live Tour 2024 \"from now on\"〖名古屋公演〗", "venue": "愛知県芸術劇場 大ホール", "open": "17:30", "start": "18:30", "end": "20:30", "who": ["伊藤美来"], "url": "" }, { "date": "2024-06-15", "title": "愛美 NEW ALBUM「LIVE IT NOW」発売記念フリーミニライブ 〖愛知〗", "venue": "プライムツリー赤池 1Fプライムホール", "open": "-", "start": "14:00", "end": "15:30", "who": ["愛美"], "url": "" }, { "date": "2024-05-17", "title": "Pyxis 9th Anniversary Party 2024 ～ピクみんと作る宝石箱～＜2部＞", "venue": "初台The DOORS(初台DOORS)", "open": "15:30", "start": "16:00", "end": "17:30", "who": ["Pyxis", "豊田萌絵", "伊藤美来"], "url": "" }, { "date": "2024-04-21", "title": "伊藤美来 TVアニメ『声優ラジオのウラオモテ』オープニングテーマ「Now On Air」発売記念 伊藤美来の“なうおんパーティー＆お渡し会”〖2部〗", "venue": "!_東京都内某所", "open": "-", "start": "15:30", "end": "16:30", "who": ["伊藤美来"], "url": "" }, { "date": "2024-03-30", "title": "Lemino presents ANIMAX MUSIX 2024 SPRING", "venue": "京王アリーナTOKYO(武蔵野の森総合スポーツプラザ)メインアリーナ", "open": "12:30", "start": "14:00", "end": "20:20", "who": ["伊藤美来"], "url": "" }, { "date": "2024-03-17", "title": "「伊藤美来 カレンダー 2024.04-2025.03」発売記念 特典お渡し会　アニメイト回", "venue": "!_東京都内某所", "open": "-", "start": "-", "end": "-", "who": ["伊藤美来"], "url": "" }, { "date": "2024-03-03", "title": "オリジナルTVアニメ「夜のクラゲは泳げない」先行上映&キャストトークイベント", "venue": "丸の内ピカデリー", "open": "17:30", "start": "18:00", "end": "19:35", "who": ["伊藤美来"], "url": "" }, { "date": "2024-01-13", "title": "伊藤美来 LIVE Blu-ray「ITO MIKU Live Tour 2023『Every Day is a Gift』 サイン会 ＜一部＞", "venue": "!_東京都内某所", "open": "-", "start": "14:30", "end": "16:00", "who": ["伊藤美来"], "url": "" }, { "date": "2023-11-18", "title": "ANIMAX MUSIX 2023", "venue": "横浜アリーナ", "open": "13:00", "start": "14:30", "end": "21:10", "who": ["伊藤美来"], "url": "" }, { "date": "2023-10-28", "title": "伊藤美来～みっくと繋がる～全国4都市メッセージ交換会～ ゲーマーズ回 名古屋会場", "venue": "オルバースビルディング名古屋", "open": "-", "start": "17:00", "end": "18:00", "who": ["伊藤美来"], "url": "" }, { "date": "2023-10-22", "title": "伊藤美来 Birthday Event 2023 そうだ！ 旅行いこう！！ 一部", "venue": "NEW PIER HALL(ニューピアホール)", "open": "13:30", "start": "14:30", "end": "16:30", "who": ["伊藤美来"], "url": "" }, { "date": "2023-10-22", "title": "伊藤美来 Birthday Event 2023 そうだ！ 旅行いこう！！ 二部", "venue": "NEW PIER HALL(ニューピアホール)", "open": "18:00", "start": "19:00", "end": "21:00", "who": ["伊藤美来"], "url": "" }, { "date": "2023-10-15", "title": "～みっくと繋がる～全国4都市メッセージ交換会～ アニメイト回〖東京〗〖お渡しの部〗", "venue": "アニメイト池袋本店 9F animate hall BLACK", "open": "-", "start": "14:00", "end": "15:00", "who": ["伊藤美来"], "url": "" }, { "date": "2023-10-15", "title": "～みっくと繋がる～全国4都市メッセージ交換会～ アニメイト回〖東京〗〖お渡されの部〗", "venue": "アニメイト池袋本店 9F animate hall BLACK", "open": "-", "start": "16:30", "end": "17:30", "who": ["伊藤美来"], "url": "" }, { "date": "2023-08-27", "title": "Animelo Summer Live 2023 -AXEL- DAY3", "venue": "GMOアリーナさいたま(さいたまスーパーアリーナ)", "open": "14:00", "start": "16:00", "end": "21:30", "who": ["伊藤美来"], "url": "" }, { "date": "2023-07-01", "title": "Pyxisのキラキラ大作戦！番組イベント2023 昼の部", "venue": "科学技術館サイエンスホール", "open": "12:30", "start": "13:30", "end": "15:20", "who": ["Pyxis", "豊田萌絵", "伊藤美来"], "url": "" }, { "date": "2023-07-01", "title": "Pyxisのキラキラ大作戦！番組イベント2023 夜の部", "venue": "科学技術館サイエンスホール", "open": "-", "start": "17:00", "end": "18:30", "who": ["Pyxis", "豊田萌絵", "伊藤美来"], "url": "" }, { "date": "2023-05-21", "title": "伊藤美来 Live Tour 2023『Every Day is a gift』東京公演", "venue": "東京国際フォーラム ホールA", "open": "17:00", "start": "18:00", "end": "20:00", "who": ["伊藤美来"], "url": "" }, { "date": "2023-05-13", "title": "伊藤美来 Live Tour 2023『Every Day is a gift』名古屋公演", "venue": "岡谷鋼機名古屋公会堂(名古屋市公会堂)", "open": "17:00", "start": "18:00", "end": "20:00", "who": ["伊藤美来"], "url": "" }, { "date": "2023-05-06", "title": "伊藤美来 Live Tour 2023『Every Day is a gift』神戸公演", "venue": "神戸国際会館こくさいホール", "open": "17:30", "start": "18:30", "end": "20:30", "who": ["伊藤美来"], "url": "" }, { "date": "2023-03-04", "title": "伊藤美来 Gift for みっく会 名古屋", "venue": "!_名古屋市内某所", "open": "-", "start": "13:00", "end": "14:00", "who": ["伊藤美来"], "url": "" }, { "date": "2022-11-03", "title": "愛美 LIVE TOUR 2022 \"AIMI SOUND\" 愛知公演", "venue": "刈谷市総合文化センター アイリス 大ホール", "open": "17:00", "start": "18:00", "end": "21:00", "who": ["愛美"], "url": "" }, { "date": "2022-10-08", "title": "伊藤美来 2022 Birthday Event ”Beauty & Healthy”～美しく健康を手に入れたい女～ 〖1部〗", "venue": "NEW PIER HALL(ニューピアホール)", "open": "13:00", "start": "14:00", "end": "16:00", "who": ["伊藤美来"], "url": "" }, { "date": "2022-10-08", "title": "伊藤美来 2022 Birthday Event ”Beauty & Healthy”～美しく健康を手に入れたい女～ 〖2部〗", "venue": "NEW PIER HALL(ニューピアホール)", "open": "17:30", "start": "18:30", "end": "20:30", "who": ["伊藤美来"], "url": "" }, { "date": "2022-09-10", "title": "Inori Minase LIVE TOUR 2022 glow 愛知公演", "venue": "名古屋国際会議場 センチュリーホール", "open": "17:00", "start": "18:00", "end": "20:50", "who": [], "url": "" }, { "date": "2022-04-09", "title": "伊藤美来 Live Tour 2022『What a Sauce！』大阪公演", "venue": "グランキューブ大阪(大阪府立国際会議場)", "open": "17:00", "start": "18:00", "end": "20:00", "who": ["伊藤美来"], "url": "" }, { "date": "2021-07-18", "title": "バンドリーマー感謝キャラバン 2021 名古屋会場 2部", "venue": "ナディアパーク3F デザインホール", "open": "16:00", "start": "17:00", "end": "19:00", "who": ["伊藤美来"], "url": "" }];
+        const FALLBACK_EVENTS = [{"date": "2027-03-21", "title": "伊藤美来 10th Anniversary Live Tour「39rpm」 東京", "venue": "LINE CUBE SHIBUYA (渋谷公会堂)", "open": "17:00", "start": "18:00", "end": "19:45", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/484272"}, {"date": "2027-01-16", "title": "伊藤美来 10th Anniversary Live Tour「39rpm」愛知公演", "venue": "COMTEC PORTBASE(コムテックポートベイス)", "open": "17:00", "start": "18:00", "end": "19:30", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/484271"}, {"date": "2027-01-11", "title": "伊藤美来 10th Anniversary Live Tour「39rpm」 大阪", "venue": "NHK大阪ホール", "open": "17:30", "start": "18:30", "end": "20:00", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/484270"}, {"date": "2026-12-12", "title": "伊藤美来 10th Anniversary Live Tour「39rpm」香港公演", "venue": "PORTAL", "open": "17:00", "start": "18:00", "end": "20:00", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/484269"}, {"date": "2026-11-28", "title": "伊藤美来 10th Anniversary Live Tour「39rpm」in Taipei", "venue": "CLAPPER STUDIO", "open": "17:00", "start": "18:00", "end": "19:30", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/484268"}, {"date": "2026-11-21", "title": "東武鉄道 presents ANIMAX MUSIX 2026 supported by Lemino【DAY2】", "venue": "横浜アリーナ", "open": "13:00", "start": "14:30", "end": "21:00", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/466254"}, {"date": "2026-09-20", "title": "TVアニメ『塩対応の佐藤さんが俺にだけ甘い』先行上映＆舞台挨拶", "venue": "新宿ピカデリー", "open": "-", "start": "18:00", "end": "19:00", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/483256"}, {"date": "2026-09-19", "title": "【出演者変更】NAGANO ANIERA FESTA 2026 DAY1", "venue": "佐久市駒場公園", "open": "10:00", "start": "12:00", "end": "20:00", "who": ["愛美", "伊藤美来"], "url": "https://www.eventernote.com/events/453804"}, {"date": "2026-09-12", "title": "五等分の花嫁 カードゲーム presents ラジオ『五等分の花嫁＊』公開収録イベント(昼の部)", "venue": "スタァライト劇場", "open": "13:00", "start": "14:00", "end": "15:35", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/488725"}, {"date": "2026-09-12", "title": "五等分の花嫁 カードゲーム presents ラジオ『五等分の花嫁＊』公開収録イベント(夜の部)", "venue": "スタァライト劇場", "open": "16:30", "start": "17:30", "end": "19:00", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/477269"}, {"date": "2026-08-30", "title": "オルケリア1st LIVE「PRINCESS RESONANCE」昼公演", "venue": "J:COMホール八王子(八王子市民会館)", "open": "13:30", "start": "14:30", "end": "16:45", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/473613"}, {"date": "2026-08-30", "title": "オルケリア1st LIVE「PRINCESS RESONANCE」夜公演", "venue": "J:COMホール八王子(八王子市民会館)", "open": "17:30", "start": "18:30", "end": "20:30", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/473614"}, {"date": "2026-07-26", "title": "BLUE TRIP#29@エアポートウォーク名古屋 3Fイベントステージ", "venue": "エアポートウォーク名古屋", "open": "-", "start": "13:30", "end": "15:30", "who": [], "url": "https://www.eventernote.com/events/475382"}, {"date": "2026-07-11", "title": "Animelo Summer Live 2026 -Messenger- DAY2", "venue": "幕張メッセ 国際展示場ホール", "open": "13:00", "start": "15:00", "end": "19:40", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/456367"}, {"date": "2026-07-05", "title": "朗読劇「星降る街2026」7/5 17:00", "venue": "大手町三井ホール", "open": "16:00", "start": "17:00", "end": "19:00", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/459976"}, {"date": "2026-07-05", "title": "朗読劇「星降る街2026」7/5 13:00", "venue": "大手町三井ホール", "open": "12:00", "start": "13:00", "end": "15:00", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/459977"}, {"date": "2026-07-04", "title": "豊田萌絵・伊藤美来のキラキラ大作戦! 番組イベント2026 昼の部", "venue": "科学技術館サイエンスホール", "open": "12:30", "start": "13:30", "end": "15:20", "who": ["Pyxis", "豊田萌絵", "伊藤美来", "愛美"], "url": "https://www.eventernote.com/events/460357"}, {"date": "2026-07-04", "title": "豊田萌絵・伊藤美来のキラキラ大作戦! 番組イベント2026 夜の部", "venue": "科学技術館サイエンスホール", "open": "16:00", "start": "17:00", "end": "18:30", "who": ["Pyxis", "豊田萌絵", "伊藤美来", "愛美"], "url": "https://www.eventernote.com/events/464102"}, {"date": "2026-05-17", "title": "伊藤美来 Orchestra Concert～Prologue to the 10th Anniversary～昼公演", "venue": "川口総合文化センター・リリア フカガワみらいホール(メインホール)", "open": "13:30", "start": "14:30", "end": "16:00", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/463914"}, {"date": "2026-05-17", "title": "伊藤美来 Orchestra Concert～Prologue to the 10th Anniversary～夜公演", "venue": "川口総合文化センター・リリア フカガワみらいホール(メインホール)", "open": "17:30", "start": "18:30", "end": "20:00", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/463915"}, {"date": "2026-05-10", "title": "伊藤美来Live Blu-ray「ITO MIKU Live 2025『Birth of Pops』」リリース記念イベント ゲーマーズ回 ＜第二部＞ ミニトーク＆ロングトークお渡し会", "venue": "AKIHABARAゲーマーズ本店", "open": "-", "start": "15:30", "end": "16:30", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/456649"}, {"date": "2026-05-10", "title": "伊藤美来Live Blu-ray「ITO MIKU Live 2025『Birth of Pops』」リリース記念イベント ゲーマーズ回 ＜第一部＞ ミニトーク＆ロングトークお渡し会", "venue": "AKIHABARAゲーマーズ本店", "open": "-", "start": "13:00", "end": "14:00", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/456648"}, {"date": "2026-05-02", "title": "五等分の花嫁 SPECIAL EVENT 2026 in TOYOTA ARENA TOKYO", "venue": "TOYOTA ARENA TOKYO(トヨタアリーナ東京)", "open": "15:30", "start": "17:00", "end": "19:35", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/435563"}, {"date": "2026-04-26", "title": "B小町ライブツアー2026 - Beyond the Brilliance Virtual Live - 愛知公演 DAY2 夜公演", "venue": "愛知県芸術劇場 大ホール", "open": "16:00", "start": "17:00", "end": "19:00", "who": [], "url": "https://www.eventernote.com/events/462164"}, {"date": "2026-04-19", "title": "伊藤美来Live Blu-ray「ITO MIKU Live 2025『Birth of Pops』」リリース記念イベント アニメイト回 第一部【ミニトーク＆ロングトークお渡し会】", "venue": "アニメイト秋葉原1号館 7F", "open": "12:30", "start": "13:00", "end": "14:00", "who": ["伊藤美来"], "url": ""}, {"date": "2026-04-05", "title": "TVアニメ「プリンセッション・オーケストラ」SPECIAL TALK SESSION 2回目", "venue": "丸の内ピカデリー", "open": "15:30", "start": "16:00", "end": "17:30", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/464535"}, {"date": "2026-04-05", "title": "TVアニメ「プリンセッション・オーケストラ」SPECIAL TALK SESSION 1回目", "venue": "丸の内ピカデリー", "open": "12:30", "start": "13:00", "end": "14:30", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/464534"}, {"date": "2026-02-28", "title": "BanG Dream! 10th Anniversary LIVE「In the name of BanG Dream!」", "venue": "Kアリーナ横浜", "open": "13:30", "start": "15:00", "end": "20:25", "who": ["愛美", "伊藤美来", "豊田萌絵"], "url": "https://www.eventernote.com/events/420629"}, {"date": "2026-01-10", "title": "伊藤美来 Official Fanclub「all yours」ファンミーティング2026～美来はこたつで丸くなる～ 夜の部", "venue": "CITY HALL & GALLERY GOTANDA", "open": "18:00", "start": "18:30", "end": "20:00", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/448386"}, {"date": "2025-11-29", "title": "スタンディングライブツアー「AIMI LIVE TOUR 2025“NEW WORLD”」愛知", "venue": "名古屋DIAMOND HALL", "open": "17:15", "start": "18:00", "end": "19:30", "who": ["愛美"], "url": "https://www.eventernote.com/events/433056"}, {"date": "2025-11-09", "title": "『いわて声優フェスタ』【夜公演】", "venue": "トーサイクラシックホール岩手(岩手県民会館) 大ホール", "open": "16:15", "start": "17:00", "end": "18:30", "who": ["愛美", "伊藤美来", "豊田萌絵"], "url": "https://www.eventernote.com/events/441290"}, {"date": "2025-11-02", "title": "JR東海 presents 出発進行！バンドリ！10周年記念トークジャーニー！ 大阪公演 2部", "venue": "朝日生命ホール", "open": "16:35", "start": "17:30", "end": "19:30", "who": ["伊藤美来", "豊田萌絵"], "url": "https://www.eventernote.com/events/435590"}, {"date": "2025-11-02", "title": "JR東海 presents 出発進行！バンドリ！10周年記念トークジャーニー！ 大阪公演 1部", "venue": "朝日生命ホール", "open": "12:45", "start": "13:30", "end": "15:30", "who": ["伊藤美来", "豊田萌絵"], "url": "https://www.eventernote.com/events/435589"}, {"date": "2025-10-11", "title": "伊藤美来 Live 2025\"Birth of Pops\"", "venue": "LINE CUBE SHIBUYA (渋谷公会堂)", "open": "17:00", "start": "18:00", "end": "20:20", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/422789"}, {"date": "2025-10-05", "title": "LAWSON presents TrySail 10th Anniversary Tour 2025 \"BestSail\" 愛知公演 Day2", "venue": "岡谷鋼機名古屋公会堂(名古屋市公会堂)", "open": "15:30", "start": "16:30", "end": "19:00", "who": [], "url": "https://www.eventernote.com/events/420887"}, {"date": "2025-07-13", "title": "Pyxisのキラキラ大作戦！番組イベント2025 昼の部", "venue": "全電通労働会館 多目的ホール", "open": "13:00", "start": "13:30", "end": "15:30", "who": ["Pyxis", "豊田萌絵", "伊藤美来"], "url": "https://www.eventernote.com/events/425319"}, {"date": "2025-07-13", "title": "Pyxisのキラキラ大作戦！番組イベント2025 夜の部", "venue": "全電通労働会館 多目的ホール", "open": "16:30", "start": "17:00", "end": "19:00", "who": ["Pyxis", "豊田萌絵", "伊藤美来"], "url": "https://www.eventernote.com/events/427780"}, {"date": "2025-06-15", "title": "PyxisのTRIP PARTY 2025 in 茨城 DAY2", "venue": "!_茨城県内某所", "open": "", "start": "", "end": "", "who": ["伊藤美来", "豊田萌絵", "Pyxis"], "url": "https://www.eventernote.com/events/428110"}, {"date": "2025-06-14", "title": "PyxisのTRIP PARTY 2025 in 茨城 DAY1", "venue": "!_茨城県内某所", "open": "", "start": "", "end": "", "who": ["伊藤美来", "豊田萌絵", "Pyxis"], "url": "https://www.eventernote.com/events/428109"}, {"date": "2025-05-17", "title": "【リミスタ】【5/17】Pyxis インターネットサイン会", "venue": "!_国内外各所 (ライブビューイング等)", "open": "-", "start": "13:00", "end": "15:35", "who": [], "url": "https://www.eventernote.com/events/429582"}, {"date": "2025-05-11", "title": "俊龍F～死ぬほどあのコールさせてやるよ!～", "venue": "カルッツかわさき", "open": "16:30", "start": "17:30", "end": "21:35", "who": ["Pyxis", "豊田萌絵", "伊藤美来"], "url": "https://www.eventernote.com/events/420253"}, {"date": "2025-05-04", "title": "10th ANNIVERSARY Pyxis Celebration Party 2025～ありがとう！おめでとう！10周年！！～ ＜昼公演＞", "venue": "豊洲PIT", "open": "13:45", "start": "14:30", "end": "16:30", "who": ["Pyxis", "豊田萌絵", "伊藤美来"], "url": "https://www.eventernote.com/events/409976"}, {"date": "2025-05-04", "title": "10th ANNIVERSARY Pyxis Celebration Party 2025～ありがとう！おめでとう！10周年！！～ ＜夜公演＞", "venue": "豊洲PIT", "open": "17:45", "start": "18:30", "end": "20:00", "who": ["Pyxis", "豊田萌絵", "伊藤美来"], "url": "https://www.eventernote.com/events/409977"}, {"date": "2024-12-22", "title": "「富田美憂・前田佳織里の“調査のご依頼、お待ちしてます！”」SPイベント 第2部:みっくとクリスマスパーティー", "venue": "CITY HALL & GALLERY GOTANDA", "open": "17:00", "start": "17:30", "end": "19:10", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/392060"}, {"date": "2024-12-01", "title": "DERAGAYA! 羊宮妃那 × 天希かのん [第2部]", "venue": "東別院テラスホール", "open": "16:30", "start": "17:00", "end": "18:30", "who": [], "url": "https://www.eventernote.com/events/393962"}, {"date": "2024-12-01", "title": "DERAGAYA! 羊宮妃那 × 天希かのん [第1部]", "venue": "東別院テラスホール", "open": "13:30", "start": "14:00", "end": "15:30", "who": [], "url": "https://www.eventernote.com/events/393961"}, {"date": "2024-11-10", "title": "オーイシマサヨシ「ギャンブリングホール」発売記念フリーライブ＠プライムツリー赤池", "venue": "プライムツリー赤池 1Fプライムホール", "open": "-", "start": "14:00", "end": "15:00", "who": [], "url": "https://www.eventernote.com/events/398180"}, {"date": "2024-11-09", "title": "『小倉 唯 LIVE TOUR 2024 ～Bloomy × Meet you!～』愛知公演", "venue": "Niterra日本特殊陶業市民会館 フォレストホール(名古屋市民会館 大ホール)", "open": "15:30", "start": "16:35", "end": "18:55", "who": [], "url": "https://www.eventernote.com/events/370302"}, {"date": "2024-10-20", "title": "伊藤美来 BIRTHDAY EVENT 2024 HOME&NIGHT Party 2部・NIGHT Party", "venue": "NEW PIER HALL(ニューピアホール)", "open": "18:00", "start": "19:00", "end": "21:00", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/383743"}, {"date": "2024-10-20", "title": "伊藤美来 BIRTHDAY EVENT 2024 HOME&NIGHT Party 1部・HOME Party", "venue": "NEW PIER HALL(ニューピアホール)", "open": "13:30", "start": "14:30", "end": "16:30", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/383742"}, {"date": "2024-09-22", "title": "劇場アニメーション『がんばっていきまっしょい』完成披露上映会", "venue": "丸の内ピカデリー", "open": "18:00", "start": "18:30", "end": "21:00", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/391721"}, {"date": "2024-08-31", "title": "Animelo Summer Live 2024 -Stargazer- DAY2", "venue": "GMOアリーナさいたま(さいたまスーパーアリーナ)", "open": "14:00", "start": "16:00", "end": "21:15", "who": ["伊藤美来", "愛美"], "url": "https://www.eventernote.com/events/362386"}, {"date": "2024-08-10", "title": "Pyxisのキラキラ大作戦！番組イベント2024 昼の部", "venue": "[代替]ニッショーホール(旧ヤクルトホール)(閉館)", "open": "12:30", "start": "13:30", "end": "15:00", "who": ["Pyxis", "豊田萌絵", "伊藤美来"], "url": "https://www.eventernote.com/events/376992"}, {"date": "2024-08-10", "title": "Pyxisのキラキラ大作戦！番組イベント2024 夜の部", "venue": "[代替]ニッショーホール(旧ヤクルトホール)(閉館)", "open": "16:00", "start": "17:00", "end": "18:30", "who": ["Pyxis", "豊田萌絵", "伊藤美来"], "url": "https://www.eventernote.com/events/376993"}, {"date": "2024-07-28", "title": "リスアニ！× 802 Palette『リスパレ！LIVE vol.1』7.28", "venue": "心斎橋BIGCAT", "open": "16:15", "start": "17:00", "end": "18:30", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/375934"}, {"date": "2024-07-15", "title": "伊藤美来 Live Tour 2024 \"from now on\"【東京公演】", "venue": "TACHIKAWA STAGE GARDEN", "open": "17:00", "start": "18:00", "end": "20:00", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/358249"}, {"date": "2024-07-13", "title": "伊藤美来 Live Tour 2024 \"from now on\"【大阪公演】", "venue": "NHK大阪ホール", "open": "17:00", "start": "18:00", "end": "20:00", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/358248"}, {"date": "2024-06-29", "title": "伊藤美来 Live Tour 2024 \"from now on\"【仙台公演】", "venue": "東京エレクトロンホール宮城(宮城県民会館)", "open": "17:00", "start": "18:00", "end": "20:00", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/358247"}, {"date": "2024-06-23", "title": "伊藤美来 Live Tour 2024 \"from now on\"【名古屋公演】", "venue": "愛知県芸術劇場 大ホール", "open": "17:30", "start": "18:30", "end": "20:30", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/358246"}, {"date": "2024-06-15", "title": "愛美 NEW ALBUM「LIVE IT NOW」発売記念フリーミニライブ 【愛知】", "venue": "プライムツリー赤池 1Fプライムホール", "open": "-", "start": "14:00", "end": "15:30", "who": ["愛美"], "url": "https://www.eventernote.com/events/374062"}, {"date": "2024-05-17", "title": "Pyxis 9th Anniversary Party 2024 ～ピクみんと作る宝石箱～＜2部＞", "venue": "初台The DOORS(初台DOORS)", "open": "15:30", "start": "16:00", "end": "17:30", "who": ["Pyxis", "豊田萌絵", "伊藤美来"], "url": "https://www.eventernote.com/events/369823"}, {"date": "2024-04-21", "title": "伊藤美来 TVアニメ『声優ラジオのウラオモテ』オープニングテーマ「Now On Air」発売記念 伊藤美来の“なうおんパーティー＆お渡し会”【2部】", "venue": "!_東京都内某所", "open": "-", "start": "15:30", "end": "16:30", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/369790"}, {"date": "2024-03-30", "title": "Lemino presents ANIMAX MUSIX 2024 SPRING", "venue": "京王アリーナTOKYO(武蔵野の森総合スポーツプラザ)メインアリーナ", "open": "12:30", "start": "14:00", "end": "20:20", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/364451"}, {"date": "2024-03-17", "title": "「伊藤美来 カレンダー 2024.04-2025.03」発売記念 特典お渡し会　アニメイト回", "venue": "!_東京都内某所", "open": "", "start": "", "end": "", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/366324"}, {"date": "2024-03-03", "title": "オリジナルTVアニメ「夜のクラゲは泳げない」先行上映&キャストトークイベント", "venue": "丸の内ピカデリー", "open": "17:30", "start": "18:00", "end": "19:35", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/367674"}, {"date": "2024-01-13", "title": "伊藤美来 LIVE Blu-ray「ITO MIKU Live Tour 2023『Every Day is a Gift』 サイン会 ＜一部＞", "venue": "!_東京都内某所", "open": "-", "start": "14:30", "end": "16:00", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/365111"}, {"date": "2023-11-18", "title": "ANIMAX MUSIX 2023", "venue": "横浜アリーナ", "open": "13:00", "start": "14:30", "end": "21:10", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/349821"}, {"date": "2023-10-28", "title": "伊藤美来～みっくと繋がる～全国4都市メッセージ交換会～ ゲーマーズ回 名古屋会場", "venue": "オルバースビルディング名古屋", "open": "-", "start": "17:00", "end": "18:00", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/350833"}, {"date": "2023-10-22", "title": "伊藤美来 Birthday Event 2023 そうだ！ 旅行いこう！！ 二部", "venue": "NEW PIER HALL(ニューピアホール)", "open": "18:00", "start": "19:00", "end": "21:00", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/350932"}, {"date": "2023-10-22", "title": "伊藤美来 Birthday Event 2023 そうだ！ 旅行いこう！！ 一部", "venue": "NEW PIER HALL(ニューピアホール)", "open": "13:30", "start": "14:30", "end": "16:30", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/350832"}, {"date": "2023-10-15", "title": "～みっくと繋がる～全国4都市メッセージ交換会～ アニメイト回【東京】【お渡しの部】", "venue": "アニメイト池袋本店 9F animate hall BLACK", "open": "-", "start": "14:00", "end": "15:00", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/350838"}, {"date": "2023-10-15", "title": "～みっくと繋がる～全国4都市メッセージ交換会～ アニメイト回【東京】【お渡されの部】", "venue": "アニメイト池袋本店 9F animate hall BLACK", "open": "-", "start": "16:30", "end": "17:30", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/350839"}, {"date": "2023-08-27", "title": "Animelo Summer Live 2023 -AXEL- DAY3", "venue": "GMOアリーナさいたま(さいたまスーパーアリーナ)", "open": "14:00", "start": "16:00", "end": "21:30", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/337726"}, {"date": "2023-07-01", "title": "Pyxisのキラキラ大作戦！番組イベント2023 昼の部", "venue": "科学技術館サイエンスホール", "open": "12:30", "start": "13:30", "end": "15:20", "who": ["Pyxis", "豊田萌絵", "伊藤美来"], "url": "https://www.eventernote.com/events/339133"}, {"date": "2023-07-01", "title": "Pyxisのキラキラ大作戦！番組イベント2023 夜の部", "venue": "科学技術館サイエンスホール", "open": "-", "start": "17:00", "end": "18:30", "who": ["Pyxis", "豊田萌絵", "伊藤美来"], "url": "https://www.eventernote.com/events/339134"}, {"date": "2023-05-21", "title": "伊藤美来 Live Tour 2023『Every Day is a gift』東京公演", "venue": "東京国際フォーラム ホールA", "open": "17:00", "start": "18:00", "end": "20:00", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/314662"}, {"date": "2023-05-13", "title": "伊藤美来 Live Tour 2023『Every Day is a gift』名古屋公演", "venue": "岡谷鋼機名古屋公会堂(名古屋市公会堂)", "open": "17:00", "start": "18:00", "end": "20:00", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/314661"}, {"date": "2023-05-06", "title": "伊藤美来 Live Tour 2023『Every Day is a gift』神戸公演", "venue": "神戸国際会館こくさいホール", "open": "17:30", "start": "18:30", "end": "20:30", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/314660"}, {"date": "2023-03-04", "title": "伊藤美来 Gift for みっく会 名古屋", "venue": "!_名古屋市内某所", "open": "-", "start": "13:00", "end": "14:00", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/327537"}, {"date": "2022-11-03", "title": "愛美 LIVE TOUR 2022 \"AIMI SOUND\" 愛知公演", "venue": "刈谷市総合文化センター アイリス 大ホール", "open": "17:00", "start": "18:00", "end": "21:00", "who": ["愛美"], "url": "https://www.eventernote.com/events/310679"}, {"date": "2022-10-08", "title": "伊藤美来 2022 Birthday Event ”Beauty & Healthy”～美しく健康を手に入れたい女～ 【2部】", "venue": "NEW PIER HALL(ニューピアホール)", "open": "17:30", "start": "18:30", "end": "20:30", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/317025"}, {"date": "2022-10-08", "title": "伊藤美来 2022 Birthday Event ”Beauty & Healthy”～美しく健康を手に入れたい女～ 【1部】", "venue": "NEW PIER HALL(ニューピアホール)", "open": "13:00", "start": "14:00", "end": "16:00", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/317024"}, {"date": "2022-09-10", "title": "Inori Minase LIVE TOUR 2022 glow 愛知公演", "venue": "名古屋国際会議場 センチュリーホール", "open": "17:00", "start": "18:00", "end": "20:50", "who": [], "url": "https://www.eventernote.com/events/308724"}, {"date": "2022-04-09", "title": "伊藤美来 Live Tour 2022『What a Sauce！』大阪公演", "venue": "グランキューブ大阪(大阪府立国際会議場)", "open": "17:00", "start": "18:00", "end": "20:00", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/279289"}, {"date": "2021-07-18", "title": "バンドリーマー感謝キャラバン 2021 名古屋会場 2部", "venue": "ナディアパーク3F デザインホール", "open": "16:00", "start": "17:00", "end": "19:00", "who": ["伊藤美来"], "url": "https://www.eventernote.com/events/279653"}];
 
         (function () {
             'use strict';
@@ -1219,14 +1209,21 @@
 
             let events = FALLBACK_EVENTS.map(x => ({ ...x, who: [...(x.who || [])] }));
             let selectedYear = 'all', selectedWho = 'all', years = [], yearBtns = [], whoBtns = [];
-            let sourceUpdatedAt = '2026-10-08', loadedFrom = 'フォールバック', verifiedInfo = '';
+            let sourceUpdatedAt = '2026-10-13', loadedFrom = 'フォールバック', verifiedInfo = '';
 
             function normalizeRows(rows) {
+                // 同じイベントページ(URL)は1人1回しか登録できないので、URLが同じ行は1件にまとめる
+                // (イベンターノートのページ送りで起きる重複が events.json に混ざっても、表示では重ならないようにする)
+                const seenUrl = new Set();
                 return rows.filter(x => x && x.date && x.title).map(x => ({
                     date: String(x.date), title: String(x.title), venue: String(x.venue || ''),
                     open: String(x.open ?? ''), start: String(x.start ?? ''), end: String(x.end ?? ''),
                     who: Array.isArray(x.who) ? x.who.filter(Boolean) : [], url: String(x.url || '')
-                })).sort((a, b) => b.date.localeCompare(a.date));
+                })).filter(x => {
+                    if (!x.url) return true;
+                    if (seenUrl.has(x.url)) return false;
+                    seenUrl.add(x.url); return true;
+                }).sort((a, b) => b.date.localeCompare(a.date));
             }
             function isFuture(e) { return e.date > todayStr }
             function labelsFor(e) { return e.who.filter(w => filterNames.includes(w)) }
@@ -1320,15 +1317,6 @@
                     )
                 }))
             }
-            function renderSongs() {
-                $('#songList').replaceChildren(...OSHI.map(o => {
-                    const rows = SONGS.filter(s => s[0] === o.name);
-                    return h('div', { class: 'songgroup' },
-                        h('h3', { text: o.name }),
-                        ...rows.map(s => h('div', { class: 'song' }, h('b', { text: s[1] }), s[2] ? h('small', { text: s[2] }) : null, h('p', { text: s[3] || '' })))
-                    )
-                }))
-            }
             function loadData(data, label) {
                 if (!data || !Array.isArray(data.events) || !data.events.length) throw new Error('events.jsonの形式が正しくありません');
                 events = normalizeRows(data.events);
@@ -1386,7 +1374,7 @@
             });
 
             // 背景
-            const BGS = [['sky', '空の水色'], ['dusk', '夜の水色'], ['dots', '水玉'], ['white', '白'], ['custom', '画像']];
+            const BGS = [['aurora', 'オーロラ'], ['stars', '星空'], ['grid', 'ネオン'], ['dusk', '夜の水色'], ['custom', '画像']];
             let customUrl = null; const bgLayer = $('.bg'), panel = $('#bgPanel');
             const swatchBtns = BGS.map(([k, label]) => h('button', { class: 'sw', type: 'button', 'data-k': k, onclick: () => k === 'custom' ? $('#bgFile').click() : setBg(k) }, h('i', { text: k === 'custom' ? '＋' : '' }), label));
             $('#swatches').append(...swatchBtns);
@@ -1401,58 +1389,73 @@
             setBg(BGS.some(x => x[0] === saved) ? saved : SITE.defaultBg);
 
             const bgBtn = $('#bgBtn');
-            // ライト／ダークテーマはユーザー設定として保存
-            const themeBtn = $('#themeBtn');
-            function setTheme(theme) {
-                document.body.dataset.theme = theme;
-                const dark = theme === 'dark';
-                themeBtn.setAttribute('aria-pressed', String(dark));
-                themeBtn.textContent = dark ? '☀️ ライトモード' : '🌙 ダークモード';
-                try { localStorage.setItem('oshi-theme', theme); } catch (e) {}
-            }
-            let savedTheme = 'light';
-            try { savedTheme = localStorage.getItem('oshi-theme') || 'light'; } catch (e) {}
-            setTheme(savedTheme === 'dark' ? 'dark' : 'light');
-            themeBtn.addEventListener('click', () => setTheme(document.body.dataset.theme === 'dark' ? 'light' : 'dark'));
+            // 表示はダークモード固定(切り替えボタンはありません)
             function togglePanel(open) { panel.hidden = !open; bgBtn.setAttribute('aria-expanded', open) }
             bgBtn.addEventListener('click', () => togglePanel(panel.hidden));
             document.addEventListener('click', e => { if (!panel.hidden && !panel.contains(e.target) && e.target !== bgBtn) togglePanel(false) });
 
-            // wallpaper
-            const body = document.body;
-            $('#wallBtn').addEventListener('click', () => { togglePanel(false); body.classList.add('wallpaper'); scrollTo(0, 0) });
-            document.addEventListener('click', e => { if (body.classList.contains('wallpaper')) { body.classList.remove('wallpaper'); e.stopPropagation() } }, true);
-            document.addEventListener('keydown', e => { if (e.key === 'Escape') { body.classList.remove('wallpaper'); togglePanel(false) } });
+            document.addEventListener('keydown', e => { if (e.key === 'Escape') togglePanel(false) });
 
             // scroll spy / progress
-            document.documentElement.classList.add('js');
-            const revealEls = [...document.querySelectorAll('.block h2,.lead,.statbar,.filter-title,.row,.count,#eventList,.tile,.songgroup,.more,.import')];
-            revealEls.forEach((el, i) => { el.classList.add('reveal'); el.style.setProperty('--i', Math.min(i, 5)) });
+            // 文字・イベント一覧は、最初から必ず見える状態にする。
+            // (以前はスクロールで「透明→表示」にする演出があり、その演出が完了しないブラウザでは
+            //  見出し・件数・絞り込み・イベント一覧が透明のまま残っていたため、この演出は廃止しました)
             const motionOK = !matchMedia('(prefers-reduced-motion: reduce)').matches;
-            if ('IntersectionObserver' in window && motionOK) { const io = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target) } }), { rootMargin: '0px 0px -8% 0px' }); revealEls.forEach(el => io.observe(el)) }
-            else revealEls.forEach(el => el.classList.add('in'));
             const navLinks = [...document.querySelectorAll('.links a')];
             if ('IntersectionObserver' in window) {
                 const spy = new IntersectionObserver(es => es.forEach(en => { if (!en.isIntersecting) return; navLinks.forEach(a => a.removeAttribute('aria-current')); const a = navLinks.find(x => x.getAttribute('href') === '#' + en.target.id); if (a) a.setAttribute('aria-current', 'true') }), { rootMargin: '-40% 0px -55% 0px' });
-                ['about', 'events', 'oshi', 'songs'].forEach(id => spy.observe(document.getElementById(id)))
+                ['about', 'events', 'oshi'].forEach(id => spy.observe(document.getElementById(id)))
             }
             const bar = $('#progress'); let ticking = false;
             function onScroll() { if (ticking) return; ticking = true; requestAnimationFrame(() => { const max = document.documentElement.scrollHeight - innerHeight; bar.style.transform = 'scaleX(' + (max > 0 ? Math.min(scrollY / max, 1) : 0) + ')'; ticking = false }) }
             addEventListener('scroll', onScroll, { passive: true }); onScroll();
 
-            // bubbles
+            // 背景の粒子(星・光のつぶ): 背景の種類によって数と色が変わる。文字より後ろに描かれる。
             (function () {
-                const cv = $('#bubbles'); if (!cv || !motionOK || !cv.getContext) return; const ctx = cv.getContext('2d'); let W = 0, H = 0, dpr = 1, last = 0, raf = 0;
-                const list = [], mouse = { x: -999, y: -999 };
-                function make(initial) { const r = 6 + Math.pow(Math.random(), 2.2) * 34; return { r, x: Math.random() * W, y: initial ? Math.random() * H : H + r + Math.random() * 80, vy: 10 + r * 1.1 + Math.random() * 10, sway: 8 + Math.random() * 22, ph: Math.random() * 6.28, sp: .4 + Math.random() * .7, a: .45 + Math.random() * .45, pop: 0 } }
-                function resize() { dpr = Math.min(devicePixelRatio || 1, 2); W = innerWidth; H = innerHeight; cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); const n = Math.round(Math.min(44, Math.max(16, W * H / 36000))); while (list.length < n) list.push(make(true)); list.length = Math.min(list.length, n) }
-                function draw(b) { const dark = document.body.dataset.bg === 'dusk', x = b.x + Math.sin(b.ph) * b.sway, r = b.r * (1 + b.pop * .6); ctx.globalAlpha = b.a * (1 - b.pop); const g = ctx.createRadialGradient(x - r * .3, b.y - r * .3, r * .1, x, b.y, r); g.addColorStop(0, dark ? 'rgba(255,255,255,.13)' : 'rgba(255,255,255,.58)'); g.addColorStop(.7, 'rgba(120,210,245,.12)'); g.addColorStop(1, dark ? 'rgba(76,195,240,.34)' : 'rgba(76,195,240,.3)'); ctx.beginPath(); ctx.arc(x, b.y, r, 0, 6.2832); ctx.fillStyle = g; ctx.fill(); ctx.lineWidth = 1.3; ctx.strokeStyle = dark ? 'rgba(190,235,252,.8)' : 'rgba(30,140,200,.45)'; ctx.stroke(); ctx.beginPath(); ctx.ellipse(x - r * .38, b.y - r * .42, r * .22, r * .12, -.6, 0, 6.2832); ctx.fillStyle = 'rgba(255,255,255,.9)'; ctx.fill() }
-                function step(t) { const dt = Math.min((t - last) / 1000 || 0, .05); last = t; ctx.clearRect(0, 0, W, H); for (const b of list) { if (b.pop) { b.pop += dt * 3.2; if (b.pop >= 1) { Object.assign(b, make(false)); continue } draw(b); continue } b.y -= b.vy * dt; b.ph += b.sp * dt; const bx = b.x + Math.sin(b.ph) * b.sway, dx = bx - mouse.x, dy = b.y - mouse.y, d = Math.hypot(dx, dy), R = b.r + 70; if (d < R && d > 0) { const f = (1 - d / R) * 60 * dt; b.x += dx / d * f; b.y += dy / d * f * .5 } if (b.y < -b.r - 10) { Object.assign(b, make(false)); continue } draw(b) } raf = requestAnimationFrame(step) }
-                resize(); addEventListener('resize', resize); addEventListener('pointermove', e => { if (e.pointerType === 'mouse') { mouse.x = e.clientX; mouse.y = e.clientY } }, { passive: true }); addEventListener('pointerdown', e => { for (const b of list) { if (b.pop) continue; if (Math.hypot(b.x + Math.sin(b.ph) * b.sway - e.clientX, b.y - e.clientY) < b.r + 10) { b.pop = .01; break } } }, { passive: true }); document.addEventListener('visibilitychange', () => { cancelAnimationFrame(raf); if (!document.hidden) { last = performance.now(); raf = requestAnimationFrame(step) } }); raf = requestAnimationFrame(step)
+                const cv = $('#bubbles'); if (!cv || !cv.getContext) return;
+                const ctx = cv.getContext('2d');
+                const PROFILE = { aurora: { n: 70, hues: ['#bfe9ff', '#d9ccff', '#ffd0ec', '#ffffff'] }, stars: { n: 170, hues: ['#ffffff', '#dfe6ff', '#cfe9ff', '#ffe9c8'] },
+                                  grid: { n: 38, hues: ['#a5f3fc', '#e9d5ff', '#ffffff'] }, dusk: { n: 54, hues: ['#cdefff', '#ffffff'] }, custom: { n: 0, hues: ['#ffffff'] } };
+                const sprites = {};
+                function sprite(color) {                  // やわらかく光る点を1回だけ作って使いまわす(軽くするため)
+                    if (sprites[color]) return sprites[color];
+                    const c = document.createElement('canvas'); c.width = c.height = 48; const g = c.getContext('2d');
+                    const r = g.createRadialGradient(24, 24, 0, 24, 24, 24); r.addColorStop(0, color); r.addColorStop(.18, color); r.addColorStop(.5, 'rgba(255,255,255,.12)'); r.addColorStop(1, 'rgba(255,255,255,0)');
+                    g.fillStyle = r; g.fillRect(0, 0, 48, 48); return (sprites[color] = c);
+                }
+                let W = 0, H = 0, dpr = 1, last = 0, raf = 0; const list = [], mouse = { x: -999, y: -999 };
+                const prof = () => PROFILE[document.body.dataset.bg] || PROFILE.aurora;
+                function make(initial) {
+                    const hues = prof().hues, big = Math.random() < .12, s = big ? 10 + Math.random() * 14 : 2.5 + Math.random() * 5;
+                    return { x: Math.random() * W, y: initial ? Math.random() * H : H + s, s, vy: (3 + Math.random() * 9) * (big ? .6 : 1), vx: (Math.random() - .5) * 4, ph: Math.random() * 6.28, tw: .5 + Math.random() * 1.6,
+                             a: big ? .22 + Math.random() * .22 : .35 + Math.random() * .6, color: hues[Math.floor(Math.random() * hues.length)] }
+                }
+                function resize() { dpr = Math.min(devicePixelRatio || 1, 2); W = innerWidth; H = innerHeight; cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); list.length = 0; if (!motionOK) frame(0) }
+                function frame(dt) {
+                    const p = prof(), target = Math.round(p.n * Math.min(1, Math.max(.5, W * H / 900000)));
+                    while (list.length < target) list.push(make(true)); if (list.length > target) list.length = target;
+                    ctx.clearRect(0, 0, W, H);
+                    for (const b of list) {
+                        b.ph += b.tw * dt; b.y -= b.vy * dt; b.x += b.vx * dt;
+                        const dx = b.x - mouse.x, dy = b.y - mouse.y, d = Math.hypot(dx, dy), R = 110; let boost = 1;
+                        if (d < R && d > 0) { const f = (1 - d / R); b.x += dx / d * f * 40 * dt; b.y += dy / d * f * 40 * dt; boost = 1 + f * .9 }
+                        if (b.y < -b.s * 2 || b.x < -20 || b.x > W + 20) { Object.assign(b, make(false)); continue }
+                        ctx.globalAlpha = Math.min(1, b.a * (.55 + .45 * Math.sin(b.ph)) * boost);
+                        ctx.drawImage(sprite(b.color), b.x - b.s, b.y - b.s, b.s * 2, b.s * 2)
+                    }
+                    ctx.globalAlpha = 1
+                }
+                function step(t) { const dt = Math.min((t - last) / 1000 || 0, .05); last = t; frame(dt); raf = requestAnimationFrame(step) }
+                resize(); addEventListener('resize', resize);
+                addEventListener('pointermove', e => { if (e.pointerType === 'mouse') { mouse.x = e.clientX; mouse.y = e.clientY } }, { passive: true });
+                if (motionOK) {
+                    document.addEventListener('visibilitychange', () => { cancelAnimationFrame(raf); if (!document.hidden) { last = performance.now(); raf = requestAnimationFrame(step) } });
+                    raf = requestAnimationFrame(step)
+                }
             })();
 
             // initial
-            makeButtons(); renderStats(); renderOshi(); renderSongs(); renderEvents(false);
+            makeButtons(); renderStats(); renderOshi(); renderEvents(false);
             // GitHub Pagesでは events.json を優先。file://直開きなどではフォールバック。
             loadJson();
         })();

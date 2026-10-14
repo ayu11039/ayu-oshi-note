@@ -992,7 +992,7 @@
         <section class="block" id="events">
             <div class="wrap">
                 <h2>参戦イベント</h2>
-                <p class="lead">イベンターノートに登録しているイベントを、そのまま年ごとに整理。</p>
+                <p class="lead">イベンターノートに登録しているイベントを、そのまま年ごとに整理。推し以外のイベントも「すべて」に残しています。</p>
 
                 <div class="statbar" id="stats"></div>
 
@@ -1041,15 +1041,15 @@
     <script>
         const ID = 'ayu_11039';
         const SITE = {
-            title: 'Ayu',
-            bio: '推し：伊藤美来さん、豊田萌絵さん、Pyxis　参戦したイベントの記録と、推しのことをまとめたサイトです（テスト）',
+            title: '推し活ノート',
+            bio: '好きな人たちを追いかけて、ライブやイベントに通っています。ここは、参戦したイベントの記録と、推しのことをまとめたノートです。',
         };
         const EVENTERNOTE = 'https://www.eventernote.com/users/' + ID + '/events';
         const ACCOUNTS = [
-            ['X', 'https://x.com/' + ayu_11039],
-            ['Instagram', 'https://www.instagram.com/' + ayu_11039 + '/'],
-            ['note', 'https://note.com/' + ayu_11039],
-            ['イベンターノート', ayu_11039]
+            ['X', 'https://x.com/' + ID],
+            ['Instagram', 'https://www.instagram.com/' + ID + '/'],
+            ['note', 'https://note.com/' + ID],
+            ['イベンターノート', EVENTERNOTE]
         ];
         const OSHI = [
             {
@@ -1090,7 +1090,7 @@
             }
             const now = new Date(); const todayStr = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
             const favoriteNames = OSHI.map(o => o.name);
-            const filterNames = ['all', '伊藤美来', '豊田萌絵', 'Pyxis', 'other'];
+            const filterNames = ['all', '伊藤美来', '豊田萌絵', 'Pyxis', '愛美', 'other'];
 
             document.title = SITE.title + ' @' + ID;
             $('#brand').textContent = SITE.title;

@@ -24,20 +24,10 @@
             --ok: #1b7f5c;
             --future: #d36b2b;
             --radius: 22px;
-            --bg-dusk: linear-gradient(180deg,#0b2236 0%,#154d70 35%,#123b5a 65%,#0b2236 100%);
             --font: "Zen Maru Gothic","Hiragino Maru Gothic ProN","Hiragino Sans","Yu Gothic UI","Meiryo",sans-serif;
         }
 
-        body[data-bg="dusk"] {
-            --ink: #eaf7fd;
-            --muted: #a9cadb;
-            --card: rgba(255,255,255,.09);
-            --panel: #123550;
-            --line: rgba(232,246,253,.20);
-            --accent-ink: #82d8f8;
-            --ok: #6fe3bc;
-            --future: #ffb078
-        }
+        
 
         body[data-theme="dark"] {
             --ink: #edf5ff;
@@ -57,23 +47,16 @@
         body[data-theme="dark"] .orbs i { opacity: .28; }
         
         
-        body[data-theme="dark"][data-bg="custom"] .bg::after { background: rgba(8,12,26,.68); }
-        /* 動く光の玉は、明るい文字(夜の水色)のうしろでは弱くして、文字が白く飛ばないようにする */
-        body[data-bg="dusk"] .orbs i { opacity: .16; }
-        /* 好きな画像の背景は場所によって明るさが違うので、見出しなどに薄い縁取りをつける */
-        body[data-bg="custom"] .block h2, body[data-bg="custom"] .lead, body[data-bg="custom"] .filter-title,
-        body[data-bg="custom"] .count, body[data-bg="custom"] .year-head, body[data-bg="custom"] footer,
-        body[data-bg="custom"] .hero .id, body[data-bg="custom"] .hero .bio, body[data-bg="custom"] .hero .tip { text-shadow: 0 0 8px rgba(255,255,255,.85), 0 0 2px rgba(255,255,255,.85); }
-        body[data-theme="dark"][data-bg="custom"] .block h2, body[data-theme="dark"][data-bg="custom"] .lead, body[data-theme="dark"][data-bg="custom"] .filter-title,
-        body[data-theme="dark"][data-bg="custom"] .count, body[data-theme="dark"][data-bg="custom"] .year-head, body[data-theme="dark"][data-bg="custom"] footer,
-        body[data-theme="dark"][data-bg="custom"] .hero .id, body[data-theme="dark"][data-bg="custom"] .hero .bio, body[data-theme="dark"][data-bg="custom"] .hero .tip { text-shadow: 0 0 8px rgba(8,12,26,.9), 0 0 2px rgba(8,12,26,.9); }
-        body[data-theme="dark"] .btn:not(.soft):not(.ghost),
-        body[data-theme="dark"] .fab button { color: #15122b; }
-        body, .nav, .stat, .ticket, .tile, .panel, .btn, .pill {
+        
+        
+        
+        
+        body[data-theme="dark"] .btn:not(.soft):not(.ghost){ color: #15122b; }
+        body, .nav, .stat, .ticket, .tile, .btn, .pill {
             transition: background-color .28s ease, color .28s ease, border-color .28s ease, box-shadow .28s ease;
         }
         @media (prefers-reduced-motion: reduce) {
-            body, .nav, .stat, .ticket, .tile, .panel, .btn, .pill { transition: none !important; }
+            body, .nav, .stat, .ticket, .tile, .btn, .pill { transition: none !important; }
         }
 
         * {
@@ -128,9 +111,7 @@
                 animation: slide 44s ease-in-out infinite alternate
             }
 
-        body[data-bg="dusk"] .bg::before {
-            background: var(--bg-dusk)
-        }
+        
 
         
 
@@ -138,16 +119,9 @@
 
         
 
-        body[data-bg="custom"] .bg::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background: rgba(255,255,255,.74)
-        }
+        
 
-        body[data-bg="dusk"] .bg::after {
-            display: none
-        }
+        
 
         .orbs {
             position: fixed;
@@ -188,11 +162,7 @@
                     animation: drift3 52s ease-in-out infinite alternate
                 }
 
-        /* =====================================================
-           背景(すべて暗い背景。文字は明るい色なので、必ず暗い背景にする)
-           aurora=オーロラ / stars=星空 / grid=ネオン / dusk=夜の水色 / custom=好きな画像
-           ===================================================== */
-        body[data-bg="custom"] .bg::before { display: none }
+        
 
         /* --- オーロラ(初期設定): 色の光がゆっくり流れ、細いカーテンのような光が揺れる --- */
         body[data-bg="aurora"] .bg { background: #060817 }
@@ -215,35 +185,22 @@
             will-change: transform;
         }
 
-        /* --- 星空: 深い藍色の空に、たくさんの星がまたたく(星は下の canvas が描く) --- */
-        body[data-bg="stars"] .bg { background: radial-gradient(120% 80% at 50% 112%, #2a2670 0%, #0d1233 48%, #050716 100%) }
-        body[data-bg="stars"] .bg::before { display: none }
+        
+        
 
-        /* --- ネオン: 光る格子が奥へ流れていく --- */
-        body[data-bg="grid"] .bg {
-            background: radial-gradient(90% 60% at 50% 0%, rgba(124,58,237,.50), transparent 72%), radial-gradient(70% 50% at 50% 104%, rgba(14,165,233,.30), transparent 72%), #060817;
-        }
-        body[data-bg="grid"] .bg::before {
-            inset: 0;
-            height: 100%;
-            background: linear-gradient(rgba(125,211,252,.30) 1px, transparent 1px) 0 0/54px 54px, linear-gradient(90deg, rgba(125,211,252,.30) 1px, transparent 1px) 0 0/54px 54px;
-            -webkit-mask-image: radial-gradient(ellipse 85% 75% at 50% 38%, #000 8%, transparent 82%);
-            mask-image: radial-gradient(ellipse 85% 75% at 50% 38%, #000 8%, transparent 82%);
-            animation: gridmove 16s linear infinite;
-        }
+        
+        
 
         /* --- 動く光の玉の色(オーロラ・星空・ネオン) --- */
         body[data-bg="aurora"] { --o1: rgba(56,189,248,.60); --o2: rgba(139,92,246,.62); --o3: rgba(236,72,153,.45) }
-        body[data-bg="stars"]  { --o1: rgba(99,102,241,.50); --o2: rgba(56,189,248,.34); --o3: rgba(168,85,247,.40) }
-        body[data-bg="grid"]   { --o1: rgba(168,85,247,.55); --o2: rgba(34,211,238,.38); --o3: rgba(236,72,153,.38) }
-        body[data-bg="aurora"] .orbs i:nth-child(1), body[data-bg="stars"] .orbs i:nth-child(1), body[data-bg="grid"] .orbs i:nth-child(1) { background: radial-gradient(circle, var(--o1) 0, transparent 68%) }
-        body[data-bg="aurora"] .orbs i:nth-child(2), body[data-bg="stars"] .orbs i:nth-child(2), body[data-bg="grid"] .orbs i:nth-child(2) { background: radial-gradient(circle, var(--o2) 0, transparent 68%) }
-        body[data-bg="aurora"] .orbs i:nth-child(3), body[data-bg="stars"] .orbs i:nth-child(3), body[data-bg="grid"] .orbs i:nth-child(3) { background: radial-gradient(circle, var(--o3) 0, transparent 68%) }
-        body[data-bg="aurora"] .orbs i, body[data-bg="stars"] .orbs i, body[data-bg="grid"] .orbs i { mix-blend-mode: screen; opacity: .8 }
+        
+        
+        body[data-bg="aurora"] .orbs i:nth-child(1){ background: radial-gradient(circle, var(--o1) 0, transparent 68%) }
+        body[data-bg="aurora"] .orbs i:nth-child(2){ background: radial-gradient(circle, var(--o2) 0, transparent 68%) }
+        body[data-bg="aurora"] .orbs i:nth-child(3){ background: radial-gradient(circle, var(--o3) 0, transparent 68%) }
+        body[data-bg="aurora"] .orbs i{ mix-blend-mode: screen; opacity: .8 }
 
-        body[data-bg="custom"] .orbs {
-            display: none
-        }
+        
 
         .bubbles {
             position: fixed;
@@ -372,11 +329,7 @@
             gap: 9px
         }
 
-        .tip {
-            margin: 1.3em 0 0;
-            font-size: .84rem;
-            color: var(--muted)
-        }
+        
 
         .btn {
             display: inline-flex;
@@ -811,105 +764,33 @@
                 margin: 0 0 .45em
             }
 
-        .fab {
-            position: fixed;
-            right: max(14px,env(safe-area-inset-right));
-            bottom: max(14px,env(safe-area-inset-bottom));
-            z-index: 30;
-            display: flex;
-            gap: 8px
-        }
+        
 
-            .fab button {
-                min-height: 48px;
-                padding: 0 17px;
-                border: 0;
-                border-radius: 999px;
-                background: var(--accent);
-                color: #06273a;
-                font-weight: 700;
-                cursor: pointer;
-                box-shadow: 0 6px 18px -6px rgba(11,60,92,.5)
-            }
+            
 
-        .panel {
-            position: fixed;
-            right: max(14px,env(safe-area-inset-right));
-            bottom: calc(76px + env(safe-area-inset-bottom));
-            z-index: 30;
-            width: min(340px,calc(100vw - 28px));
-            padding: 16px;
-            background: var(--panel);
-            border: 1px solid var(--line);
-            border-radius: var(--radius);
-            box-shadow: 0 18px 40px -16px rgba(0,0,0,.4)
-        }
+        
 
-            .panel h2 {
-                font-size: 1rem;
-                margin: 0 0 10px
-            }
+            
 
-        .swatches {
-            display: grid;
-            grid-template-columns: repeat(5,1fr);
-            gap: 8px
-        }
+        
 
-        .sw {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            padding: 0;
-            border: 0;
-            background: none;
-            font-size: .68rem;
-            line-height: 1.2;
-            cursor: pointer
-        }
+        
 
-            .sw i {
-                display: block;
-                width: 100%;
-                aspect-ratio: 1;
-                border-radius: 12px;
-                border: 2px solid var(--line)
-            }
+            
 
-            .sw[aria-pressed="true"] i {
-                border-color: var(--accent);
-                box-shadow: 0 0 0 2px var(--accent)
-            }
+            
 
-            .sw[data-k="aurora"] i {
-                background: radial-gradient(60% 50% at 20% 25%,rgba(56,189,248,.9),transparent 70%),radial-gradient(60% 55% at 85% 20%,rgba(139,92,246,.95),transparent 70%),radial-gradient(60% 45% at 60% 90%,rgba(236,72,153,.7),transparent 72%),#070a1f
-            }
+            
 
-            .sw[data-k="stars"] i {
-                background: radial-gradient(1.5px 1.5px at 22% 28%,#fff,transparent),radial-gradient(1px 1px at 68% 18%,#fff,transparent),radial-gradient(1.5px 1.5px at 80% 62%,#cfe,transparent),radial-gradient(1px 1px at 38% 74%,#fff,transparent),radial-gradient(120% 80% at 50% 110%,#2a2670,#0d1233 55%,#050716)
-            }
+            
 
-            .sw[data-k="grid"] i {
-                background: linear-gradient(rgba(125,211,252,.55) 1px,transparent 1px) 0 0/10px 10px,linear-gradient(90deg,rgba(125,211,252,.55) 1px,transparent 1px) 0 0/10px 10px,radial-gradient(90% 70% at 50% 0%,rgba(124,58,237,.8),#070a1f 80%)
-            }
+            
 
-            .sw[data-k="dusk"] i {
-                background: var(--bg-dusk)
-            }
+            
 
-            .sw[data-k="custom"] i {
-                display: grid;
-                place-items: center;
-                font-style: normal;
-                font-size: 1.3rem
-            }
+            
 
-        .panel small {
-            display: block;
-            margin-top: 9px;
-            color: var(--muted)
-        }
+        
 
         .toast {
             position: fixed;
@@ -977,9 +858,7 @@
             to   { transform: translateX(5%) skewX(7deg) }
         }
 
-        @keyframes gridmove {
-            to { background-position: 0 54px, 54px 0 }
-        }
+        
 
         @keyframes slide {
             to {
@@ -1046,6 +925,31 @@
             }
 
         }
+
+        /* =====================================================
+           スマホ向けの調整
+           ===================================================== */
+        /* 絞り込みボタンは、横にスクロールせず折り返して全部見えるようにする */
+        .row { flex-wrap: wrap; overflow: visible }
+        /* 「データ更新・手動取り込み」の見出しを、指でタップしやすい高さにする */
+        .import summary { display: block; padding: 12px 0; min-height: 44px }
+        /* 小さすぎる文字を、スマホでも読める大きさ(12px以上)にする */
+        .status { font-size: .75rem }
+        .tag { font-size: .78rem }
+        @media (max-width: 640px) {
+            /* 「登録イベント/参戦済み/これからの予定」は、縦に3枚ならべず、横に3つならべて場所をとらないようにする */
+            .statbar { grid-template-columns: repeat(3, 1fr); gap: 8px }
+            .stat { padding: 12px 10px; border-radius: 14px }
+            .stat b { font-size: 1.45rem }
+            .stat small { font-size: .78rem; display: block; line-height: 1.35 }
+        }
+        @media (max-width: 480px) {
+            /* 幅の狭い画面では、サイト名(ヒーローに大きく出ている)を省いて、メニューが右で切れないようにする */
+            .brand { display: none }
+            .links { -webkit-mask-image: none; mask-image: none }
+            .links { margin-left: 0; width: 100%; justify-content: space-between }
+            .links a { padding: 10px 12px; flex: 1 1 auto; text-align: center }
+        }
     </style>
 </head>
 <body data-bg="aurora" data-theme="dark">
@@ -1059,8 +963,8 @@
             <a class="brand" id="brand" href="#about"></a>
             <nav class="links" aria-label="ページ内メニュー">
                 <a href="#about">自己紹介</a>
-                <a href="#events">参戦イベント</a>
                 <a href="#oshi">推し</a>
+                <a href="#events">参戦イベント</a>
             </nav>
         </div>
     </header>
@@ -1072,12 +976,17 @@
                 <p class="id" id="siteId"></p>
                 <p class="bio" id="bio"></p>
                 <div class="acc" id="acc">
-                    <button class="btn ghost" type="button" id="copyHero">IDをコピー</button>
                 </div>
-                <p class="tip">右下の「背景」ボタンで、背景を変えられます。</p>
             </div>
             <div class="wave w2" aria-hidden="true"></div>
             <div class="wave" aria-hidden="true"></div>
+        </section>
+
+        <section class="block" id="oshi">
+            <div class="wrap">
+                <h2>推し</h2>
+                <div class="oshi" id="oshiList"></div>
+            </div>
         </section>
 
         <section class="block" id="events">
@@ -1114,13 +1023,6 @@
             </div>
         </section>
 
-        <section class="block" id="oshi">
-            <div class="wrap">
-                <h2>推し</h2>
-                <div class="oshi" id="oshiList"></div>
-            </div>
-        </section>
-
     </main>
 
     <footer class="wrap">
@@ -1129,13 +1031,7 @@
         <p><a href="#import">データ更新・手動取り込み</a> ／ <a href="simple.html">シンプル表示(演出なし)</a></p>
     </footer>
 
-    <div class="fab">
-        <button type="button" id="bgBtn" class="secondary-fab" aria-expanded="false" aria-controls="bgPanel">背景</button>
-    </div>
 
-    <div class="panel" id="bgPanel" hidden>
-        <h2>背景をえらぶ</h2>
-        <div class="swatches" id="swatches"></div>
         <input type="file" id="bgFile" accept="image/*" hidden>
         <small>自分の画像は、このページを開いている間だけ使われます。</small>
     </div>
@@ -1147,7 +1043,6 @@
         const SITE = {
             title: '推し活ノート',
             bio: '好きな人たちを追いかけて、ライブやイベントに通っています。ここは、参戦したイベントの記録と、推しのことをまとめたノートです。',
-            defaultBg: 'aurora'
         };
         const EVENTERNOTE = 'https://www.eventernote.com/users/' + ID + '/events';
         const ACCOUNTS = [
@@ -1204,8 +1099,7 @@
             $('#siteId').textContent = '@' + ID;
             $('#bio').textContent = SITE.bio;
             $('#acc').prepend(...ACCOUNTS.map(a => h('a', { class: 'btn soft', href: a[1], target: '_blank', rel: 'noopener noreferrer', text: a[0] })));
-            $('#copyHero').addEventListener('click', () => copyText('@' + ID, 'IDをコピーしました'));
-            $('#enLink').href = EVENTERNOTE;
+                        $('#enLink').href = EVENTERNOTE;
 
             let events = FALLBACK_EVENTS.map(x => ({ ...x, who: [...(x.who || [])] }));
             let selectedYear = 'all', selectedWho = 'all', years = [], yearBtns = [], whoBtns = [];
@@ -1338,8 +1232,7 @@
                     if (!r.ok) throw new Error('HTTP ' + r.status);
                     const data = await r.json();
                     loadData(data, 'events.json');
-                    toast('最新のevents.jsonを読み込みました');
-                } catch (e) { toast('events.jsonを読み込めないため、内蔵データを表示しています'); $('#syncMsg').textContent = '読み込みに失敗しました: ' + e.message }
+                                    } catch (e) { toast('events.jsonを読み込めないため、内蔵データを表示しています'); $('#syncMsg').textContent = '読み込みに失敗しました: ' + e.message }
             }
             $('#reloadJson').addEventListener('click', loadJson);
             $('#copyJson').addEventListener('click', () => copyText(JSON.stringify({ updatedAt: sourceUpdatedAt, events }, null, 2), 'JSONをコピーしました'));
@@ -1373,28 +1266,7 @@
                 $('#syncMsg').textContent = rows.length + '件を読み取りました。手動取り込みの重複は自動整理しています。'
             });
 
-            // 背景
-            const BGS = [['aurora', 'オーロラ'], ['stars', '星空'], ['grid', 'ネオン'], ['dusk', '夜の水色'], ['custom', '画像']];
-            let customUrl = null; const bgLayer = $('.bg'), panel = $('#bgPanel');
-            const swatchBtns = BGS.map(([k, label]) => h('button', { class: 'sw', type: 'button', 'data-k': k, onclick: () => k === 'custom' ? $('#bgFile').click() : setBg(k) }, h('i', { text: k === 'custom' ? '＋' : '' }), label));
-            $('#swatches').append(...swatchBtns);
-            function setBg(name, img) {
-                document.body.dataset.bg = name;
-                bgLayer.style.backgroundImage = name === 'custom' ? 'url("' + img + '")' : '';
-                swatchBtns.forEach(b => b.setAttribute('aria-pressed', b.dataset.k === name));
-                if (name !== 'custom') { try { localStorage.setItem('oshi-bg', name) } catch (e) { } }
-            }
-            $('#bgFile').addEventListener('change', e => { const f = e.target.files[0]; if (!f || !f.type.startsWith('image/')) return; if (customUrl) URL.revokeObjectURL(customUrl); customUrl = URL.createObjectURL(f); setBg('custom', customUrl) });
-            let saved = null; try { saved = localStorage.getItem('oshi-bg') } catch (e) { }
-            setBg(BGS.some(x => x[0] === saved) ? saved : SITE.defaultBg);
-
-            const bgBtn = $('#bgBtn');
-            // 表示はダークモード固定(切り替えボタンはありません)
-            function togglePanel(open) { panel.hidden = !open; bgBtn.setAttribute('aria-expanded', open) }
-            bgBtn.addEventListener('click', () => togglePanel(panel.hidden));
-            document.addEventListener('click', e => { if (!panel.hidden && !panel.contains(e.target) && e.target !== bgBtn) togglePanel(false) });
-
-            document.addEventListener('keydown', e => { if (e.key === 'Escape') togglePanel(false) });
+            // 背景は動くオーロラ1つに固定(選択ボタンはありません)。見た目の設定はCSSの「背景」の項目にあります。
 
             // scroll spy / progress
             // 文字・イベント一覧は、最初から必ず見える状態にする。
@@ -1404,18 +1276,18 @@
             const navLinks = [...document.querySelectorAll('.links a')];
             if ('IntersectionObserver' in window) {
                 const spy = new IntersectionObserver(es => es.forEach(en => { if (!en.isIntersecting) return; navLinks.forEach(a => a.removeAttribute('aria-current')); const a = navLinks.find(x => x.getAttribute('href') === '#' + en.target.id); if (a) a.setAttribute('aria-current', 'true') }), { rootMargin: '-40% 0px -55% 0px' });
-                ['about', 'events', 'oshi'].forEach(id => spy.observe(document.getElementById(id)))
+                ['about', 'oshi', 'events'].forEach(id => spy.observe(document.getElementById(id)))
             }
             const bar = $('#progress'); let ticking = false;
             function onScroll() { if (ticking) return; ticking = true; requestAnimationFrame(() => { const max = document.documentElement.scrollHeight - innerHeight; bar.style.transform = 'scaleX(' + (max > 0 ? Math.min(scrollY / max, 1) : 0) + ')'; ticking = false }) }
             addEventListener('scroll', onScroll, { passive: true }); onScroll();
 
-            // 背景の粒子(星・光のつぶ): 背景の種類によって数と色が変わる。文字より後ろに描かれる。
+            // 背景の粒子(星・光のつぶ): ふわふわ漂う。文字より後ろに描かれる。
             (function () {
                 const cv = $('#bubbles'); if (!cv || !cv.getContext) return;
                 const ctx = cv.getContext('2d');
-                const PROFILE = { aurora: { n: 70, hues: ['#bfe9ff', '#d9ccff', '#ffd0ec', '#ffffff'] }, stars: { n: 170, hues: ['#ffffff', '#dfe6ff', '#cfe9ff', '#ffe9c8'] },
-                                  grid: { n: 38, hues: ['#a5f3fc', '#e9d5ff', '#ffffff'] }, dusk: { n: 54, hues: ['#cdefff', '#ffffff'] }, custom: { n: 0, hues: ['#ffffff'] } };
+                // 光のつぶの数と色(オーロラの色合いに合わせています)。数を変えたいときは n を変えてください。
+                const P = { n: 80, hues: ['#bfe9ff', '#d9ccff', '#ffd0ec', '#ffffff'] };
                 const sprites = {};
                 function sprite(color) {                  // やわらかく光る点を1回だけ作って使いまわす(軽くするため)
                     if (sprites[color]) return sprites[color];
@@ -1424,7 +1296,7 @@
                     g.fillStyle = r; g.fillRect(0, 0, 48, 48); return (sprites[color] = c);
                 }
                 let W = 0, H = 0, dpr = 1, last = 0, raf = 0; const list = [], mouse = { x: -999, y: -999 };
-                const prof = () => PROFILE[document.body.dataset.bg] || PROFILE.aurora;
+                const prof = () => P;
                 function make(initial) {
                     const hues = prof().hues, big = Math.random() < .12, s = big ? 10 + Math.random() * 14 : 2.5 + Math.random() * 5;
                     return { x: Math.random() * W, y: initial ? Math.random() * H : H + s, s, vy: (3 + Math.random() * 9) * (big ? .6 : 1), vx: (Math.random() - .5) * 4, ph: Math.random() * 6.28, tw: .5 + Math.random() * 1.6,

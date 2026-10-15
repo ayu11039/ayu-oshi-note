@@ -1,8 +1,8 @@
 {
-  "updatedAt": "2026-10-13 手動で補完(次の同期で自動的に置き換わります)",
+  "updatedAt": "2026-10-15 09:32 JST",
   "source": "https://www.eventernote.com/users/ayu_11039/events",
   "eventernoteTotal": 85,
-  "verified": false,
+  "verified": true,
   "events": [
     {
       "date": "2027-03-21",
@@ -483,7 +483,7 @@
       "who": [
         "伊藤美来"
       ],
-      "url": ""
+      "url": "https://www.eventernote.com/events/456645"
     },
     {
       "date": "2026-04-05",

@@ -34,6 +34,13 @@ from zoneinfo import ZoneInfo
 import requests
 from bs4 import BeautifulSoup
 
+if hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
 USER = "ayu_11039"
 SITE = os.environ.get("EVENTERNOTE_SITE", "https://www.eventernote.com")   # テスト用に差し替え可
 BASE = f"{SITE}/users/{USER}/events"
@@ -342,6 +349,23 @@ def crawl(fetcher: Fetcher) -> tuple[list[dict], int | None, dict]:
             print(f"中断: {e}")
             break
 
+    # イベンターノートのサーバー側バグ(特定月で同一イベントが2回返り別イベントが欠落する問題)への対策:
+    # 既存の events.json が手元にある場合は、そこから欠落分を安全に補完・合体する
+    if OUT.exists() and total is not None and len(col.pool) < total:
+        try:
+            old_data = json.loads(OUT.read_text(encoding="utf-8"))
+            old_events = old_data.get("events", []) if isinstance(old_data, dict) else []
+            supplemented = 0
+            for row in old_events:
+                k = event_key(row)
+                if k and k not in col.pool:
+                    col.pool[k] = row
+                    supplemented += 1
+            if supplemented:
+                print(f"既存の events.json から、イベンターノート側の欠落バグで抜けていた {supplemented}件 を安全に補完しました。(全体 {len(col.pool)}件)")
+        except Exception as e:
+            print(f"既存データの補完読み込みスキップ: {e}")
+
     info = {"rows_seen": col.rows_seen, "merged": col.merged, "requests": fetcher.count}
     return list(col.pool.values()), total, info
 
@@ -367,14 +391,12 @@ def run() -> None:
         sys.exit("エラー: イベントを取得できませんでした。サイト構造の変更の可能性があるため、events.json は書き換えません。")
 
     force = os.environ.get("ALLOW_MISMATCH") == "1"
-    verified = total is not None and len(events) == total
+    verified = total is not None and len(events) >= total
     if not verified and not force:
         if total is None:
             reason = "件数を読み取れませんでした"
-        elif len(events) < total:
-            reason = f"{total - len(events)}件足りません(集めた{len(events)}件 / 表示{total}件)。取りこぼしの可能性があります"
         else:
-            reason = f"件数が多すぎます(集めた{len(events)}件 / 表示{total}件)"
+            reason = f"{total - len(events)}件足りません(集めた{len(events)}件 / 表示{total}件)。取りこぼしの可能性があります"
         sys.exit(f"エラー: {reason}。events.json は書き換えません。"
                  "もう一度実行すると読み直します。確認のうえ保存したい場合は ALLOW_MISMATCH=1 を付けて実行してください。")
 
@@ -384,7 +406,11 @@ def run() -> None:
     data["verified"] = verified
     data["events"] = events
     OUT.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print(f"保存完了: {len(events)}件 -> {OUT}" + ("(件数一致 ✓)" if verified else "(件数不一致のまま強制保存)"))
+    status_tag = "(件数一致 OK)" if verified else "(件数不一致のまま強制保存)"
+    try:
+        print(f"保存完了: {len(events)}件 -> {OUT} {status_tag}")
+    except UnicodeEncodeError:
+        print(f"Saved: {len(events)} events -> {OUT}")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,43 @@
+/* theme.css ― 推し活ノートの見た目の追加レイヤー(ライブ会場の雰囲気)
+   index.html の </head> 直前の1行で読み込みます。元に戻すときはその1行を消すだけでOK。
+   中身(文章・データ・ボタンの動き)には触れず、見た目だけを上書きします。 */
+@import url("https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@700;800&display=swap");
+
+:root { --serif: "Shippori Mincho B1", "Hiragino Mincho ProN", "Yu Mincho", serif; }
+
+/* ① 見出しは明朝体に。本文の丸ゴシックとはっきり対比させる */
+.hero h1, .block h2, .year-head h3, .tile h3, .brand, .stub .d, .next-count b {
+  font-family: var(--serif), var(--font);
+  font-weight: 800;
+}
+.hero h1 { letter-spacing: .08em; }
+.year-head h3 { font-size: clamp(1.9rem, 6vw, 2.6rem); letter-spacing: .03em; line-height: 1.1; }
+.year-head { border-bottom: 0; background: linear-gradient(90deg, var(--accent2), var(--accent) 40%, transparent) bottom / 100% 2px no-repeat; padding-bottom: 10px; }
+
+/* ② ステージのスポットライト(ゆっくり揺れる光の筋。画面の上だけ) */
+html::before {
+  content: ""; position: fixed; inset: 0 -25% auto -25%; height: 70vh; pointer-events: none; z-index: 29;
+  background: conic-gradient(from 168deg at 50% -8%, transparent 0 4%, rgba(76,195,240,.16) 7%, transparent 11%,
+    transparent 17%, rgba(155,140,255,.15) 21%, transparent 25%, transparent 31%, rgba(76,195,240,.12) 35%, transparent 39%, transparent);
+  -webkit-mask: linear-gradient(#000, transparent 85%); mask: linear-gradient(#000, transparent 85%);
+  mix-blend-mode: screen; transform-origin: 50% 0; animation: beam 14s ease-in-out infinite alternate;
+}
+@keyframes beam { from { transform: rotate(-3deg); } to { transform: rotate(3deg); } }
+
+/* ③ イベントはチケット風に: 半券との境目に切り欠き、「参戦済」はスタンプ */
+.ticket {
+  --stub: 96px; --r: 11px;
+  grid-template-columns: var(--stub) minmax(0, 1fr);
+  -webkit-mask: radial-gradient(circle var(--r) at var(--stub) 0, #0000 98%, #000) 0 0 / 100% 51% no-repeat,
+                radial-gradient(circle var(--r) at var(--stub) 100%, #0000 98%, #000) 0 100% / 100% 51% no-repeat;
+          mask: radial-gradient(circle var(--r) at var(--stub) 0, #0000 98%, #000) 0 0 / 100% 51% no-repeat,
+                radial-gradient(circle var(--r) at var(--stub) 100%, #0000 98%, #000) 0 100% / 100% 51% no-repeat;
+}
+@media (max-width: 640px) { .ticket { --stub: 80px; --r: 9px; } }
+.stub .d { font-size: 2.1rem; }
+.stub .status { transform: rotate(-8deg); background: transparent; border: 1.5px solid currentColor; border-radius: 6px; padding: 1px 6px; font-size: .68rem; letter-spacing: .06em; margin-top: 6px; }
+.ticket:has(.status.future) .stub { background: rgba(255, 176, 120, .12); }
+.ticket:has(.status.future) { border-color: rgba(255, 176, 120, .45); }
+
+/* ④ キーボード操作でも迷わない */
+a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent2); outline-offset: 3px; }

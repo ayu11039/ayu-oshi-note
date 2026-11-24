@@ -1305,11 +1305,14 @@
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
     <script>
-        // 基本設定
-        const ID = 'ayu_11039';
+        // 基本設定（URLの ?user=ID&name=表示名 で友達用ノートに切り替え）
+        const params = new URLSearchParams(location.search);
+        const requestedUser = (params.get('user') || 'ayu_11039').trim();
+        const ID = /^[a-zA-Z0-9_-]{1,40}$/.test(requestedUser) ? requestedUser : 'ayu_11039';
+        const isGuestNote = ID !== 'ayu_11039';
         const SITE = {
-            title: 'Ayu☻',
-            bio: 'ライブやイベントに通っています。ここは、参戦したイベントの記録と、推しのことをまとめたノートです。',
+            title: (params.get('name') || (isGuestNote ? ID : 'Ayu☻')).trim().slice(0, 40),
+            bio: (params.get('bio') || (isGuestNote ? 'イベンターノートに登録された参加イベントをまとめた推し活ノートです。' : 'ライブやイベントに通っています。ここは、参戦したイベントの記録と、推しのことをまとめたノートです。')).trim().slice(0, 240),
         };
         const EVENTERNOTE = 'https://www.eventernote.com/users/' + ID + '/events';
 
@@ -1727,8 +1730,110 @@
                 renderEvents();
             }
 
-            async function loadJson() {
+            // 友達用ノート：公開されているイベンターノートを読み込みます。
+        // GitHub Pagesは静的ホスティングのため、公開HTML取得にCORS中継を使用します。
+        async function loadPublicEventernote(userId) {
+            const base = 'https://www.eventernote.com/users/' + encodeURIComponent(userId) + '/events';
+            const proxy = 'https://proxy.cors.dev/';
+            const seen = new Map();
+            const queue = [base];
+            const visited = new Set();
+            let profileHtml = '';
+            while (queue.length && visited.size < 30) {
+                const url = queue.shift();
+                if (visited.has(url)) continue;
+                visited.add(url);
+                const response = await fetch(proxy + url, { credentials: 'omit', cache: 'no-store' });
+                if (!response.ok) throw new Error(response.status === 404 ? 'ユーザーが見つかりません。IDを確認してください。' : 'イベンターノートの読み込みに失敗しました（HTTP ' + response.status + '）。');
+                const html = await response.text();
+                if (!profileHtml) profileHtml = html;
+                const doc = new DOMParser().parseFromString(html, 'text/html');
+                doc.querySelectorAll('h4, h3').forEach(heading => {
+                    const link = heading.querySelector('a[href]');
+                    if (!link) return;
+                    const match = link.href.match(/\/events\/(\d+)/);
+                    if (!match) return;
+                    let node = heading, block = '', blockNode = null;
+                    for (let i = 0; i < 6 && node.parentElement; i++) {
+                        node = node.parentElement;
+                        const candidate = (node.innerText || node.textContent || '').replace(/\s+/g, ' ').trim();
+                        if (/20\d{2}-\d{2}-\d{2}/.test(candidate) && (/会場/.test(candidate) || /開演/.test(candidate))) {
+                            block = candidate; blockNode = node; break;
+                        }
+                    }
+                    const date = block.match(/(20\d{2})-(\d{2})-(\d{2})/);
+                    if (!date) return;
+                    const venue = block.match(/会場:\s*(.+?)(?=\s+開場|\s+開演|\s+出演者|$)/);
+                    const times = block.match(/開場\s*([^\s]+)\s*開演\s*([^\s]+)\s*終演\s*([^\s]+)/);
+                    const who = [];
+                    if (blockNode) blockNode.querySelectorAll('a[href*="/actors/"], a[href*="/artists/"]').forEach(a => {
+                        const name = (a.textContent || '').trim();
+                        if (name && !who.includes(name)) who.push(name);
+                    });
+                    seen.set(match[1], { date: date[1] + '-' + date[2] + '-' + date[3], title: (link.textContent || '').trim(), venue: venue ? venue[1].trim() : '', open: times ? times[1] : '', start: times ? times[2] : '', end: times ? times[3] : '', who, url: 'https://www.eventernote.com/events/' + match[1] });
+                });
+                doc.querySelectorAll('a[href*="/users/' + userId + '/events"][href*="page="]').forEach(a => {
+                    const next = new URL(a.href, base).href;
+                    if (!visited.has(next) && !queue.includes(next)) queue.push(next);
+                });
+                if (queue.length === 0 && doc.querySelectorAll('h4, h3').length >= 30) {
+                    const next = new URL(base); next.searchParams.set('page', String(visited.size + 1));
+                    if (!visited.has(next.href)) queue.push(next.href);
+                }
+            }
+            if (!seen.size) throw new Error('公開イベントを取得できませんでした。ユーザーIDまたは公開設定を確認してください。');
+            const text = new DOMParser().parseFromString(profileHtml, 'text/html').body.innerText;
+            const totalMatch = text.match(/参加イベント一覧\s*[（(]\s*(\d+)/);
+            return { updatedAt: new Date().toLocaleString('ja-JP'), source: base, eventernoteTotal: totalMatch ? Number(totalMatch[1]) : seen.size, verified: !!totalMatch && Number(totalMatch[1]) === seen.size, events: [...seen.values()].sort((a,b) => b.date.localeCompare(a.date)) };
+        }
+
+        function applyGuestProfile() {
+            if (!isGuestNote) return;
+            document.title = SITE.title + '（@' + ID + '）｜推し活ノート';
+            const heading = document.querySelector('.hero h1');
+            if (heading) heading.textContent = SITE.title;
+            const idLabel = document.querySelector('.hero .id');
+            if (idLabel) idLabel.textContent = '@' + ID;
+            const bio = document.querySelector('.hero .bio');
+            if (bio) bio.textContent = SITE.bio;
+            const badge = document.querySelector('.hero .badge-user');
+            if (badge) badge.textContent = '✦ ' + SITE.title + ' の推し活ノート';
+            const footer = document.querySelector('footer p');
+            if (footer) footer.textContent = '© ' + SITE.title + ' (@' + ID + ') ・ 非公式ファンサイト';
+        }
+
+        function addNotebookCreator() {
+            const hero = document.querySelector('.hero .wrap');
+            if (!hero || document.getElementById('friendNotebookForm')) return;
+            const panel = document.createElement('details');
+            panel.id = 'friendNotebookForm';
+            panel.style.cssText = 'margin:24px auto 0;max-width:560px;text-align:left;background:rgba(20,31,53,.78);border:1px solid rgba(205,222,255,.2);border-radius:16px;padding:14px 18px;';
+            panel.innerHTML = '<summary style="cursor:pointer;font-weight:700;color:#c5bdff">友達の推し活ノートを作る</summary><form id="friendNotebookMake" style="display:grid;gap:10px;margin-top:14px"><label>イベンターノートID<input name="user" required maxlength="40" pattern="[A-Za-z0-9_-]+" placeholder="例：ayu_11039" style="display:block;width:100%;padding:11px;border-radius:10px;border:1px solid #52617d;background:#0b1228;color:#fff"></label><label>表示名<input name="name" maxlength="40" placeholder="例：Ayu" style="display:block;width:100%;padding:11px;border-radius:10px;border:1px solid #52617d;background:#0b1228;color:#fff"></label><label>ひとこと<input name="bio" maxlength="120" placeholder="好きなアーティスト・推しなど" style="display:block;width:100%;padding:11px;border-radius:10px;border:1px solid #52617d;background:#0b1228;color:#fff"></label><button class="btn primary" type="submit">専用ノートのURLを作成</button><p id="friendNotebookResult" role="status" style="font-size:.85rem;color:#b4c3d8"></p></form>';
+            hero.append(panel);
+            panel.querySelector('form').addEventListener('submit', event => {
+                event.preventDefault();
+                const form = new FormData(event.currentTarget);
+                const user = String(form.get('user') || '').trim();
+                if (!/^[A-Za-z0-9_-]{1,40}$/.test(user)) return;
+                const url = new URL(location.href); url.search = ''; url.hash = '';
+                url.searchParams.set('user', user);
+                if (String(form.get('name') || '').trim()) url.searchParams.set('name', String(form.get('name')).trim());
+                if (String(form.get('bio') || '').trim()) url.searchParams.set('bio', String(form.get('bio')).trim());
+                const result = panel.querySelector('#friendNotebookResult');
+                result.textContent = url.href;
+                const link = document.createElement('a'); link.href = url.href; link.textContent = '作成したノートを開く'; link.style.display = 'block';
+                result.append(document.createElement('br'), link);
+                if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url.href).catch(() => {});
+            });
+        }
+
+        async function loadJson() {
                 try {
+                    if (isGuestNote) {
+                        const data = await loadPublicEventernote(ID);
+                        loadData(data, 'イベンターノート（@' + ID + '）');
+                        return;
+                    }
                     const r = await fetch('./events.json?ts=' + Date.now(), { cache: 'no-store' });
                     if (!r.ok) throw new Error('HTTP ' + r.status);
                     const data = await r.json();
@@ -1739,7 +1844,10 @@
                 }
             }
 
-            // 管理者用ボタンのイベントリスナー
+            applyGuestProfile();
+        addNotebookCreator();
+
+        // 管理者用ボタンのイベントリスナー
             $('#reloadJson').addEventListener('click', () => {
                 loadJson();
                 toast('最新データを読み込みました');

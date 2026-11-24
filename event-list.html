@@ -157,6 +157,10 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
 .filter-toolbar #activeFilters{margin-left:auto;color:var(--dim)}
 @media(max-width:760px){.annual-calendar{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:480px){.annual-calendar{gap:7px}.month-card{padding:7px}.calendar-day{font-size:.62rem}.personal-actions{width:100%}.personal-actions .btn{flex:1}.filter-toolbar #activeFilters{width:100%;margin-left:0}}
+.year-switcher{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0 4px;padding:12px 14px;border:1px solid var(--line);border-radius:13px;background:rgba(20,31,53,.55)}
+.year-switcher label{font-size:.82rem;color:var(--muted);font-weight:700}
+.year-switcher select{min-height:38px;min-width:120px;border:1px solid var(--line);border-radius:9px;background:#111b31;color:var(--ink);padding:0 30px 0 10px}
+.year-switcher span{font-size:.76rem;color:var(--dim)}
 .data-actions{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 4px}
 .data-actions .btn{min-height:36px;font-size:.76rem;padding:0 12px}
 .compare-panel{margin:26px 0;padding:clamp(16px,3vw,24px);border:1px solid var(--line);border-radius:20px;background:linear-gradient(145deg,rgba(24,36,59,.94),rgba(18,24,48,.86))}
@@ -200,6 +204,7 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
 <main class="wrap block">
   <h2 id="listHeading">参戦イベント一覧</h2>
   <p class="lead" id="listLead">公開されているイベンターノートのイベント情報を取得しています。</p>
+  <div class="year-switcher"><label for="eventYearSelect">表示する年</label><select id="eventYearSelect" aria-label="イベントを表示する年" disabled><option>年度を確認中…</option></select><span id="yearScopeNote">選択した年のイベントだけを読み込みます。</span></div>
   <div class="statusline" aria-live="polite"><span class="dot" id="statusDot"></span><span id="statusText">読み込み準備中…</span></div>
   <div class="data-actions"><button type="button" class="btn soft" id="refreshData">最新データに更新</button><button type="button" class="btn soft" id="clearCache">このIDの保存データを削除</button><span class="cache-hint" id="cacheStatus">保存データを確認できます</span></div>
   <div class="progress"><span id="progressBar"></span></div>
@@ -286,27 +291,39 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
   const WAIT_MS = 140;
   const MONTH_CONCURRENCY = 3;
   const PAGE_SIZE = 50;
-  const EVENT_CACHE_PREFIX = 'eventArchiveCache:v2:';
+  const EVENT_CACHE_PREFIX = 'eventArchiveCache:v3:';
+  const LEGACY_EVENT_CACHE_PREFIX = 'eventArchiveCache:v2:';
   const $ = (selector) => document.querySelector(selector);
   const params = new URLSearchParams(location.search);
-  const state = { events: [], year: 'all', performer: 'all', search: '', busy: false, compareBusy:false, requests: 0, currentId: '', selectedDate: '', mode: 'all', personal: {favorites:[],notes:{}}, visibleLimit:50, lastFilterSignature:'' };
+  const state = { events: [], year: 'all', performer: 'all', search: '', busy: false, compareBusy:false, requests: 0, currentId: '', currentYear: '', availableYears: [], availableMonths: [], profileRows: [], profileTotal: null, selectedDate: '', mode: 'all', personal: {favorites:[],notes:{}}, visibleLimit:50, lastFilterSignature:'' };
   const today = new Date();
   const todayStr = [today.getFullYear(), String(today.getMonth()+1).padStart(2,'0'), String(today.getDate()).padStart(2,'0')].join('-');
   const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
   const safeText = value => String(value == null ? '' : value).trim();
-  const eventCacheKey = id => EVENT_CACHE_PREFIX + id;
-  const readEventCache = id => {
+  const eventCacheKey = (id, year) => EVENT_CACHE_PREFIX + id + ':' + year;
+  const readEventCache = (id, year) => {
     try {
-      const item = JSON.parse(localStorage.getItem(eventCacheKey(id)) || 'null');
-      if (item && item.version === 2 && Array.isArray(item.rows)) return item;
+      const item = JSON.parse(localStorage.getItem(eventCacheKey(id, year)) || 'null');
+      if (item && item.version === 3 && Array.isArray(item.rows)) return item;
+    } catch (_) {}
+    // Migrate the former all-years cache by using only the requested year.
+    try {
+      const legacy = JSON.parse(localStorage.getItem(LEGACY_EVENT_CACHE_PREFIX + id) || 'null');
+      if (legacy && legacy.version === 2 && Array.isArray(legacy.rows)) {
+        const rows = legacy.rows.filter(row => String(row.date || '').startsWith(String(year)));
+        if (rows.length) return {version:3, year:String(year), savedAt:legacy.savedAt, total:null, verified:false, completedMonths:[], rows, migrated:true};
+      }
     } catch (_) {}
     return null;
   };
-  const writeEventCache = (id, rows, total, verified) => {
+  const writeEventCache = (id, year, rows, total, verified, completedMonths = []) => {
     try {
-      localStorage.setItem(eventCacheKey(id), JSON.stringify({
-        version: 2, savedAt: Date.now(), total, verified: !!verified, rows
+      localStorage.setItem(eventCacheKey(id, year), JSON.stringify({
+        version: 3, year:String(year), savedAt: Date.now(), total, verified: !!verified,
+        completedMonths: Array.isArray(completedMonths) ? completedMonths : [], rows
       }));
+      // Remove the old all-years blob after a year-scoped cache has been saved.
+      try { localStorage.removeItem(LEGACY_EVENT_CACHE_PREFIX + id); } catch (_) {}
     } catch (error) { console.warn('Event cache could not be saved:', error); }
   };
   const formatSavedAt = value => value
@@ -387,10 +404,11 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
     $('#statusDot').className = 'dot' + (mode === 'good' ? ' good' : mode === 'warn' ? ' warn' : '');
     if (progress !== null) $('#progressBar').style.width = Math.max(0, Math.min(100, progress)) + '%';
   };
-  const updateUrl = id => {
+  const updateUrl = (id, year = '') => {
     const next = new URL(location.href);
     next.search = '';
     next.searchParams.set('id', id);
+    if (year) next.searchParams.set('year', String(year));
     history.replaceState(null, '', next);
   };
   const validateId = value => /^[A-Za-z0-9_-]{1,40}$/.test(value);
@@ -473,6 +491,33 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
     months.forEach(item => unique.set(item.year + '-' + item.month, item));
     return [...unique.values()].sort((a,b) => b.year - a.year || b.month - a.month);
   };
+  const getYearLinks = (doc, id) => {
+    const years = [];
+    const basePath = '/users/' + id + '/events';
+    doc.querySelectorAll('a[href]').forEach(a => {
+      try {
+        const url = new URL(a.getAttribute('href'), EVENTERNOTE);
+        if (!url.pathname.includes(basePath) || url.searchParams.has('page')) return;
+        const year = Number(url.searchParams.get('year'));
+        if (year >= 2000 && year <= 2100) years.push(String(year));
+      } catch (_) {}
+    });
+    return [...new Set(years)];
+  };
+  const discoverProfile = async id => {
+    state.requests = 0;
+    const base = makeEventUrl(id);
+    setStatus('@' + id + ' の公開プロフィールと年度一覧を確認中…', 'loading', 3);
+    const html = await requestHtml(base);
+    const parsed = parsePage(html, base);
+    const months = getMonths(parsed.doc, id);
+    const years = [...new Set([
+      ...months.map(item => String(item.year)),
+      ...getYearLinks(parsed.doc, id),
+      ...parsed.rows.map(row => row.date.slice(0,4))
+    ])].sort((a,b) => b.localeCompare(a));
+    return {months, years, rows:parsed.rows, total:getTotal(html)};
+  };
   const addRows = (pool, rows, onlyMonth = null) => {
     rows.forEach(row => {
       if (onlyMonth && !row.date.startsWith(onlyMonth)) return;
@@ -480,7 +525,7 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
     });
   };
   const pageNumber = url => Number(new URL(url).searchParams.get('page') || 1);
-  const readListing = async (startUrl, pool, onlyMonth = null, userId = state.currentId) => {
+  const readListing = async (startUrl, pool, onlyMonth = null, userId = state.currentId, onPage = null) => {
     const queue = [startUrl], visited = new Set(), pageRows = new Map();
     while (queue.length && pageRows.size < 30) {
       const url = queue.shift();
@@ -491,6 +536,7 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
       const parsed = parsePage(html, url);
       pageRows.set(number, parsed.rows);
       addRows(pool, parsed.rows, onlyMonth);
+      if (typeof onPage === 'function') onPage();
       parsed.doc.querySelectorAll('a[href]').forEach(a => {
         const href = a.getAttribute('href') || '';
         if (!href.includes('/users/' + userId + '/events') || !/[?&]page=\d+/.test(href)) return;
@@ -506,49 +552,97 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
     }
     return [...pageRows.values()].flat();
   };
-  const collectAll = async id => {
+  const collectYear = async (id, year, months, profileRows = [], onProgress = null) => {
     state.requests = 0;
     const base = makeEventUrl(id);
-    setStatus('@' + id + ' の公開プロフィールを確認中…', 'loading', 2);
-    const firstHtml = await requestHtml(base);
-    const first = parsePage(firstHtml, base);
-    const total = getTotal(firstHtml);
-    const months = getMonths(first.doc, id);
+    const yearText = String(year);
+    const prefix = yearText + '-';
+    const cached = readEventCache(id, yearText);
     const pool = new Map();
-    addRows(pool, first.rows);
-    if (!months.length) {
-      setStatus('月別カレンダーが見つからないため、ページ送りで取得中…', 'loading', 5);
-      await readListing(base, pool, null, id);
+    if (cached && Array.isArray(cached.rows)) addRows(pool, cached.rows);
+    addRows(pool, profileRows.filter(row => String(row.date || '').startsWith(prefix)));
+    const completedMonths = new Set(cached && Array.isArray(cached.completedMonths) ? cached.completedMonths : []);
+    const monthItems = (months || []).filter(item => String(item.year) === yearText);
+    const knownCounts = monthItems.filter(item => item.count !== null);
+    const yearTotal = monthItems.length && knownCounts.length === monthItems.length
+      ? knownCounts.reduce((sum,item) => sum + item.count, 0) : null;
+    let failedMonths = 0;
+    let pagesRead = 0;
+    const sortedRows = () => [...pool.values()].sort((a,b) => b.date.localeCompare(a.date) || a.title.localeCompare(b.title));
+    const report = (phase, checkpoint = false) => {
+      const rows = sortedRows();
+      if (checkpoint && rows.length) {
+        writeEventCache(id, yearText, rows, yearTotal, false, [...completedMonths]);
+      }
+      if (typeof onProgress === 'function') onProgress({
+        rows, total:yearTotal, allTotal:state.profileTotal, requests:state.requests,
+        completedMonths:[...completedMonths], monthCount:monthItems.length,
+        failedMonths, phase
+      });
+    };
+    report('start', true);
+
+    if (!monthItems.length) {
+      setStatus('@' + id + '：' + yearText + '年のイベントを取得中…', 'loading', 12);
+      try {
+        await readListing(base + '/?year=' + yearText, pool, prefix, id, () => {
+          pagesRead++;
+          report('page', pagesRead % 4 === 0);
+        });
+      } catch (error) {
+        failedMonths++;
+        report('partial', true);
+      }
     } else {
-      const monthsToRead = months.filter(m => m.count === null || m.count > 0);
+      const now = new Date();
+      const previous = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const refreshMonths = new Set([
+        now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0'),
+        previous.getFullYear() + '-' + String(previous.getMonth()+1).padStart(2,'0')
+      ]);
+      const monthsToRead = monthItems.filter(item => item.count === null || item.count > 0)
+        .filter(item => !completedMonths.has(yearText + '-' + String(item.month).padStart(2,'0')) ||
+          (Number(yearText) === now.getFullYear() && refreshMonths.has(yearText + '-' + String(item.month).padStart(2,'0'))));
+
       for (let offset = 0; offset < monthsToRead.length; offset += MONTH_CONCURRENCY) {
         const batch = monthsToRead.slice(offset, offset + MONTH_CONCURRENCY);
         const done = Math.min(offset + batch.length, monthsToRead.length);
-        const progress = 6 + Math.round((done / monthsToRead.length) * 72);
-        setStatus('@' + id + '：月別イベントを並行取得中… ' + done + ' / ' + monthsToRead.length + 'か月（現在 ' + pool.size + '件）', 'loading', progress);
-        await Promise.all(batch.map(async item => {
-          const monthKey = item.year + '-' + String(item.month).padStart(2,'0');
-          const monthUrl = base + '/?year=' + item.year + '&month=' + item.month;
-          const monthRows = await readListing(monthUrl, pool, monthKey, id);
-          const uniqueMonth = new Set(monthRows.filter(row => row.date.startsWith(monthKey)).map(row => row.key)).size;
-          if (item.count !== null && uniqueMonth < item.count && state.requests < MAX_REQUESTS - 1) {
-            await readListing(monthUrl, pool, monthKey, id);
-          }
+        setStatus('@' + id + '：' + yearText + '年の月別イベントを取得中… ' + done + ' / ' + monthsToRead.length + 'か月（' + pool.size + '件）', 'loading', 12 + Math.round(done / Math.max(1,monthsToRead.length) * 78));
+
+        const results = await Promise.allSettled(batch.map(async item => {
+          const monthKey = yearText + '-' + String(item.month).padStart(2,'0');
+          const monthUrl = base + '/?year=' + yearText + '&month=' + item.month;
+          const monthRows = await readListing(monthUrl, pool, monthKey, id, () => {
+            pagesRead++;
+            report('page', pagesRead % 4 === 0);
+          });
+          const found = new Set(monthRows.filter(row => row.date.startsWith(monthKey)).map(row => row.key)).size;
+          return {monthKey, found, expected:item.count};
         }));
-        if (pool.size >= MAX_REQUESTS * PER_PAGE || state.requests >= MAX_REQUESTS - 2) break;
+
+        results.forEach((result,index) => {
+          const item = batch[index];
+          const monthKey = yearText + '-' + String(item.month).padStart(2,'0');
+          if (result.status === 'fulfilled' && (result.value.expected === null || result.value.found >= result.value.expected)) {
+            completedMonths.add(monthKey);
+          } else {
+            completedMonths.delete(monthKey);
+            failedMonths++;
+          }
+        });
+        report('month', true);
+        if (state.requests >= MAX_REQUESTS - 3) break;
       }
     }
-    if (total !== null && pool.size < total) {
-      setStatus('@' + id + '：取得件数を確認中…（' + pool.size + ' / ' + total + '件）', 'loading', 82);
-      const years = [...new Set(months.map(x => x.year))].sort((a,b) => b-a);
-      for (const year of years) {
-        if (pool.size >= total || state.requests >= MAX_REQUESTS - 2) break;
-        await readListing(base + '/?year=' + year, pool, String(year) + '-', id);
-      }
-      if (pool.size < total && state.requests < MAX_REQUESTS - 2) await readListing(base, pool, null, id);
-    }
-    const rows = [...pool.values()].sort((a,b) => b.date.localeCompare(a.date) || a.title.localeCompare(b.title));
-    return { rows, total, months: months.length, requests: state.requests, verified: total !== null && rows.length >= total };
+
+    const rows = sortedRows();
+    const verified = yearTotal !== null && rows.length >= yearTotal;
+    writeEventCache(id, yearText, rows, yearTotal, verified, [...completedMonths]);
+    return {
+      rows, total:yearTotal, allTotal:state.profileTotal, requests:state.requests,
+      verified, completedMonths:[...completedMonths], failedMonths,
+      monthCount:monthItems.length, budgetReached:state.requests >= MAX_REQUESTS
+    };
   };
   const isFuture = event => event.date > todayStr;
   const h = (tag, className, text) => {
@@ -767,7 +861,7 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
   const shareToX = () => {
     const year=$('#reportYear').value,rows=state.events.filter(e=>e.date.startsWith(year));
     const text='【'+year+'年の参戦記録】\n参加イベント：'+rows.length+'件\n'+reportText(year,rows).split('\n').slice(2,4).join('\n')+'\n\n#EventArchive #イベンターノート';
-    const url=location.origin+location.pathname+'?id='+encodeURIComponent(state.currentId);
+    const url=location.origin+location.pathname+'?id='+encodeURIComponent(state.currentId)+'&year='+encodeURIComponent(state.currentYear||year);
     window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(text)+'&url='+encodeURIComponent(url),'_blank','noopener,noreferrer');
   };
   const compareUsers = async otherId => {
@@ -775,31 +869,33 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
     if(otherId===state.currentId){alert('現在表示中のIDとは別のIDを入力してください。');return;}
     if(state.compareBusy||state.busy)return;
     state.compareBusy=true;
+    const comparisonYear = state.currentYear || String(today.getFullYear());
     const button=$('#compareButton');button.disabled=true;button.textContent='取得中…';
-    const output=$('#compareOutput');output.replaceChildren(h('p','compare-status','@'+otherId+' の公開イベントを確認しています。イベント数によって時間がかかる場合があります。'));
+    const output=$('#compareOutput');output.replaceChildren(h('p','compare-status','@'+otherId+' の '+comparisonYear+'年の公開イベントを確認しています。全期間ではなく、表示中の年度だけを取得します。'));
     try{
       let otherRows=[];
-      const cached=readEventCache(otherId);
+      let cached=readEventCache(otherId,comparisonYear);
       if(cached&&cached.rows.length)otherRows=cached.rows;
       else{
-        const result=await collectAll(otherId);
+        const profile=await discoverProfile(otherId);
+        const result=await collectYear(otherId,comparisonYear,profile.months,profile.rows);
         otherRows=result.rows;
-        if(otherRows.length)writeEventCache(otherId,otherRows,result.total,result.verified);
+        if(otherRows.length)writeEventCache(otherId,comparisonYear,otherRows,result.total,result.verified,result.completedMonths);
       }
-      if(!otherRows.length)throw new Error('公開イベントを取得できませんでした。IDや公開設定を確認してください。');
+      if(!otherRows.length)throw new Error('この年度の公開イベントを取得できませんでした。IDや公開設定、対象年を確認してください。');
       const mine=new Map(state.events.map(e=>[e.key,e]));
       const common=otherRows.filter(e=>mine.has(e.key)).sort((a,b)=>b.date.localeCompare(a.date));
       const sharedArtists=new Set(state.events.flatMap(e=>e.who));
       const commonArtists=new Set(otherRows.flatMap(e=>e.who).filter(x=>sharedArtists.has(x)));
       output.replaceChildren();
       const stats=h('div','compare-summary');
-      [['共通イベント',common.length+'件'],['自分の登録',state.events.length+'件'],['相手の登録',otherRows.length+'件']].forEach(([label,value])=>{
+      [['共通イベント',common.length+'件'],['自分の'+comparisonYear+'年',state.events.length+'件'],['相手の'+comparisonYear+'年',otherRows.length+'件']].forEach(([label,value])=>{
         const card=h('div','compare-stat');card.append(h('b','',value),h('small','',label));stats.append(card);
       });
       output.append(stats);
       const artistLine=h('p','compare-status','共通出演者：'+(Array.from(commonArtists).slice(0,12).join('、')||'見つかりませんでした。'));
       output.append(artistLine);
-      const title=h('h3','','一緒に参加したイベント');title.style.margin='10px 0';output.append(title);
+      const title=h('h3','','一緒に参加したイベント（'+comparisonYear+'年）');title.style.margin='10px 0';output.append(title);
       const list=h('div','compare-results');
       if(!common.length)list.append(h('p','insight-note','共通イベントは見つかりませんでした。イベント名や日付の登録状況によって照合できない場合があります。'));
       common.slice(0,30).forEach(e=>{
@@ -810,7 +906,7 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
       });
       output.append(list);
       if(common.length>30)output.append(h('p','compare-status','ほか '+(common.length-30)+' 件'));
-      output.append(h('p','compare-status','※イベント名・日付などの公開情報を使った照合です。登録内容の違いにより一致しないことがあります。'));
+      output.append(h('p','compare-status','※表示中の年度のイベントだけを照合しています。登録内容の違いにより一致しない場合があります。'));
     }catch(error){output.replaceChildren(h('p','error',error.message||'比較に失敗しました。'));}
     finally{state.compareBusy=false;button.disabled=false;button.textContent='共通イベントを調べる';}
   };
@@ -866,68 +962,140 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
     $('#listLead').textContent = '公開データを取得できませんでした。IDとイベンターノート側の公開状態を確認してください。';
     $('#eventList').replaceChildren(h('p','error',message));
   };
-  const load = async id => {
-    if (state.busy || state.compareBusy) return;
+  const fillEventYears = (years, selected) => {
+    const select = $('#eventYearSelect');
+    select.replaceChildren();
+    years.forEach(year => {
+      const option = document.createElement('option');
+      option.value = year;
+      option.textContent = year + '年';
+      select.append(option);
+    });
+    select.value = String(selected);
+    select.disabled = years.length < 2;
+    $('#yearScopeNote').textContent = '選択した1年分だけ取得・表示します。過去の年は切り替えて読み込めます。';
+  };
+
+  const loadYear = async year => {
+    if (state.busy || state.compareBusy || !state.currentId) return;
+    const id = state.currentId;
+    const yearText = String(year);
+    if (!/^20\d{2}$/.test(yearText)) return;
     state.busy = true;
-    state.currentId = id;
-    state.events = []; state.year = 'all'; state.performer = 'all'; state.search = ''; state.selectedDate='';state.mode='all';
-    state.personal=readPersonal(id);
-    $('#searchBox').value = '';
-    const cached = readEventCache(id);
-    $('#cacheStatus').textContent=cached&&cached.rows.length?'前回取得：'+formatSavedAt(cached.savedAt):'保存データなし';
-    if (cached && cached.rows.length) {
-      state.events = cached.rows;
+    state.currentYear = yearText;
+    state.year = 'all'; state.performer = 'all'; state.selectedDate = ''; state.mode = 'all';
+    state.visibleLimit = PAGE_SIZE; state.lastFilterSignature = '';
+    $('#eventYearSelect').value = yearText;
+    $('#eventYearSelect').disabled = true;
+    $('#listHeading').textContent = '@' + id + ' の ' + yearText + '年の参戦イベント';
+    updateUrl(id, yearText);
+
+    const cached = readEventCache(id, yearText);
+    state.events = cached && cached.rows ? cached.rows : [];
+    const cacheLabel = cached && cached.rows.length
+      ? '保存済み：' + formatSavedAt(cached.savedAt) + '（' + cached.rows.length + '件）'
+      : 'この年度の保存データなし';
+    $('#cacheStatus').textContent = cacheLabel;
+    if (state.events.length) {
       render();
-      setStatus('前回の保存データを表示中（'+formatSavedAt(cached.savedAt)+'）。最新情報を確認しています…','loading',8);
-      $('#listLead').textContent = '保存済みのイベントを先に表示しながら、イベンターノートの最新情報を確認しています。';
+      setStatus(yearText + '年の保存データを表示中。最新情報を確認しています…','loading',8);
+      $('#listLead').textContent = yearText + '年分の保存データを先に表示し、未取得の月を確認します。';
     } else {
-      $('#eventList').replaceChildren(h('p','empty','イベント一覧を読み込んでいます…'));
+      $('#eventList').replaceChildren(h('p','empty',yearText + '年のイベントを読み込んでいます…'));
+      $('#listLead').textContent = yearText + '年分だけを取得しています。ほかの年度のイベントは、年度を切り替えたときに読み込みます。';
     }
-    $('#listHeading').textContent = '@' + id + ' の参戦イベント';
-    $('#listLead').textContent = 'イベンターノートに公開されている参加イベントを取得しています。イベント数や登録期間によって、読み込みに時間がかかる場合があります。';
-    $('#sourceLink').href = makeEventUrl(id);
-    $('#userId').value = id;
-    updateUrl(id);
+
     try {
-      const result = await collectAll(id);
+      const result = await collectYear(id, yearText, state.availableMonths, state.profileRows, info => {
+        state.events = info.rows;
+        render();
+        const totalText = info.total === null ? '' : ' / ' + info.total + '件';
+        setStatus(yearText + '年を取得中：' + info.rows.length + '件' + totalText + ' ・ ' + info.requests + 'ページ','loading',Math.min(95,10 + info.requests / MAX_REQUESTS * 85));
+        if (info.phase === 'page' || info.phase === 'month') {
+          $('#listLead').textContent = yearText + '年のイベントを順次表示しています。ほかの年のデータは取得していません。';
+        }
+      });
       if (!result.rows.length && cached && cached.rows.length) {
         state.events = cached.rows;
         render();
-        setStatus('最新データは取得できませんでした。保存済みデータを表示しています。','warn',100);
-        $('#listLead').textContent = '通信に失敗したため、'+formatSavedAt(cached.savedAt)+' 時点の保存データを表示しています。';
+        setStatus('最新データは取得できませんでした。保存済みの' + yearText + '年分を表示しています。','warn',100);
+        $('#listLead').textContent = formatSavedAt(cached.savedAt) + '時点の保存データです。';
         return;
       }
       state.events = result.rows;
       if (!state.events.length) {
-        showError('イベントを取得できませんでした。IDが正しいか、プロフィールが公開されているか確認してください。');
+        showError(yearText + '年のイベントを取得できませんでした。年度やプロフィールの公開設定を確認してください。');
         return;
       }
-      writeEventCache(id,result.rows,result.total,result.verified);
-      $('#cacheStatus').textContent='最終更新：'+formatSavedAt(Date.now())+(result.verified?'（件数確認済み）':'（取得件数は未確認）');
+      writeEventCache(id,yearText,result.rows,result.total,result.verified,result.completedMonths);
+      $('#cacheStatus').textContent = '最終更新：' + formatSavedAt(Date.now()) + '（' + result.rows.length + '件）';
       render();
       if (result.verified) {
-        setStatus('取得完了：' + result.rows.length + ' / ' + result.total + '件を確認しました（' + result.requests + 'ページ取得）','good',100);
-        $('#listLead').textContent = 'イベンターノートの登録 ' + result.total + '件と取得件数が一致しました。';
+        setStatus(yearText + '年の取得完了：' + result.rows.length + ' / ' + result.total + '件を確認しました（' + result.requests + 'ページ）','good',100);
+        $('#listLead').textContent = yearText + '年分のイベントを取得しました。全期間の登録数はプロフィール上で' + (result.allTotal === null ? '確認できませんでした。' : result.allTotal + '件です。');
       } else {
-        const totalText = result.total === null ? '総件数を読み取れませんでした' : '登録 ' + result.total + '件に対して ' + result.rows.length + '件を取得';
-        setStatus('取得は終了しましたが、全件一致を確認できません：' + totalText + '（' + result.requests + 'ページ取得）','warn',100);
-        $('#listLead').textContent = '一部のイベントが取得できていない可能性があります。下の一覧は取得できた公開情報です。';
+        const totalText = result.total === null ? '年度別の正確な件数は確認できません' : '年度内の登録目安 ' + result.total + '件に対して ' + result.rows.length + '件を取得';
+        setStatus(yearText + '年の取得終了：' + totalText + '（' + result.requests + 'ページ）','warn',100);
+        $('#listLead').textContent = '選択した年度の取得できたイベントを表示しています。未取得の月がある場合は、再読み込みで続きを確認できます。全期間の登録数：' + (result.allTotal === null ? '不明' : result.allTotal + '件');
       }
     } catch (error) {
       console.error(error);
-      if (cached && cached.rows.length) {
-        state.events = cached.rows;
+      const latestCache = readEventCache(id,yearText) || cached;
+      if (latestCache && latestCache.rows.length) {
+        state.events = latestCache.rows;
         render();
-        setStatus('最新データの更新に失敗しました。保存済みデータを表示しています。','warn',100);
-        $('#listLead').textContent = formatSavedAt(cached.savedAt)+' 時点の保存データです。通信が安定したときに再読み込みしてください。';
+        setStatus(yearText + '年の更新に失敗しました。保存済みの' + latestCache.rows.length + '件を表示しています。','warn',100);
+        $('#listLead').textContent = '保存済みデータを表示しています。通信が安定してから再度お試しください。';
       } else {
-        showError(error && error.message ? error.message : '読み込み中にエラーが発生しました。時間をおいて再度お試しください。');
+        showError(error && error.message ? error.message : yearText + '年の読み込み中にエラーが発生しました。');
       }
     } finally {
       state.busy = false;
+      $('#eventYearSelect').disabled = state.availableYears.length < 2;
     }
   };
 
+  const load = async id => {
+    if (state.busy || state.compareBusy) return;
+    state.busy = true;
+    state.currentId = id;
+    state.currentYear = '';
+    state.events = []; state.year = 'all'; state.performer = 'all'; state.search = ''; state.selectedDate='';state.mode='all';
+    state.availableYears = []; state.availableMonths = []; state.profileRows = []; state.profileTotal = null;
+    state.personal=readPersonal(id);
+    $('#searchBox').value = '';
+    $('#eventYearSelect').disabled = true;
+    $('#eventYearSelect').replaceChildren(new Option('年度を確認中…',''));
+    $('#cacheStatus').textContent = '年度別の保存データを確認します';
+    $('#eventList').replaceChildren(h('p','empty','公開プロフィールと年度一覧を読み込んでいます…'));
+    $('#listHeading').textContent = '@' + id + ' の参戦イベント';
+    $('#listLead').textContent = 'まず年度一覧を確認し、選択した1年分だけを取得します。';
+    $('#sourceLink').href = makeEventUrl(id);
+    $('#userId').value = id;
+    updateUrl(id, params.get('year') || '');
+    try {
+      const profile = await discoverProfile(id);
+      state.availableMonths = profile.months;
+      state.profileRows = profile.rows;
+      state.profileTotal = profile.total;
+      state.availableYears = profile.years.length ? profile.years : [String(today.getFullYear())];
+      const requestedYear = params.get('year');
+      const defaultYear = state.availableYears.includes(requestedYear)
+        ? requestedYear
+        : (state.availableYears.includes(String(today.getFullYear())) ? String(today.getFullYear()) : state.availableYears[0]);
+      fillEventYears(state.availableYears, defaultYear);
+      state.busy = false;
+      await loadYear(defaultYear);
+    } catch (error) {
+      console.error(error);
+      showError(error && error.message ? error.message : '公開プロフィールを確認できませんでした。');
+    } finally {
+      state.busy = false;
+      $('#eventYearSelect').disabled = state.availableYears.length < 2;
+    }
+  };
+
+  $('#eventYearSelect').addEventListener('change',event=>loadYear(event.target.value));
   $('#reportYear').addEventListener('change',()=>{if(state.selectedDate&&!state.selectedDate.startsWith($('#reportYear').value))state.selectedDate='';renderInsights();renderCalendar();});
   $('#sortOrder').addEventListener('change',render);
   $('#clearCalendarDay').addEventListener('click',()=>{state.selectedDate='';render();});
@@ -941,16 +1109,20 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
   $('#calendarExport').addEventListener('click',exportCalendar);
   $('#compareForm').addEventListener('submit',event=>{event.preventDefault();compareUsers(safeText($('#compareId').value));});
   $('#refreshData').addEventListener('click',()=>{
-    if(!state.currentId)return;
-    try{localStorage.removeItem(eventCacheKey(state.currentId));}catch(_){}
-    load(state.currentId);
+    if(!state.currentId || !state.currentYear || state.busy)return;
+    try{localStorage.removeItem(eventCacheKey(state.currentId,state.currentYear));}catch(_){}
+    loadYear(state.currentYear);
   });
   $('#clearCache').addEventListener('click',()=>{
     if(!state.currentId)return;
-    if(!confirm('@'+state.currentId+' の取得済みイベントデータをこのブラウザから削除します。個人メモは削除されません。よろしいですか？'))return;
-    try{localStorage.removeItem(eventCacheKey(state.currentId));}catch(_){}
-    $('#cacheStatus').textContent='保存データを削除しました';
-    alert('イベントの保存データを削除しました。表示中の一覧はそのままです。');
+    if(!confirm('@'+state.currentId+' の年度別イベント保存データをこのブラウザから削除します。個人メモは削除されません。よろしいですか？'))return;
+    try{
+      const prefix=EVENT_CACHE_PREFIX+state.currentId+':';
+      for(let i=localStorage.length-1;i>=0;i--){const key=localStorage.key(i);if(key&&key.startsWith(prefix))localStorage.removeItem(key);}
+      localStorage.removeItem(LEGACY_EVENT_CACHE_PREFIX+state.currentId);
+    }catch(_){}
+    $('#cacheStatus').textContent='年度別の保存データを削除しました';
+    alert('このIDの年度別イベント保存データを削除しました。表示中の一覧はそのままです。');
   });
   $('#copyReport').addEventListener('click',async()=>{
     const year=$('#reportYear').value;

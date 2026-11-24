@@ -707,14 +707,13 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
     a.href=url;a.download=filename;document.body.append(a);a.click();a.remove();
     setTimeout(()=>URL.revokeObjectURL(url),1000);
   };
-  const calendarEscape = value => String(value||'').replace(/\\/g,'\\\\').replace(/\n/g,'\\n').replace(/,/g,'\\,').replace(/;/g,'\\;');
+  const calendarEscape = value => String(value||'').replace(/\\/g,'\\\\').replace(/\r?\n/g,'\\n').replace(/,/g,'\\,').replace(/;/g,'\\;');
   const exportCalendar = () => {
-    const rows=state.events.filter(e=>isFuture(e)&&/^\\d{4}-\\d{2}-\\d{2}$/.test(e.date));
+    const rows=state.events.filter(e=>isFuture(e)&&/^\d{4}-\d{2}-\d{2}$/.test(e.date));
     if(!rows.length){alert('カレンダーに出力できる今後の予定がありません。');return;}
-    const stamp=date=>date.replace(/[-:]/g,'')+'T000000';
     const lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Event Archive//JP','CALSCALE:GREGORIAN','METHOD:PUBLISH'];
     rows.forEach((e,i)=>{
-      lines.push('BEGIN:VEVENT','UID:'+calendarEscape(e.key||('event-'+i))+'@event-archive','DTSTAMP:'+stamp(todayStr),
+      lines.push('BEGIN:VEVENT','UID:'+calendarEscape(e.key||('event-'+i))+'@event-archive','DTSTAMP:'+todayStr.replace(/-/g,'')+'T000000',
         'DTSTART;VALUE=DATE:'+e.date.replace(/-/g,''),
         'SUMMARY:'+calendarEscape(e.title),
         'DESCRIPTION:'+calendarEscape([e.who.join(' / '),e.venue,e.url].filter(Boolean).join(' | ')));
@@ -722,7 +721,7 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
       lines.push('URL:'+e.url,'END:VEVENT');
     });
     lines.push('END:VCALENDAR');
-    downloadBlob(new Blob([lines.join('\\r\\n')],{type:'text/calendar;charset=utf-8'}),'event-archive-'+state.currentId+'.ics');
+    downloadBlob(new Blob([lines.join('\r\n')],{type:'text/calendar;charset=utf-8'}),'event-archive-'+state.currentId+'.ics');
   };
   const buildShareCard = async () => {
     const year=$('#reportYear').value,rows=state.events.filter(e=>e.date.startsWith(year));
@@ -761,7 +760,7 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
   };
   const shareToX = () => {
     const year=$('#reportYear').value,rows=state.events.filter(e=>e.date.startsWith(year));
-    const text='【'+year+'年の参戦記録】\\n参加イベント：'+rows.length+'件\\n'+reportText(year,rows).split('\\n').slice(2,4).join('\\n')+'\\n\\n#EventArchive #イベンターノート';
+    const text='【'+year+'年の参戦記録】\n参加イベント：'+rows.length+'件\n'+reportText(year,rows).split('\n').slice(2,4).join('\n')+'\n\n#EventArchive #イベンターノート';
     const url=location.origin+location.pathname+'?id='+encodeURIComponent(state.currentId);
     window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(text)+'&url='+encodeURIComponent(url),'_blank','noopener,noreferrer');
   };

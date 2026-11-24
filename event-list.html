@@ -119,6 +119,39 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
 .insight-note{color:var(--dim);font-size:.76rem;margin-top:12px}
 @media(max-width:650px){.chart-grid{grid-template-columns:1fr}.report-stats{grid-template-columns:repeat(2,1fr)}.month-chart{gap:2px}.month-label{font-size:.58rem}}
 
+
+/* Calendar and personal event tools */
+.calendar-section,.personal-panel{margin:28px 0;padding:clamp(16px,3vw,24px);border:1px solid var(--line);border-radius:20px;background:rgba(20,31,53,.72)}
+.section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.section-head h2,.personal-copy h2{font-size:1.35rem;margin-bottom:3px}
+.section-head p,.personal-copy p{color:var(--muted);font-size:.82rem}
+.annual-calendar{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.month-card{padding:10px;border:1px solid var(--line);border-radius:13px;background:rgba(4,9,26,.25)}
+.month-card h3{font-size:.88rem;margin-bottom:8px}
+.month-days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:2px;text-align:center}
+.month-weekday{font-size:.62rem;color:var(--dim)}
+.calendar-blank{aspect-ratio:1}
+.calendar-day{aspect-ratio:1;border:0;border-radius:6px;background:transparent;color:var(--muted);font-size:.68rem;position:relative}
+.calendar-day.has-events{background:rgba(76,195,240,.18);color:#fff;font-weight:700;outline:1px solid rgba(76,195,240,.25)}
+.calendar-day.has-events:after{content:"";position:absolute;width:4px;height:4px;left:50%;bottom:2px;transform:translateX(-50%);border-radius:50%;background:var(--accent2)}
+.calendar-day.selected{background:var(--accent);color:#080d20}
+.calendar-day:disabled{opacity:.28}
+.calendar-selection{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px;padding:10px;border-radius:10px;background:rgba(155,140,255,.1);font-size:.82rem;color:var(--accent-ink)}
+.calendar-selection[hidden]{display:none}
+.personal-panel{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+.personal-copy{flex:1;min-width:220px}
+.personal-copy p{line-height:1.6}
+.personal-summary{margin-top:7px;font-size:.78rem;color:var(--accent-ink)}
+.personal-actions,.event-tools{display:flex;gap:7px;flex-wrap:wrap}
+.personal-actions .btn{min-height:36px;padding:0 12px;font-size:.75rem}
+.event-tools{margin-top:10px}
+.mini-btn{min-height:31px;padding:0 10px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.045);color:var(--muted);font-size:.74rem}
+.mini-btn.is-favorite{background:rgba(255,176,120,.13);border-color:rgba(255,176,120,.4);color:#ffd0ad}
+.event-memo-preview{margin-top:8px;padding:8px 10px;border-left:2px solid var(--accent);background:rgba(155,140,255,.08);color:var(--muted);font-size:.76rem;white-space:pre-wrap;overflow-wrap:anywhere}
+.filter-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0;color:var(--muted);font-size:.8rem}
+.filter-toolbar #activeFilters{margin-left:auto;color:var(--dim)}
+@media(max-width:760px){.annual-calendar{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:480px){.annual-calendar{gap:7px}.month-card{padding:7px}.calendar-day{font-size:.62rem}.personal-actions{width:100%}.personal-actions .btn{flex:1}.filter-toolbar #activeFilters{width:100%;margin-left:0}}
 </style>
 </head>
 <body>
@@ -166,6 +199,17 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
     <p class="insight-note" id="reportNote">取得できたイベント情報をもとに集計しています。出演者・会場が未登録のイベントはランキングに含まれません。</p>
   </section>
 
+  <section class="calendar-section" aria-label="年間参加カレンダー">
+    <div class="section-head"><div><h2>年間カレンダー</h2><p>イベントのある日を押すと、その日のイベントだけに絞り込めます。</p></div><span class="calendar-legend"><i style="display:inline-block;width:8px;height:8px;border-radius:3px;background:var(--accent2)"></i>イベント登録あり</span></div>
+    <div class="annual-calendar" id="annualCalendar"><p class="empty">イベントを読み込むと表示されます。</p></div>
+    <div class="calendar-selection" id="calendarSelection" hidden><span id="calendarSelectionText"></span><button type="button" class="btn soft" id="clearCalendarDay">解除</button></div>
+  </section>
+  <section class="personal-panel" aria-label="自分用のお気に入りとメモ">
+    <div class="personal-copy"><h2>自分用のお気に入り・メモ</h2><p>感想、座席、グッズ、同行者などを記録できます。メモはこのブラウザ内だけに保存され、共有URLには含まれません。</p><div class="personal-summary" id="personalSummary">お気に入り 0件 ／ メモ 0件</div></div>
+    <div class="personal-actions"><button type="button" class="btn soft" id="backupPersonal">バックアップ</button><button type="button" class="btn soft" id="restorePersonal">復元</button><button type="button" class="btn soft" id="clearPersonal">データ削除</button><input type="file" id="restoreFile" accept="application/json,.json" hidden></div>
+  </section>
+  <div class="filter-title">表示するイベント</div><div class="pills" id="eventModes"></div>
+  <div class="filter-toolbar"><label for="sortOrder">並び順</label><select class="report-select" id="sortOrder"><option value="desc">新しい順</option><option value="asc">古い順</option></select><span id="activeFilters">すべて表示</span></div>
   <div class="search-wrap">
     <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 9.5 5a4.5 4.5 0 0 1 0 9z"/></svg>
     <input class="search-box" id="searchBox" type="search" placeholder="イベント名・会場名・出演者・日付で検索…" autocomplete="off">
@@ -189,7 +233,7 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
   const EVENT_CACHE_PREFIX = 'eventArchiveCache:v2:';
   const $ = (selector) => document.querySelector(selector);
   const params = new URLSearchParams(location.search);
-  const state = { events: [], year: 'all', performer: 'all', search: '', busy: false, requests: 0, currentId: '' };
+  const state = { events: [], year: 'all', performer: 'all', search: '', busy: false, requests: 0, currentId: '', selectedDate: '', mode: 'all', personal: {favorites:[],notes:{}} };
   const today = new Date();
   const todayStr = [today.getFullYear(), String(today.getMonth()+1).padStart(2,'0'), String(today.getDate()).padStart(2,'0')].join('-');
   const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -212,6 +256,72 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
   const formatSavedAt = value => value
     ? new Date(value).toLocaleString('ja-JP',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})
     : '前回';
+  const personalKey = id => 'eventArchivePersonal:v1:' + id;
+  const readPersonal = id => {
+    try {
+      const value=JSON.parse(localStorage.getItem(personalKey(id))||'null');
+      if(value&&Array.isArray(value.favorites)&&value.notes&&typeof value.notes==='object')
+        return {favorites:value.favorites,notes:value.notes};
+    } catch(_){}
+    return {favorites:[],notes:{}};
+  };
+  const savePersonal = () => {
+    try { localStorage.setItem(personalKey(state.currentId),JSON.stringify(state.personal));renderPersonalSummary(); }
+    catch(_){ alert('ブラウザの保存容量が足りず保存できませんでした。'); }
+  };
+  const renderPersonalSummary = () => {
+    const el=$('#personalSummary');if(!el)return;
+    el.textContent='お気に入り '+state.personal.favorites.length+'件 ／ メモ '+Object.values(state.personal.notes).filter(x=>safeText(x)).length+'件（このブラウザ内）';
+  };
+  const renderModes = () => {
+    const box=$('#eventModes');if(!box)return;
+    const choices=[['すべて','all',state.events.length],['参戦済み','past',state.events.filter(e=>!isFuture(e)).length],['これから','future',state.events.filter(isFuture).length],['お気に入り','favorites',state.personal.favorites.length]];
+    box.replaceChildren(...choices.map(([label,key,count])=>makePill(label,key,count,state.mode,()=>{state.mode=key;render();})));
+  };
+  const renderCalendar = () => {
+    const box=$('#annualCalendar');if(!box)return;
+    const year=Number($('#reportYear').value)||today.getFullYear(),counts=new Map();
+    state.events.forEach(e=>{if(e.date.startsWith(String(year)))counts.set(e.date,(counts.get(e.date)||0)+1);});
+    const names=['日','月','火','水','木','金','土'];box.replaceChildren();
+    for(let m=0;m<12;m++){
+      const card=h('section','month-card');card.append(h('h3','',(m+1)+'月'));
+      const grid=h('div','month-days');names.forEach(x=>grid.append(h('span','month-weekday',x)));
+      const offset=new Date(year,m,1).getDay(),days=new Date(year,m+1,0).getDate();
+      for(let p=0;p<offset;p++)grid.append(h('span','calendar-blank'));
+      for(let d=1;d<=days;d++){
+        const key=String(year)+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0'),count=counts.get(key)||0;
+        const b=h('button','calendar-day'+(count?' has-events':'')+(state.selectedDate===key?' selected':''));
+        b.type='button';b.textContent=String(d);b.disabled=!count;b.title=count?key+'：'+count+'件':'イベントなし';
+        if(count)b.addEventListener('click',()=>{state.selectedDate=state.selectedDate===key?'':key;render();if(state.selectedDate)$('#eventList').scrollIntoView({behavior:'smooth'});});
+        grid.append(b);
+      }
+      card.append(grid);box.append(card);
+    }
+    $('#calendarSelection').hidden=!state.selectedDate;
+    if(state.selectedDate)$('#calendarSelectionText').textContent=state.selectedDate+' のイベントに絞り込み中';
+  };
+  const toggleFavorite = key => {
+    const set=new Set(state.personal.favorites);set.has(key)?set.delete(key):set.add(key);
+    state.personal.favorites=[...set];savePersonal();render();
+  };
+  const editMemo = event => {
+    const value=prompt('感想・座席・グッズ・同行者などをメモできます。\nこのブラウザ内だけに保存されます。',state.personal.notes[event.key]||'');
+    if(value===null)return;
+    if(safeText(value))state.personal.notes[event.key]=value.trim();else delete state.personal.notes[event.key];
+    savePersonal();render();
+  };
+  const backupPersonal = () => {
+    const data={format:'event-archive-personal-backup',version:1,userId:state.currentId,personal:state.personal};
+    const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'})),a=document.createElement('a');
+    a.href=url;a.download='event-archive-'+state.currentId+'-memo.json';document.body.append(a);a.click();a.remove();URL.revokeObjectURL(url);
+  };
+  const restorePersonal = async file => {
+    try{
+      const data=JSON.parse(await file.text());
+      if(data.format!=='event-archive-personal-backup'||data.version!==1||data.userId!==state.currentId||!data.personal||!Array.isArray(data.personal.favorites)||!data.personal.notes)throw new Error('このIDのバックアップではありません。');
+      state.personal={favorites:data.personal.favorites,notes:data.personal.notes};savePersonal();render();alert('復元しました。');
+    }catch(e){alert('復元できませんでした：'+e.message);}
+  };
   const eventIdFromUrl = value => {
     const m = String(value || '').match(/\/events\/(\d+)/);
     return m ? m[1] : '';
@@ -404,11 +514,17 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
       return card;
     }));
   };
-  const getFilterRows = () => state.events.filter(event =>
-    (state.year === 'all' || event.date.startsWith(state.year)) &&
-    (state.performer === 'all' || event.who.includes(state.performer)) &&
-    (!state.search || [event.title,event.venue,event.date,...event.who].some(value => value.toLowerCase().includes(state.search)))
-  );
+  const getFilterRows = () => {
+    const rows=state.events.filter(event =>
+      (state.year==='all'||event.date.startsWith(state.year)) &&
+      (state.performer==='all'||event.who.includes(state.performer)) &&
+      (!state.selectedDate||event.date===state.selectedDate) &&
+      (state.mode==='all'||(state.mode==='past'&&!isFuture(event))||(state.mode==='future'&&isFuture(event))||(state.mode==='favorites'&&state.personal.favorites.includes(event.key))) &&
+      (!state.search||[event.title,event.venue,event.date,...event.who].some(value=>safeText(value).toLocaleLowerCase().includes(state.search)))
+    );
+    rows.sort((a,b)=>$('#sortOrder')&&$('#sortOrder').value==='asc'?a.date.localeCompare(b.date):b.date.localeCompare(a.date));
+    return rows;
+  };
   const makePill = (label, key, count, selected, callback) => {
     const button = h('button','pill');
     button.type = 'button'; button.setAttribute('aria-pressed', selected === key ? 'true' : 'false');
@@ -460,6 +576,13 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
     const more = h('div','event-action');
     const link = h('a','', 'イベンターノートで詳細を見る ↗');
     link.href = event.url; link.target='_blank'; link.rel='noopener noreferrer'; more.append(link); body.append(more);
+    const tools=h('div','event-tools'),fav=state.personal.favorites.includes(event.key);
+    const favBtn=h('button','mini-btn'+(fav?' is-favorite':''),fav?'★ お気に入り済み':'☆ お気に入り');
+    favBtn.type='button';favBtn.setAttribute('aria-pressed',String(fav));favBtn.addEventListener('click',()=>toggleFavorite(event.key));
+    const memoBtn=h('button','mini-btn',state.personal.notes[event.key]?'メモを編集':'メモを書く');
+    memoBtn.type='button';memoBtn.addEventListener('click',()=>editMemo(event));
+    tools.append(favBtn,memoBtn);body.append(tools);
+    if(state.personal.notes[event.key])body.append(h('div','event-memo-preview',state.personal.notes[event.key]));
     li.append(dateBox,body); return li;
   };
 
@@ -533,11 +656,14 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
   };
 
   const render = () => {
-    renderStats(); renderFilters(); renderInsights();
+    renderStats(); renderFilters(); renderInsights(); renderModes(); renderPersonalSummary(); renderCalendar();
     const rows = getFilterRows();
     const label = state.year === 'all' ? '全期間' : state.year + '年';
     const performerLabel = state.performer === 'all' ? '' : ' ／ ' + state.performer;
-    $('#eventCount').textContent = label + performerLabel + '：' + rows.length + '件';
+    const modeLabel=({all:'',past:' ／ 参戦済み',future:' ／ これから',favorites:' ／ お気に入り'})[state.mode]||'';
+    const dateLabel=state.selectedDate?' ／ '+state.selectedDate:'';
+    $('#eventCount').textContent = label + performerLabel + modeLabel + dateLabel + '：' + rows.length + '件';
+    $('#activeFilters').textContent=(state.selectedDate?'日付指定あり':'')+(state.search?'　検索中':'')+(state.performer!=='all'?'　出演者指定あり':'')||'すべて表示';
     const list = $('#eventList');
     list.replaceChildren();
     if (!rows.length) {
@@ -567,7 +693,8 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
   const load = async id => {
     if (state.busy) return;
     state.busy = true;
-    state.events = []; state.year = 'all'; state.performer = 'all'; state.search = '';
+    state.events = []; state.year = 'all'; state.performer = 'all'; state.search = ''; state.selectedDate='';state.mode='all';
+    state.personal=readPersonal(id);
     $('#searchBox').value = '';
     const cached = readEventCache(id);
     if (cached && cached.rows.length) {
@@ -622,7 +749,13 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
     }
   };
 
-  $('#reportYear').addEventListener('change',renderInsights);
+  $('#reportYear').addEventListener('change',()=>{if(state.selectedDate&&!state.selectedDate.startsWith($('#reportYear').value))state.selectedDate='';renderInsights();renderCalendar();});
+  $('#sortOrder').addEventListener('change',render);
+  $('#clearCalendarDay').addEventListener('click',()=>{state.selectedDate='';render();});
+  $('#backupPersonal').addEventListener('click',backupPersonal);
+  $('#restorePersonal').addEventListener('click',()=>$('#restoreFile').click());
+  $('#restoreFile').addEventListener('change',async e=>{const file=e.target.files&&e.target.files[0];if(file)await restorePersonal(file);e.target.value='';});
+  $('#clearPersonal').addEventListener('click',()=>{if(!confirm('このIDのお気に入りとメモをすべて削除しますか？'))return;state.personal={favorites:[],notes:{}};savePersonal();render();});
   $('#csvExport').addEventListener('click',exportCsv);
   $('#copyReport').addEventListener('click',async()=>{
     const year=$('#reportYear').value;

@@ -184,7 +184,9 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
   const DEFAULT_ID = 'ayu_11039';
   const MAX_REQUESTS = 250;
   const PER_PAGE = 30;
-  const WAIT_MS = 450;
+  const WAIT_MS = 140;
+  const MONTH_CONCURRENCY = 3;
+  const EVENT_CACHE_PREFIX = 'eventArchiveCache:v2:';
   const $ = (selector) => document.querySelector(selector);
   const params = new URLSearchParams(location.search);
   const state = { events: [], year: 'all', performer: 'all', search: '', busy: false, requests: 0, currentId: '' };
@@ -192,6 +194,24 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
   const todayStr = [today.getFullYear(), String(today.getMonth()+1).padStart(2,'0'), String(today.getDate()).padStart(2,'0')].join('-');
   const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
   const safeText = value => String(value == null ? '' : value).trim();
+  const eventCacheKey = id => EVENT_CACHE_PREFIX + id;
+  const readEventCache = id => {
+    try {
+      const item = JSON.parse(localStorage.getItem(eventCacheKey(id)) || 'null');
+      if (item && item.version === 2 && Array.isArray(item.rows)) return item;
+    } catch (_) {}
+    return null;
+  };
+  const writeEventCache = (id, rows, total, verified) => {
+    try {
+      localStorage.setItem(eventCacheKey(id), JSON.stringify({
+        version: 2, savedAt: Date.now(), total, verified: !!verified, rows
+      }));
+    } catch (error) { console.warn('Event cache could not be saved:', error); }
+  };
+  const formatSavedAt = value => value
+    ? new Date(value).toLocaleString('ja-JP',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})
+    : '前回';
   const eventIdFromUrl = value => {
     const m = String(value || '').match(/\/events\/(\d+)/);
     return m ? m[1] : '';
@@ -336,19 +356,20 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
       await readListing(base, pool);
     } else {
       const monthsToRead = months.filter(m => m.count === null || m.count > 0);
-      for (let index = 0; index < monthsToRead.length; index++) {
-        const item = monthsToRead[index];
-        const monthKey = item.year + '-' + String(item.month).padStart(2,'0');
-        const monthUrl = base + '/?year=' + item.year + '&month=' + item.month;
-        const progress = 6 + Math.round(((index + 1) / monthsToRead.length) * 72);
-        setStatus('月別イベントを取得中… ' + (index + 1) + ' / ' + monthsToRead.length + 'か月（現在 ' + pool.size + '件）', 'loading', progress);
-        const monthRows = await readListing(monthUrl, pool, monthKey);
-        const uniqueMonth = new Set(monthRows.filter(row => row.date.startsWith(monthKey)).map(row => row.key)).size;
-        if (item.count !== null && uniqueMonth < item.count) {
-          await sleep(850);
-          setStatus(monthKey + ' の不足分を再確認中…', 'loading', progress);
-          await readListing(monthUrl, pool, monthKey);
-        }
+      for (let offset = 0; offset < monthsToRead.length; offset += MONTH_CONCURRENCY) {
+        const batch = monthsToRead.slice(offset, offset + MONTH_CONCURRENCY);
+        const done = Math.min(offset + batch.length, monthsToRead.length);
+        const progress = 6 + Math.round((done / monthsToRead.length) * 72);
+        setStatus('月別イベントを並行取得中… ' + done + ' / ' + monthsToRead.length + 'か月（現在 ' + pool.size + '件）', 'loading', progress);
+        await Promise.all(batch.map(async item => {
+          const monthKey = item.year + '-' + String(item.month).padStart(2,'0');
+          const monthUrl = base + '/?year=' + item.year + '&month=' + item.month;
+          const monthRows = await readListing(monthUrl, pool, monthKey);
+          const uniqueMonth = new Set(monthRows.filter(row => row.date.startsWith(monthKey)).map(row => row.key)).size;
+          if (item.count !== null && uniqueMonth < item.count && state.requests < MAX_REQUESTS - 1) {
+            await readListing(monthUrl, pool, monthKey);
+          }
+        }));
         if (pool.size >= MAX_REQUESTS * PER_PAGE) break;
       }
     }
@@ -548,7 +569,15 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
     state.busy = true;
     state.events = []; state.year = 'all'; state.performer = 'all'; state.search = '';
     $('#searchBox').value = '';
-    $('#eventList').replaceChildren(h('p','empty','イベント一覧を読み込んでいます…'));
+    const cached = readEventCache(id);
+    if (cached && cached.rows.length) {
+      state.events = cached.rows;
+      render();
+      setStatus('前回の保存データを表示中（'+formatSavedAt(cached.savedAt)+'）。最新情報を確認しています…','loading',8);
+      $('#listLead').textContent = '保存済みのイベントを先に表示しながら、イベンターノートの最新情報を確認しています。';
+    } else {
+      $('#eventList').replaceChildren(h('p','empty','イベント一覧を読み込んでいます…'));
+    }
     $('#listHeading').textContent = '@' + id + ' の参戦イベント';
     $('#listLead').textContent = 'イベンターノートに公開されている参加イベントを取得しています。イベント数や登録期間によって、読み込みに時間がかかる場合があります。';
     $('#sourceLink').href = makeEventUrl(id);
@@ -556,11 +585,19 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
     updateUrl(id);
     try {
       const result = await collectAll(id);
+      if (!result.rows.length && cached && cached.rows.length) {
+        state.events = cached.rows;
+        render();
+        setStatus('最新データは取得できませんでした。保存済みデータを表示しています。','warn',100);
+        $('#listLead').textContent = '通信に失敗したため、'+formatSavedAt(cached.savedAt)+' 時点の保存データを表示しています。';
+        return;
+      }
       state.events = result.rows;
       if (!state.events.length) {
         showError('イベントを取得できませんでした。IDが正しいか、プロフィールが公開されているか確認してください。');
         return;
       }
+      writeEventCache(id,result.rows,result.total,result.verified);
       render();
       if (result.verified) {
         setStatus('取得完了：' + result.rows.length + ' / ' + result.total + '件を確認しました（' + result.requests + 'ページ取得）','good',100);
@@ -572,7 +609,14 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
       }
     } catch (error) {
       console.error(error);
-      showError(error && error.message ? error.message : '読み込み中にエラーが発生しました。時間をおいて再度お試しください。');
+      if (cached && cached.rows.length) {
+        state.events = cached.rows;
+        render();
+        setStatus('最新データの更新に失敗しました。保存済みデータを表示しています。','warn',100);
+        $('#listLead').textContent = formatSavedAt(cached.savedAt)+' 時点の保存データです。通信が安定したときに再読み込みしてください。';
+      } else {
+        showError(error && error.message ? error.message : '読み込み中にエラーが発生しました。時間をおいて再度お試しください。');
+      }
     } finally {
       state.busy = false;
     }

@@ -6,7 +6,12 @@
 <meta name="theme-color" content="#060817">
 <meta name="color-scheme" content="dark">
 <title>参戦イベント一覧｜Event Archive</title>
-<meta name="description" content="イベンターノートの公開参加イベントを、IDを指定して一覧表示するイベントアーカイブです。">
+<meta name="description" content="イベンターノートの参加履歴を一覧・分析・比較。年間レポート、カレンダー、共通参戦イベントを確認できます。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Event Archive｜参戦イベントを振り返る">
+<meta property="og:description" content="イベンターノートの参加履歴を見やすく整理。年間分析・カレンダー・ユーザー比較に対応した非公式ツールです。">
+<meta property="og:url" content="https://ayu11039.github.io/ayu-oshi-note/event-list.html">
+<meta name="twitter:card" content="summary">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
@@ -152,6 +157,28 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
 .filter-toolbar #activeFilters{margin-left:auto;color:var(--dim)}
 @media(max-width:760px){.annual-calendar{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:480px){.annual-calendar{gap:7px}.month-card{padding:7px}.calendar-day{font-size:.62rem}.personal-actions{width:100%}.personal-actions .btn{flex:1}.filter-toolbar #activeFilters{width:100%;margin-left:0}}
+.data-actions{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 4px}
+.data-actions .btn{min-height:36px;font-size:.76rem;padding:0 12px}
+.compare-panel{margin:26px 0;padding:clamp(16px,3vw,24px);border:1px solid var(--line);border-radius:20px;background:linear-gradient(145deg,rgba(24,36,59,.94),rgba(18,24,48,.86))}
+.compare-panel h2{font-size:1.4rem;margin-bottom:4px}
+.compare-lead{font-size:.82rem;color:var(--muted);margin-bottom:14px}
+.compare-form{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px}
+.compare-form input{min-width:0;height:44px;border:1px solid var(--line);border-radius:11px;background:rgba(4,9,26,.72);padding:0 12px;outline:none}
+.compare-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:16px 0}
+.compare-stat{padding:12px 8px;border-radius:12px;border:1px solid var(--line);background:rgba(4,9,26,.3);text-align:center}
+.compare-stat b{display:block;font-size:1.5rem;color:#fff}
+.compare-stat small{font-size:.72rem;color:var(--muted)}
+.compare-results{display:grid;gap:8px}
+.compare-event{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:rgba(4,9,26,.25)}
+.compare-event strong{display:block;font-size:.86rem;overflow-wrap:anywhere}
+.compare-event small{display:block;color:var(--muted);font-size:.75rem}
+.compare-status{margin-top:10px;color:var(--dim);font-size:.76rem}
+.guide-panel{margin:30px 0;padding:18px;border:1px solid var(--line);border-radius:16px;background:rgba(20,31,53,.55)}
+.guide-panel summary{cursor:pointer;font-weight:700;color:#fff}
+.guide-panel h3{font-size:.9rem;margin:14px 0 4px}
+.guide-panel p,.guide-panel li{font-size:.8rem;color:var(--muted);line-height:1.75}
+.guide-panel ul{padding-left:20px}
+@media(max-width:520px){.compare-form{grid-template-columns:1fr}.compare-summary{gap:5px}.compare-stat{padding:10px 4px}.compare-stat b{font-size:1.25rem}.compare-event{align-items:flex-start;flex-direction:column}}
 .more-events{display:flex;justify-content:center;align-items:center;gap:12px;flex-wrap:wrap;margin:22px 0}.more-events small{color:var(--dim);font-size:.78rem}
 </style>
 </head>
@@ -174,6 +201,7 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
   <h2 id="listHeading">参戦イベント一覧</h2>
   <p class="lead" id="listLead">公開されているイベンターノートのイベント情報を取得しています。</p>
   <div class="statusline" aria-live="polite"><span class="dot" id="statusDot"></span><span id="statusText">読み込み準備中…</span></div>
+  <div class="data-actions"><button type="button" class="btn soft" id="refreshData">最新データに更新</button><button type="button" class="btn soft" id="clearCache">このIDの保存データを削除</button><span class="cache-hint" id="cacheStatus">保存データを確認できます</span></div>
   <div class="progress"><span id="progressBar"></span></div>
   <div class="stats" id="stats">
     <div class="stat"><b>—</b><small>登録イベント</small></div>
@@ -187,6 +215,9 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
       <div class="insights-actions">
         <select class="report-select" id="reportYear" aria-label="集計する年"></select>
         <button type="button" class="btn soft" id="copyReport">レポートをコピー</button>
+        <button type="button" class="btn soft" id="saveShareCard">X用画像を保存</button>
+        <button type="button" class="btn soft" id="shareToX">X投稿文を作成</button>
+        <button type="button" class="btn soft" id="calendarExport">予定をカレンダー出力</button>
         <button type="button" class="btn soft" id="csvExport">CSV出力</button>
       </div>
     </div>
@@ -205,6 +236,12 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
     <div class="annual-calendar" id="annualCalendar"><p class="empty">イベントを読み込むと表示されます。</p></div>
     <div class="calendar-selection" id="calendarSelection" hidden><span id="calendarSelectionText"></span><button type="button" class="btn soft" id="clearCalendarDay">解除</button></div>
   </section>
+  <section class="compare-panel" aria-label="他のユーザーとの参戦履歴比較">
+    <h2>参戦履歴を友達と比較</h2>
+    <p class="compare-lead">もう1人のイベンターノートIDを入力すると、同じイベントに参加した履歴や共通の出演者を確認できます。ログイン情報は不要です。</p>
+    <form class="compare-form" id="compareForm"><input id="compareId" name="compareId" maxlength="40" pattern="[A-Za-z0-9_-]+" placeholder="比較するユーザーID（例：user_123）" required><button class="btn" type="submit" id="compareButton">共通イベントを調べる</button></form>
+    <div id="compareOutput" aria-live="polite"><p class="insight-note">まず自分のイベント一覧を読み込んでから、比較したいIDを入力してください。</p></div>
+  </section>
   <section class="personal-panel" aria-label="自分用のお気に入りとメモ">
     <div class="personal-copy"><h2>自分用のお気に入り・メモ</h2><p>感想、座席、グッズ、同行者などを記録できます。メモはこのブラウザ内だけに保存され、共有URLには含まれません。</p><div class="personal-summary" id="personalSummary">お気に入り 0件 ／ メモ 0件</div></div>
     <div class="personal-actions"><button type="button" class="btn soft" id="backupPersonal">バックアップ</button><button type="button" class="btn soft" id="restorePersonal">復元</button><button type="button" class="btn soft" id="clearPersonal">データ削除</button><input type="file" id="restoreFile" accept="application/json,.json" hidden></div>
@@ -219,8 +256,25 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
   <div class="filter-title">出演者で絞り込む</div><div class="pills" id="performers"></div>
   <div class="countline"><span id="eventCount">イベントを読み込んでいます。</span><a id="sourceLink" href="https://www.eventernote.com/" target="_blank" rel="noopener noreferrer">イベンターノート ↗</a></div>
   <div id="eventList"><p class="empty">公開イベント一覧を読み込んでいます。</p></div>
+<details class="guide-panel">
+    <summary>初めて使う方へ・使い方とデータの取り扱い</summary>
+    <h3>使い方</h3><ul>
+      <li>イベンターノートのプロフィールURLに含まれるユーザーIDを入力します。</li>
+      <li>公開されている参加イベントを一覧・カレンダー・年間レポートで確認できます。</li>
+      <li>友達との比較には、比較相手の公開ユーザーIDを入力します。</li>
+    </ul>
+    <h3>データとプライバシー</h3><ul>
+      <li>このツールは非公式の閲覧ツールです。Eventernoteのパスワードやログイン情報は入力しないでください。</li>
+      <li>取得対象は公開プロフィール・公開イベント情報です。取得のため外部CORS中継サービスを経由します。</li>
+      <li>取得したイベントデータ、お気に入り、メモは利用者のブラウザ内に保存されます。メモは共有URLには含まれません。ブラウザのデータ削除で消える場合があるため、必要に応じてバックアップしてください。</li>
+      <li>X用画像には年間集計値とユーザーIDが含まれます。投稿前に内容を確認してください。</li>
+      <li>公開ページの構成や通信状況によって一部のイベントが取得できない場合があります。</li>
+    </ul>
+    <p>Eventernote公式サービスではありません。元データの内容・正確性・継続利用を保証するものではありません。大量アクセスや不具合がある場合は利用を控えてください。</p>
+    <p><a href="https://www.eventernote.com/pages/termsofservice" target="_blank" rel="noopener noreferrer">Eventernote利用規約</a> ／ <a href="https://cors.dev/docs" target="_blank" rel="noopener noreferrer">CORS中継サービスの説明</a> ／ <a href="https://github.com/ayu11039/ayu-oshi-note/issues" target="_blank" rel="noopener noreferrer">不具合・改善要望を報告</a></p>
+  </details>
 </main>
-<footer><div class="wrap">Event Archive ・ イベンターノートの公開情報を表示しています。<br>データの所有者・公式サービスとは関係のない非公式ビューアーです。</div></footer>
+<footer><div class="wrap">Event Archive ・ イベンターノートの公開情報を表示する非公式ツールです。<br>Eventernoteおよびその運営者とは関係ありません。</div></footer>
 <script>
 (() => {
   'use strict';
@@ -235,7 +289,7 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
   const EVENT_CACHE_PREFIX = 'eventArchiveCache:v2:';
   const $ = (selector) => document.querySelector(selector);
   const params = new URLSearchParams(location.search);
-  const state = { events: [], year: 'all', performer: 'all', search: '', busy: false, requests: 0, currentId: '', selectedDate: '', mode: 'all', personal: {favorites:[],notes:{}}, visibleLimit:50, lastFilterSignature:'' };
+  const state = { events: [], year: 'all', performer: 'all', search: '', busy: false, compareBusy:false, requests: 0, currentId: '', selectedDate: '', mode: 'all', personal: {favorites:[],notes:{}}, visibleLimit:50, lastFilterSignature:'' };
   const today = new Date();
   const todayStr = [today.getFullYear(), String(today.getMonth()+1).padStart(2,'0'), String(today.getDate()).padStart(2,'0')].join('-');
   const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -426,7 +480,7 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
     });
   };
   const pageNumber = url => Number(new URL(url).searchParams.get('page') || 1);
-  const readListing = async (startUrl, pool, onlyMonth = null) => {
+  const readListing = async (startUrl, pool, onlyMonth = null, userId = state.currentId) => {
     const queue = [startUrl], visited = new Set(), pageRows = new Map();
     while (queue.length && pageRows.size < 30) {
       const url = queue.shift();
@@ -439,7 +493,7 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
       addRows(pool, parsed.rows, onlyMonth);
       parsed.doc.querySelectorAll('a[href]').forEach(a => {
         const href = a.getAttribute('href') || '';
-        if (!href.includes('/users/' + state.currentId + '/events') || !/[?&]page=\d+/.test(href)) return;
+        if (!href.includes('/users/' + userId + '/events') || !/[?&]page=\d+/.test(href)) return;
         const next = new URL(href, url).href;
         if (!visited.has(pageNumber(next)) && !queue.some(x => pageNumber(x) === pageNumber(next))) queue.push(next);
       });
@@ -454,7 +508,6 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
   };
   const collectAll = async id => {
     state.requests = 0;
-    state.currentId = id;
     const base = makeEventUrl(id);
     setStatus('@' + id + ' の公開プロフィールを確認中…', 'loading', 2);
     const firstHtml = await requestHtml(base);
@@ -465,35 +518,34 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
     addRows(pool, first.rows);
     if (!months.length) {
       setStatus('月別カレンダーが見つからないため、ページ送りで取得中…', 'loading', 5);
-      await readListing(base, pool);
+      await readListing(base, pool, null, id);
     } else {
       const monthsToRead = months.filter(m => m.count === null || m.count > 0);
       for (let offset = 0; offset < monthsToRead.length; offset += MONTH_CONCURRENCY) {
         const batch = monthsToRead.slice(offset, offset + MONTH_CONCURRENCY);
         const done = Math.min(offset + batch.length, monthsToRead.length);
         const progress = 6 + Math.round((done / monthsToRead.length) * 72);
-        setStatus('月別イベントを並行取得中… ' + done + ' / ' + monthsToRead.length + 'か月（現在 ' + pool.size + '件）', 'loading', progress);
+        setStatus('@' + id + '：月別イベントを並行取得中… ' + done + ' / ' + monthsToRead.length + 'か月（現在 ' + pool.size + '件）', 'loading', progress);
         await Promise.all(batch.map(async item => {
           const monthKey = item.year + '-' + String(item.month).padStart(2,'0');
           const monthUrl = base + '/?year=' + item.year + '&month=' + item.month;
-          const monthRows = await readListing(monthUrl, pool, monthKey);
+          const monthRows = await readListing(monthUrl, pool, monthKey, id);
           const uniqueMonth = new Set(monthRows.filter(row => row.date.startsWith(monthKey)).map(row => row.key)).size;
           if (item.count !== null && uniqueMonth < item.count && state.requests < MAX_REQUESTS - 1) {
-            await readListing(monthUrl, pool, monthKey);
+            await readListing(monthUrl, pool, monthKey, id);
           }
         }));
-        if (pool.size >= MAX_REQUESTS * PER_PAGE) break;
+        if (pool.size >= MAX_REQUESTS * PER_PAGE || state.requests >= MAX_REQUESTS - 2) break;
       }
     }
     if (total !== null && pool.size < total) {
-      setStatus('取得件数を確認中…（' + pool.size + ' / ' + total + '件）。補完ページを読み込みます。', 'loading', 82);
-      // 月別ページで取り切れない分がある場合、年別ページと全期間ページ送りから補う。
+      setStatus('@' + id + '：取得件数を確認中…（' + pool.size + ' / ' + total + '件）', 'loading', 82);
       const years = [...new Set(months.map(x => x.year))].sort((a,b) => b-a);
       for (const year of years) {
         if (pool.size >= total || state.requests >= MAX_REQUESTS - 2) break;
-        await readListing(base + '/?year=' + year, pool, String(year) + '-');
+        await readListing(base + '/?year=' + year, pool, String(year) + '-', id);
       }
-      if (pool.size < total && state.requests < MAX_REQUESTS - 2) await readListing(base, pool);
+      if (pool.size < total && state.requests < MAX_REQUESTS - 2) await readListing(base, pool, null, id);
     }
     const rows = [...pool.values()].sort((a,b) => b.date.localeCompare(a.date) || a.title.localeCompare(b.title));
     return { rows, total, months: months.length, requests: state.requests, verified: total !== null && rows.length >= total };
@@ -703,8 +755,9 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
     $('#eventList').replaceChildren(h('p','error',message));
   };
   const load = async id => {
-    if (state.busy) return;
+    if (state.busy || state.compareBusy) return;
     state.busy = true;
+    state.currentId = id;
     state.events = []; state.year = 'all'; state.performer = 'all'; state.search = ''; state.selectedDate='';state.mode='all';
     state.personal=readPersonal(id);
     $('#searchBox').value = '';

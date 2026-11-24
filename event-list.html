@@ -211,7 +211,6 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
   };
   const getTotal = html => {
     const doc = new DOMParser().parseFromString(html, 'text/html');
-    if (doc.title) doc.title.remove();
     const text = safeText(doc.body ? doc.body.innerText : doc.documentElement.textContent);
     const m = text.match(/参加イベント一覧\s*[（(]\s*(\d+)/);
     return m ? Number(m[1]) : null;

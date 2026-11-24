@@ -152,6 +152,7 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
 .filter-toolbar #activeFilters{margin-left:auto;color:var(--dim)}
 @media(max-width:760px){.annual-calendar{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:480px){.annual-calendar{gap:7px}.month-card{padding:7px}.calendar-day{font-size:.62rem}.personal-actions{width:100%}.personal-actions .btn{flex:1}.filter-toolbar #activeFilters{width:100%;margin-left:0}}
+.more-events{display:flex;justify-content:center;align-items:center;gap:12px;flex-wrap:wrap;margin:22px 0}.more-events small{color:var(--dim);font-size:.78rem}
 </style>
 </head>
 <body>
@@ -230,10 +231,11 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
   const PER_PAGE = 30;
   const WAIT_MS = 140;
   const MONTH_CONCURRENCY = 3;
+  const PAGE_SIZE = 50;
   const EVENT_CACHE_PREFIX = 'eventArchiveCache:v2:';
   const $ = (selector) => document.querySelector(selector);
   const params = new URLSearchParams(location.search);
-  const state = { events: [], year: 'all', performer: 'all', search: '', busy: false, requests: 0, currentId: '', selectedDate: '', mode: 'all', personal: {favorites:[],notes:{}} };
+  const state = { events: [], year: 'all', performer: 'all', search: '', busy: false, requests: 0, currentId: '', selectedDate: '', mode: 'all', personal: {favorites:[],notes:{}}, visibleLimit:50, lastFilterSignature:'' };
   const today = new Date();
   const todayStr = [today.getFullYear(), String(today.getMonth()+1).padStart(2,'0'), String(today.getDate()).padStart(2,'0')].join('-');
   const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -657,6 +659,8 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
 
   const render = () => {
     renderStats(); renderFilters(); renderInsights(); renderModes(); renderPersonalSummary(); renderCalendar();
+    const signature=JSON.stringify([state.year,state.performer,state.search,state.selectedDate,state.mode,$('#sortOrder')?$('#sortOrder').value:'desc']);
+    if(signature!==state.lastFilterSignature){state.visibleLimit=PAGE_SIZE;state.lastFilterSignature=signature;}
     const rows = getFilterRows();
     const label = state.year === 'all' ? '全期間' : state.year + '年';
     const performerLabel = state.performer === 'all' ? '' : ' ／ ' + state.performer;
@@ -676,14 +680,28 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
       if (!groups.has(year)) groups.set(year,[]);
       groups.get(year).push(event);
     });
+    const shown=rows.slice(0,state.visibleLimit);
+    const groups = new Map();
+    shown.forEach(event => {
+      const year=event.date.slice(0,4);
+      if(!groups.has(year))groups.set(year,[]);
+      groups.get(year).push(event);
+    });
     groups.forEach((events,year) => {
       const section = h('section','year-group');
       const heading = h('div','year-head');
-      heading.append(h('h3','',year + '年'),h('small','',events.length + '件'));
+      heading.append(h('h3','',year + '年'),h('small','',events.length + '件（表示分）'));
       const ul = h('ul','tickets');
       events.forEach(event => ul.append(eventCard(event)));
       section.append(heading,ul); list.append(section);
     });
+    if(rows.length>shown.length){
+      const more=h('div','more-events');
+      const button=h('button','btn soft','さらに50件表示');
+      button.type='button';button.addEventListener('click',()=>{state.visibleLimit+=PAGE_SIZE;render();});
+      more.append(button,h('small','',(shown.length)+' / '+rows.length+'件を表示中'));
+      list.append(more);
+    }
   };
   const showError = message => {
     setStatus(message,'warn',100);

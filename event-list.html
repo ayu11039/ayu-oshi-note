@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#060817">
+<meta name="color-scheme" content="dark">
+<title>参戦イベント一覧｜Event Archive</title>
+<meta name="description" content="イベンターノートの公開参加イベントを、IDを指定して一覧表示するイベントアーカイブです。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#edf5ff;--muted:#b4c3d8;--dim:#7d93b3;--bg:#060817;--card:rgba(20,31,53,.82);--panel:#18243b;--line:rgba(205,222,255,.16);--accent:#9b8cff;--accent2:#4cc3f0;--accent-ink:#c5bdff;--ok:#75e0ba;--future:#ffb078;--font:"Zen Maru Gothic",-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic UI",sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;background:var(--bg);color:var(--ink);-webkit-text-size-adjust:100%}
+body{font:500 1rem/1.8 var(--font);min-height:100vh;overflow-x:hidden;background:radial-gradient(ellipse at 12% 5%,rgba(56,189,248,.18),transparent 38%),radial-gradient(ellipse at 90% 12%,rgba(139,92,246,.22),transparent 38%),radial-gradient(ellipse at 65% 95%,rgba(236,72,153,.12),transparent 34%),linear-gradient(180deg,#05071a,#0a1033 52%,#0c0a26);color:var(--ink)}
+a{color:var(--accent-ink);text-decoration:none}a:hover{color:#fff}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+.wrap{width:min(1040px,100%);margin:auto;padding-inline:clamp(16px,4vw,30px)}
+.nav{position:sticky;top:0;z-index:10;background:rgba(11,16,32,.86);border-bottom:1px solid var(--line);backdrop-filter:blur(16px)}
+.nav .wrap{min-height:58px;display:flex;align-items:center;gap:10px}
+.brand{font-weight:700;letter-spacing:.03em;white-space:nowrap;color:#fff}
+.brand-dot{display:inline-block;width:8px;height:8px;margin-right:8px;border-radius:50%;background:var(--accent2);box-shadow:0 0 12px var(--accent2)}
+.nav-note{margin-left:auto;color:var(--dim);font-size:.8rem}
+.hero{position:relative;text-align:center;padding:clamp(58px,10vw,100px) 0 62px;overflow:hidden}
+.hero:after{content:"";position:absolute;left:0;right:0;bottom:0;height:60px;background:linear-gradient(180deg,transparent,rgba(155,140,255,.12));clip-path:ellipse(60% 55% at 50% 100%);pointer-events:none}
+.kicker{display:inline-flex;padding:4px 14px;border-radius:999px;background:rgba(155,140,255,.14);border:1px solid rgba(155,140,255,.35);color:var(--accent-ink);font-size:.82rem;font-weight:700}
+h1{font-size:clamp(2.2rem,8vw,4.1rem);line-height:1.2;letter-spacing:.035em;margin:16px 0 8px;background:linear-gradient(135deg,#fff 36%,#c2d9ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.subtitle{color:var(--muted);max-width:600px;margin:0 auto 24px}
+.id-form{max-width:670px;margin:0 auto;padding:16px;background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:0 18px 44px rgba(0,0,0,.2);display:grid;grid-template-columns:1fr auto;gap:10px;text-align:left}
+.id-form label{grid-column:1/-1;color:var(--dim);font-size:.82rem;font-weight:700}
+.id-form input{min-width:0;width:100%;height:48px;border:1px solid var(--line);border-radius:12px;background:rgba(4,9,26,.72);padding:0 14px;outline:none}
+.id-form input:focus,.search-box:focus{border-color:var(--accent2);box-shadow:0 0 0 3px rgba(76,195,240,.13)}
+.btn{display:inline-flex;justify-content:center;align-items:center;gap:8px;min-height:44px;padding:0 18px;border-radius:999px;border:1px solid var(--accent);background:var(--accent);color:#0b0f24;font-size:.9rem;font-weight:700;transition:.2s}
+.btn:hover{transform:translateY(-1px);filter:brightness(1.08)}
+.btn.soft{background:var(--card);border-color:var(--line);color:var(--ink)}
+.shareline{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;color:var(--dim);font-size:.78rem}
+.block{padding:32px 0 74px}
+.block h2{display:flex;align-items:center;gap:12px;font-size:clamp(1.5rem,4vw,2rem);margin-bottom:8px}
+.block h2:after{content:"";width:44px;height:3px;margin-top:7px;border-radius:3px;background:linear-gradient(90deg,var(--accent2),var(--accent))}
+.lead{color:var(--muted);margin-bottom:20px;font-size:.94rem}
+.statusline{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:18px 0;color:var(--muted);font-size:.86rem}
+.dot{width:8px;height:8px;display:inline-block;border-radius:50%;background:var(--accent2);box-shadow:0 0 9px var(--accent2)}
+.dot.good{background:var(--ok);box-shadow:0 0 9px var(--ok)}
+.dot.warn{background:var(--future);box-shadow:0 0 9px var(--future)}
+.progress{height:4px;overflow:hidden;border-radius:9px;background:rgba(255,255,255,.08);margin:8px 0 20px}
+.progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent2),var(--accent));transition:width .25s}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0}
+.stat{padding:15px;background:var(--card);border:1px solid var(--line);border-radius:17px;text-align:center}
+.stat b{display:block;font-size:clamp(1.5rem,4vw,2rem);line-height:1.2;background:linear-gradient(135deg,#fff,var(--accent-ink));-webkit-background-clip:text;background-clip:text;color:transparent}
+.stat small{display:block;margin-top:5px;color:var(--muted);font-size:.8rem}
+.search-wrap{position:relative;margin:22px 0 16px}
+.search-icon{position:absolute;left:15px;top:50%;transform:translateY(-50%);width:20px;opacity:.6}
+.search-box{width:100%;height:50px;border:1px solid var(--line);border-radius:14px;background:var(--card);padding:0 16px 0 46px;outline:none}
+.filter-title{font-size:.82rem;font-weight:700;color:var(--dim);margin:14px 0 8px}
+.pills{display:flex;gap:8px;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;gap:5px;min-height:37px;padding:0 13px;border-radius:999px;background:var(--card);border:1px solid var(--line);color:var(--muted);font-size:.82rem}
+.pill[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:#0b0f24;font-weight:700}
+.pill small{opacity:.8}
+.countline{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:18px 0 8px;color:var(--muted);font-size:.9rem}
+.year-group{margin-top:30px}
+.year-head{display:flex;align-items:baseline;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:7px;margin-bottom:12px}
+.year-head h3{font-size:1.38rem;color:#fff}.year-head small{color:var(--dim)}
+.tickets{list-style:none;display:grid;gap:10px}
+.ticket{display:grid;grid-template-columns:96px minmax(0,1fr);overflow:hidden;border:1px solid var(--line);border-radius:17px;background:var(--card);backdrop-filter:blur(10px);transition:.2s}
+.ticket:hover{border-color:rgba(155,140,255,.55);transform:translateY(-2px);box-shadow:0 10px 28px rgba(0,0,0,.2)}
+.datebox{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px 7px;background:rgba(76,195,240,.08);border-right:1px dashed var(--line);text-align:center}
+.datebox .month{font-size:.8rem;color:var(--accent-ink);font-weight:700}.datebox .day{font-size:2rem;line-height:1.25;font-weight:700;color:#fff}.datebox .weekday{font-size:.76rem;color:var(--dim)}
+.ticket-body{min-width:0;padding:14px 16px}
+.ticket-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:5px}
+.status{font-size:.7rem;font-weight:700;border-radius:999px;padding:2px 9px}
+.status.past{color:var(--ok);background:rgba(117,224,186,.12);border:1px solid rgba(117,224,186,.24)}
+.status.future{color:var(--future);background:rgba(255,176,120,.12);border:1px solid rgba(255,176,120,.24)}
+.ticket-title{display:block;color:#fff;font-weight:700;font-size:1.02rem;line-height:1.5;overflow-wrap:anywhere}
+.ticket-title:hover{color:var(--accent-ink)}
+.venue{color:var(--muted);font-size:.84rem;margin-top:5px}
+.times{color:var(--dim);font-size:.78rem;margin-top:2px}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+.tag{font-size:.72rem;padding:2px 9px;border-radius:999px;background:rgba(255,255,255,.055);border:1px solid var(--line);color:var(--muted)}
+.event-action{margin-top:8px;font-size:.77rem}
+.empty,.error{padding:24px;border:1px dashed var(--line);border-radius:16px;background:rgba(20,31,53,.45);color:var(--muted);text-align:center}
+.error{border-color:rgba(255,176,120,.35);color:#ffd0ad}
+footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;color:var(--dim);font-size:.8rem}
+@media(max-width:560px){.id-form{grid-template-columns:1fr}.id-form label{grid-column:auto}.shareline{grid-column:auto}.stats{gap:7px}.stat{padding:12px 5px}.ticket{grid-template-columns:76px minmax(0,1fr)}.ticket-body{padding:12px}.datebox .day{font-size:1.7rem}.nav-note{font-size:.72rem}}
+</style>
+</head>
+<body>
+<header class="nav"><div class="wrap"><div class="brand"><span class="brand-dot"></span>EVENT ARCHIVE</div><span class="nav-note">イベンターノート参加記録ビューアー</span></div></header>
+<section class="hero">
+  <div class="wrap">
+    <span class="kicker">EVENTERNOTE ARCHIVE</span>
+    <h1>参戦イベント</h1>
+    <p class="subtitle">イベンターノートに登録された参加イベントを、見やすいチケット形式で表示します。</p>
+    <form class="id-form" id="idForm">
+      <label for="userId">イベンターノート ID</label>
+      <input id="userId" name="id" autocomplete="off" spellcheck="false" maxlength="40" pattern="[A-Za-z0-9_-]+" placeholder="例：ayu_11039" required>
+      <button class="btn" type="submit">このIDで表示</button>
+      <div class="shareline"><span>URLに ?id=ユーザーID を付けるだけでも切り替えできます。</span><button type="button" class="btn soft" id="shareBtn">この一覧を共有</button></div>
+    </form>
+  </div>
+</section>
+<main class="wrap block">
+  <h2 id="listHeading">参戦イベント一覧</h2>
+  <p class="lead" id="listLead">公開されているイベンターノートのイベント情報を取得しています。</p>
+  <div class="statusline" aria-live="polite"><span class="dot" id="statusDot"></span><span id="statusText">読み込み準備中…</span></div>
+  <div class="progress"><span id="progressBar"></span></div>
+  <div class="stats" id="stats">
+    <div class="stat"><b>—</b><small>登録イベント</small></div>
+    <div class="stat"><b>—</b><small>参戦済み</small></div>
+    <div class="stat"><b>—</b><small>これからの予定</small></div>
+  </div>
+  <div class="search-wrap">
+    <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 9.5 5a4.5 4.5 0 0 1 0 9z"/></svg>
+    <input class="search-box" id="searchBox" type="search" placeholder="イベント名・会場名・出演者・日付で検索…" autocomplete="off">
+  </div>
+  <div class="filter-title">年で絞り込む</div><div class="pills" id="years"></div>
+  <div class="filter-title">出演者で絞り込む</div><div class="pills" id="performers"></div>
+  <div class="countline"><span id="eventCount">イベントを読み込んでいます。</span><a id="sourceLink" href="https://www.eventernote.com/" target="_blank" rel="noopener noreferrer">イベンターノート ↗</a></div>
+  <div id="eventList"><p class="empty">公開イベント一覧を読み込んでいます。</p></div>
+</main>
+<footer><div class="wrap">Event Archive ・ イベンターノートの公開情報を表示しています。<br>データの所有者・公式サービスとは関係のない非公式ビューアーです。</div></footer>
+<script>
+(() => {
+  'use strict';
+  const EVENTERNOTE = 'https://www.eventernote.com';
+  const PROXY = 'https://proxy.cors.dev/';
+  const DEFAULT_ID = 'ayu_11039';
+  const MAX_REQUESTS = 250;
+  const PER_PAGE = 30;
+  const WAIT_MS = 450;
+  const $ = (selector) => document.querySelector(selector);
+  const params = new URLSearchParams(location.search);
+  const state = { events: [], year: 'all', performer: 'all', search: '', busy: false, requests: 0, currentId: '' };
+  const today = new Date();
+  const todayStr = [today.getFullYear(), String(today.getMonth()+1).padStart(2,'0'), String(today.getDate()).padStart(2,'0')].join('-');
+  const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+  const safeText = value => String(value == null ? '' : value).trim();
+  const eventIdFromUrl = value => {
+    const m = String(value || '').match(/\/events\/(\d+)/);
+    return m ? m[1] : '';
+  };
+  const setStatus = (message, mode = 'loading', progress = null) => {
+    $('#statusText').textContent = message;
+    $('#statusDot').className = 'dot' + (mode === 'good' ? ' good' : mode === 'warn' ? ' warn' : '');
+    if (progress !== null) $('#progressBar').style.width = Math.max(0, Math.min(100, progress)) + '%';
+  };
+  const updateUrl = id => {
+    const next = new URL(location.href);
+    next.search = '';
+    next.searchParams.set('id', id);
+    history.replaceState(null, '', next);
+  };
+  const validateId = value => /^[A-Za-z0-9_-]{1,40}$/.test(value);
+  const makeEventUrl = id => EVENTERNOTE + '/users/' + encodeURIComponent(id) + '/events';
+  const requestHtml = async url => {
+    if (state.requests >= MAX_REQUESTS) throw new Error('安全上限（' + MAX_REQUESTS + 'ページ）に達しました。イベント数の多いユーザーは、対象期間を絞った取得が必要です。');
+    state.requests++;
+    let lastError;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        const response = await fetch(PROXY + url, { method: 'GET', credentials: 'omit', cache: 'no-store' });
+        if (!response.ok) {
+          const detail = response.headers.get('X-Cors-Error') || '';
+          throw new Error('HTTP ' + response.status + (detail ? ' (' + detail + ')' : ''));
+        }
+        return await response.text();
+      } catch (error) {
+        lastError = error;
+        if (attempt < 2) await sleep(700 * (attempt + 1));
+      }
+    }
+    throw new Error('公開ページの取得に失敗しました。' + (lastError && lastError.message ? lastError.message : ''));
+  };
+  const parsePage = (html, baseUrl) => {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    const rows = [];
+    doc.querySelectorAll('h4, h3').forEach(heading => {
+      const link = heading.querySelector('a[href]');
+      if (!link) return;
+      const title = safeText(link.textContent);
+      const absoluteUrl = new URL(link.getAttribute('href'), baseUrl).href;
+      const eventId = eventIdFromUrl(absoluteUrl);
+      if (!title || !eventId) return;
+      let node = heading, blockNode = null, block = '';
+      for (let step = 0; step < 6 && node.parentElement; step++) {
+        node = node.parentElement;
+        const candidate = safeText(node.textContent).replace(/\s+/g, ' ');
+        if (/20\d{2}-\d{2}-\d{2}/.test(candidate) && (/会場/.test(candidate) || /開演/.test(candidate))) {
+          blockNode = node; block = candidate; break;
+        }
+      }
+      const dateMatch = block.match(/(20\d{2})-(\d{2})-(\d{2})/);
+      if (!dateMatch) return;
+      const venueMatch = block.match(/会場:\s*(.+?)(?=\s+開場|\s+開演|\s+出演者|$)/);
+      const timeMatch = block.match(/開場\s*([^\s]+)\s*開演\s*([^\s]+)\s*終演\s*([^\s]+)/);
+      const who = [];
+      if (blockNode) blockNode.querySelectorAll('a[href*="/actors/"], a[href*="/artists/"]').forEach(a => {
+        const name = safeText(a.textContent);
+        if (name && !who.includes(name)) who.push(name);
+      });
+      rows.push({
+        date: dateMatch[1] + '-' + dateMatch[2] + '-' + dateMatch[3],
+        title, venue: venueMatch ? venueMatch[1].trim() : '',
+        open: timeMatch ? timeMatch[1] : '', start: timeMatch ? timeMatch[2] : '', end: timeMatch ? timeMatch[3] : '',
+        who, url: EVENTERNOTE + '/events/' + eventId, key: eventId
+      });
+    });
+    return { doc, rows };
+  };
+  const getTotal = html => {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    if (doc.title) doc.title.remove();
+    const text = safeText(doc.body ? doc.body.innerText : doc.documentElement.textContent);
+    const m = text.match(/参加イベント一覧\s*[（(]\s*(\d+)/);
+    return m ? Number(m[1]) : null;
+  };
+  const getMonths = (doc, id) => {
+    const months = [];
+    const basePath = '/users/' + id + '/events';
+    doc.querySelectorAll('a[href]').forEach(a => {
+      try {
+        const url = new URL(a.getAttribute('href'), EVENTERNOTE);
+        if (!url.pathname.includes(basePath)) return;
+        if (url.searchParams.has('page') || !url.searchParams.has('year') || !url.searchParams.has('month')) return;
+        const year = Number(url.searchParams.get('year'));
+        const month = Number(url.searchParams.get('month'));
+        if (year >= 2000 && month >= 1 && month <= 12) months.push({year, month, count: /^\d+$/.test(safeText(a.textContent)) ? Number(safeText(a.textContent)) : null});
+      } catch (_) {}
+    });
+    const unique = new Map();
+    months.forEach(item => unique.set(item.year + '-' + item.month, item));
+    return [...unique.values()].sort((a,b) => b.year - a.year || b.month - a.month);
+  };
+  const addRows = (pool, rows, onlyMonth = null) => {
+    rows.forEach(row => {
+      if (onlyMonth && !row.date.startsWith(onlyMonth)) return;
+      if (!pool.has(row.key)) pool.set(row.key, row);
+    });
+  };
+  const pageNumber = url => Number(new URL(url).searchParams.get('page') || 1);
+  const readListing = async (startUrl, pool, onlyMonth = null) => {
+    const queue = [startUrl], visited = new Set(), pageRows = new Map();
+    while (queue.length && pageRows.size < 30) {
+      const url = queue.shift();
+      const number = pageNumber(url);
+      if (visited.has(number)) continue;
+      visited.add(number);
+      const html = await requestHtml(url);
+      const parsed = parsePage(html, url);
+      pageRows.set(number, parsed.rows);
+      addRows(pool, parsed.rows, onlyMonth);
+      parsed.doc.querySelectorAll('a[href]').forEach(a => {
+        const href = a.getAttribute('href') || '';
+        if (!href.includes('/users/' + state.currentId + '/events') || !/[?&]page=\d+/.test(href)) return;
+        const next = new URL(href, url).href;
+        if (!visited.has(pageNumber(next)) && !queue.some(x => pageNumber(x) === pageNumber(next))) queue.push(next);
+      });
+      if (!queue.length && parsed.rows.length >= PER_PAGE) {
+        const next = new URL(startUrl);
+        next.searchParams.set('page', String(Math.max(...pageRows.keys()) + 1));
+        if (!visited.has(pageNumber(next.href))) queue.push(next.href);
+      }
+      if (queue.length || parsed.rows.length >= PER_PAGE) await sleep(WAIT_MS);
+    }
+    return [...pageRows.values()].flat();
+  };
+  const collectAll = async id => {
+    state.requests = 0;
+    state.currentId = id;
+    const base = makeEventUrl(id);
+    setStatus('@' + id + ' の公開プロフィールを確認中…', 'loading', 2);
+    const firstHtml = await requestHtml(base);
+    const first = parsePage(firstHtml, base);
+    const total = getTotal(firstHtml);
+    const months = getMonths(first.doc, id);
+    const pool = new Map();
+    addRows(pool, first.rows);
+    if (!months.length) {
+      setStatus('月別カレンダーが見つからないため、ページ送りで取得中…', 'loading', 5);
+      await readListing(base, pool);
+    } else {
+      const monthsToRead = months.filter(m => m.count === null || m.count > 0);
+      for (let index = 0; index < monthsToRead.length; index++) {
+        const item = monthsToRead[index];
+        const monthKey = item.year + '-' + String(item.month).padStart(2,'0');
+        const monthUrl = base + '/?year=' + item.year + '&month=' + item.month;
+        const progress = 6 + Math.round(((index + 1) / monthsToRead.length) * 72);
+        setStatus('月別イベントを取得中… ' + (index + 1) + ' / ' + monthsToRead.length + 'か月（現在 ' + pool.size + '件）', 'loading', progress);
+        const monthRows = await readListing(monthUrl, pool, monthKey);
+        const uniqueMonth = new Set(monthRows.filter(row => row.date.startsWith(monthKey)).map(row => row.key)).size;
+        if (item.count !== null && uniqueMonth < item.count) {
+          await sleep(850);
+          setStatus(monthKey + ' の不足分を再確認中…', 'loading', progress);
+          await readListing(monthUrl, pool, monthKey);
+        }
+        if (pool.size >= MAX_REQUESTS * PER_PAGE) break;
+      }
+    }
+    if (total !== null && pool.size < total) {
+      setStatus('取得件数を確認中…（' + pool.size + ' / ' + total + '件）。補完ページを読み込みます。', 'loading', 82);
+      // 月別ページで取り切れない分がある場合、年別ページと全期間ページ送りから補う。
+      const years = [...new Set(months.map(x => x.year))].sort((a,b) => b-a);
+      for (const year of years) {
+        if (pool.size >= total || state.requests >= MAX_REQUESTS - 2) break;
+        await readListing(base + '/?year=' + year, pool, String(year) + '-');
+      }
+      if (pool.size < total && state.requests < MAX_REQUESTS - 2) await readListing(base, pool);
+    }
+    const rows = [...pool.values()].sort((a,b) => b.date.localeCompare(a.date) || a.title.localeCompare(b.title));
+    return { rows, total, months: months.length, requests: state.requests, verified: total !== null && rows.length >= total };
+  };
+  const isFuture = event => event.date > todayStr;
+  const h = (tag, className, text) => {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  };
+  const renderStats = () => {
+    const past = state.events.filter(x => !isFuture(x)).length;
+    const future = state.events.length - past;
+    const labels = [[state.events.length,'登録イベント'],[past,'参戦済み'],[future,'これからの予定']];
+    const box = $('#stats');
+    box.replaceChildren(...labels.map(item => {
+      const card = h('div','stat');
+      card.append(h('b','',String(item[0])),h('small','',item[1]));
+      return card;
+    }));
+  };
+  const getFilterRows = () => state.events.filter(event =>
+    (state.year === 'all' || event.date.startsWith(state.year)) &&
+    (state.performer === 'all' || event.who.includes(state.performer)) &&
+    (!state.search || [event.title,event.venue,event.date,...event.who].some(value => value.toLowerCase().includes(state.search)))
+  );
+  const makePill = (label, key, count, selected, callback) => {
+    const button = h('button','pill');
+    button.type = 'button'; button.setAttribute('aria-pressed', selected === key ? 'true' : 'false');
+    button.append(document.createTextNode(label));
+    const small = h('small','',String(count)); button.append(small);
+    button.addEventListener('click', callback);
+    return button;
+  };
+  const renderFilters = () => {
+    const years = [...new Set(state.events.map(x => x.date.slice(0,4)))].sort((a,b) => b.localeCompare(a));
+    const yearCounts = new Map([['all',state.events.length],...years.map(y => [y,state.events.filter(x => x.date.startsWith(y)).length])]);
+    $('#years').replaceChildren(makePill('すべて','all',state.events.length,state.year,() => {state.year='all';render();}));
+    years.forEach(year => $('#years').append(makePill(year + '年',year,yearCounts.get(year),state.year,() => {state.year=year;render();})));
+    const performers = new Map();
+    state.events.forEach(event => event.who.forEach(name => performers.set(name,(performers.get(name)||0)+1)));
+    const top = [...performers.entries()].sort((a,b) => b[1]-a[1] || a[0].localeCompare(b[0],'ja')).slice(0,30);
+    const performerBox = $('#performers');
+    performerBox.replaceChildren(makePill('すべて','all',state.events.length,state.performer,() => {state.performer='all';render();}));
+    top.forEach(([name,count]) => performerBox.append(makePill(name,name,count,state.performer,() => {state.performer=name;render();})));
+    if (!top.length) performerBox.append(h('span','tag','出演者情報なし'));
+  };
+  const eventCard = event => {
+    const date = new Date(event.date + 'T12:00:00');
+    const month = date.getMonth()+1, day = date.getDate();
+    const weekday = ['日','月','火','水','木','金','土'][date.getDay()];
+    const li = h('li','ticket');
+    const dateBox = h('div','datebox');
+    dateBox.append(h('span','month',month + '月'),h('span','day',String(day)),h('span','weekday','(' + weekday + ')'));
+    const body = h('div','ticket-body');
+    const top = h('div','ticket-top');
+    top.append(h('span','status ' + (isFuture(event) ? 'future' : 'past'),isFuture(event) ? '予定' : '参戦済'));
+    body.append(top);
+    const title = h('a','ticket-title',event.title);
+    title.href = event.url; title.target = '_blank'; title.rel = 'noopener noreferrer';
+    body.append(title);
+    if (event.venue) body.append(h('div','venue','📍 ' + event.venue));
+    const time = [];
+    if (event.open && event.open !== '-') time.push('開場 ' + event.open);
+    if (event.start && event.start !== '-') time.push('開演 ' + event.start);
+    if (event.end && event.end !== '-') time.push('終演 ' + event.end);
+    if (time.length) body.append(h('div','times',time.join(' ／ ')));
+    if (event.who.length) {
+      const tags = h('div','tags');
+      event.who.forEach(name => {
+        const tag = h('span','tag',name); tags.append(tag);
+      });
+      body.append(tags);
+    }
+    const more = h('div','event-action');
+    const link = h('a','', 'イベンターノートで詳細を見る ↗');
+    link.href = event.url; link.target='_blank'; link.rel='noopener noreferrer'; more.append(link); body.append(more);
+    li.append(dateBox,body); return li;
+  };
+  const render = () => {
+    renderStats(); renderFilters();
+    const rows = getFilterRows();
+    const label = state.year === 'all' ? '全期間' : state.year + '年';
+    const performerLabel = state.performer === 'all' ? '' : ' ／ ' + state.performer;
+    $('#eventCount').textContent = label + performerLabel + '：' + rows.length + '件';
+    const list = $('#eventList');
+    list.replaceChildren();
+    if (!rows.length) {
+      list.append(h('p','empty',state.events.length ? '条件に一致するイベントは見つかりませんでした。' : '表示できるイベントがありません。'));
+      return;
+    }
+    const groups = new Map();
+    rows.forEach(event => {
+      const year = event.date.slice(0,4);
+      if (!groups.has(year)) groups.set(year,[]);
+      groups.get(year).push(event);
+    });
+    groups.forEach((events,year) => {
+      const section = h('section','year-group');
+      const heading = h('div','year-head');
+      heading.append(h('h3','',year + '年'),h('small','',events.length + '件'));
+      const ul = h('ul','tickets');
+      events.forEach(event => ul.append(eventCard(event)));
+      section.append(heading,ul); list.append(section);
+    });
+  };
+  const showError = message => {
+    setStatus(message,'warn',100);
+    $('#listLead').textContent = '公開データを取得できませんでした。IDとイベンターノート側の公開状態を確認してください。';
+    $('#eventList').replaceChildren(h('p','error',message));
+  };
+  const load = async id => {
+    if (state.busy) return;
+    state.busy = true;
+    state.events = []; state.year = 'all'; state.performer = 'all'; state.search = '';
+    $('#searchBox').value = '';
+    $('#eventList').replaceChildren(h('p','empty','イベント一覧を読み込んでいます…'));
+    $('#listHeading').textContent = '@' + id + ' の参戦イベント';
+    $('#listLead').textContent = 'イベンターノートに公開されている参加イベントを取得しています。イベント数や登録期間によって、読み込みに時間がかかる場合があります。';
+    $('#sourceLink').href = makeEventUrl(id);
+    $('#userId').value = id;
+    updateUrl(id);
+    try {
+      const result = await collectAll(id);
+      state.events = result.rows;
+      if (!state.events.length) {
+        showError('イベントを取得できませんでした。IDが正しいか、プロフィールが公開されているか確認してください。');
+        return;
+      }
+      render();
+      if (result.verified) {
+        setStatus('取得完了：' + result.rows.length + ' / ' + result.total + '件を確認しました（' + result.requests + 'ページ取得）','good',100);
+        $('#listLead').textContent = 'イベンターノートの登録 ' + result.total + '件と取得件数が一致しました。';
+      } else {
+        const totalText = result.total === null ? '総件数を読み取れませんでした' : '登録 ' + result.total + '件に対して ' + result.rows.length + '件を取得';
+        setStatus('取得は終了しましたが、全件一致を確認できません：' + totalText + '（' + result.requests + 'ページ取得）','warn',100);
+        $('#listLead').textContent = '一部のイベントが取得できていない可能性があります。下の一覧は取得できた公開情報です。';
+      }
+    } catch (error) {
+      console.error(error);
+      showError(error && error.message ? error.message : '読み込み中にエラーが発生しました。時間をおいて再度お試しください。');
+    } finally {
+      state.busy = false;
+    }
+  };
+  $('#idForm').addEventListener('submit',event => {
+    event.preventDefault();
+    const id = safeText($('#userId').value);
+    if (!validateId(id)) {
+      showError('IDは半角英数字・アンダースコア・ハイフンで入力してください。');
+      return;
+    }
+    load(id);
+  });
+  $('#searchBox').addEventListener('input',event => {
+    state.search = safeText(event.target.value).toLocaleLowerCase();
+    render();
+  });
+  $('#shareBtn').addEventListener('click',async () => {
+    const url = location.href;
+    try {
+      await navigator.clipboard.writeText(url);
+      $('#shareBtn').textContent = 'URLをコピーしました';
+      setTimeout(() => {$('#shareBtn').textContent='この一覧を共有';},1800);
+    } catch (_) {
+      window.prompt('このURLをコピーしてください',url);
+    }
+  });
+  const initialId = safeText(params.get('id') || DEFAULT_ID);
+  if (validateId(initialId)) load(initialId);
+  else { $('#userId').value = DEFAULT_ID; showError('URLのIDが正しくありません。IDを入力して表示してください。'); }
+})();
+</script>
+</body>
+</html>

@@ -84,6 +84,41 @@ h1{font-size:clamp(2.2rem,8vw,4.1rem);line-height:1.2;letter-spacing:.035em;marg
 .error{border-color:rgba(255,176,120,.35);color:#ffd0ad}
 footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;color:var(--dim);font-size:.8rem}
 @media(max-width:560px){.id-form{grid-template-columns:1fr}.id-form label{grid-column:auto}.shareline{grid-column:auto}.stats{gap:7px}.stat{padding:12px 5px}.ticket{grid-template-columns:76px minmax(0,1fr)}.ticket-body{padding:12px}.datebox .day{font-size:1.7rem}.nav-note{font-size:.72rem}}
+
+/* Annual insights */
+.insights{margin:28px 0 34px;padding:clamp(16px,3vw,24px);border:1px solid var(--line);border-radius:22px;background:linear-gradient(145deg,rgba(24,36,59,.92),rgba(18,24,48,.86));box-shadow:0 18px 45px rgba(0,0,0,.16)}
+.insights-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.insights-head h2{margin:0;font-size:1.45rem}.insights-head h2:after{display:none}
+.insights-actions{display:flex;gap:8px;flex-wrap:wrap}
+.insights-actions .btn{min-height:38px;padding:0 13px;font-size:.78rem}
+.report-select{min-height:40px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:#111b32;color:var(--ink)}
+.report-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:16px 0}
+.report-stat{padding:13px 8px;border:1px solid var(--line);border-radius:13px;background:rgba(4,9,26,.34);text-align:center}
+.report-stat b{display:block;font-size:1.55rem;line-height:1.3;color:#fff}.report-stat small{color:var(--muted);font-size:.75rem}
+.chart-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:12px}
+.chart-panel{min-width:0;padding:16px;border:1px solid var(--line);border-radius:15px;background:rgba(4,9,26,.28)}
+.chart-panel h3{font-size:.96rem;margin-bottom:13px;color:#fff}
+.month-chart{height:150px;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));align-items:end;gap:5px;padding-top:8px}
+.month-col{height:100%;display:flex;flex-direction:column;justify-content:end;align-items:center;gap:6px;min-width:0}
+.month-bar-wrap{height:112px;width:100%;display:flex;align-items:end;justify-content:center}
+.month-bar{width:min(100%,22px);min-height:2px;border-radius:6px 6px 2px 2px;background:linear-gradient(180deg,var(--accent2),var(--accent));position:relative}
+.month-bar[data-count="0"]{opacity:.18}
+.month-label{font-size:.65rem;color:var(--dim)}
+.month-value{font-size:.65rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.rank-list{display:grid;gap:9px}
+.rank-row{display:grid;grid-template-columns:24px:minmax(0,1fr) auto;align-items:center;gap:8px;font-size:.82rem}
+.rank-no{color:var(--accent-ink);font-weight:700;text-align:center}
+.rank-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)}
+.rank-count{color:#fff;font-weight:700;font-variant-numeric:tabular-nums}
+.rank-track{grid-column:2/4;height:5px;border-radius:8px;background:rgba(255,255,255,.07);overflow:hidden;margin-top:-5px}
+.rank-track span{display:block;height:100%;border-radius:8px;background:linear-gradient(90deg,var(--accent2),var(--accent))}
+.weekday-chart{display:grid;gap:8px}
+.weekday-row{display:grid;grid-template-columns:26px 1fr 28px;gap:8px;align-items:center;font-size:.78rem;color:var(--muted)}
+.weekday-track{height:8px;border-radius:8px;background:rgba(255,255,255,.07);overflow:hidden}
+.weekday-track span{display:block;height:100%;background:linear-gradient(90deg,#4cc3f0,#9b8cff);border-radius:8px}
+.insight-note{color:var(--dim);font-size:.76rem;margin-top:12px}
+@media(max-width:650px){.chart-grid{grid-template-columns:1fr}.report-stats{grid-template-columns:repeat(2,1fr)}.month-chart{gap:2px}.month-label{font-size:.58rem}}
+
 </style>
 </head>
 <body>
@@ -111,6 +146,26 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
     <div class="stat"><b>—</b><small>参戦済み</small></div>
     <div class="stat"><b>—</b><small>これからの予定</small></div>
   </div>
+
+  <section class="insights" id="insights" aria-label="イベント参加分析">
+    <div class="insights-head">
+      <div><h2>イベント参加レポート</h2><p class="lead" style="margin:3px 0 0">1年間の思い出と、これまでの参加傾向を可視化。</p></div>
+      <div class="insights-actions">
+        <select class="report-select" id="reportYear" aria-label="集計する年"></select>
+        <button type="button" class="btn soft" id="copyReport">レポートをコピー</button>
+        <button type="button" class="btn soft" id="csvExport">CSV出力</button>
+      </div>
+    </div>
+    <div class="report-stats" id="reportStats"></div>
+    <div class="chart-grid">
+      <div class="chart-panel"><h3 id="monthChartTitle">月別イベント参加数</h3><div class="month-chart" id="monthChart"></div></div>
+      <div class="chart-panel"><h3>曜日別の参加傾向</h3><div class="weekday-chart" id="weekdayChart"></div></div>
+      <div class="chart-panel"><h3 id="performerRankTitle">よく参加している出演者</h3><div class="rank-list" id="performerRank"></div></div>
+      <div class="chart-panel"><h3 id="venueRankTitle">よく訪れている会場</h3><div class="rank-list" id="venueRank"></div></div>
+    </div>
+    <p class="insight-note" id="reportNote">取得できたイベント情報をもとに集計しています。出演者・会場が未登録のイベントはランキングに含まれません。</p>
+  </section>
+
   <div class="search-wrap">
     <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 9.5 5a4.5 4.5 0 0 1 0 9z"/></svg>
     <input class="search-box" id="searchBox" type="search" placeholder="イベント名・会場名・出演者・日付で検索…" autocomplete="off">
@@ -386,8 +441,77 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
     link.href = event.url; link.target='_blank'; link.rel='noopener noreferrer'; more.append(link); body.append(more);
     li.append(dateBox,body); return li;
   };
+
+  const countBy = (rows, getter) => {
+    const map = new Map();
+    rows.forEach(row => {
+      const value = safeText(getter(row));
+      if (value) map.set(value, (map.get(value) || 0) + 1);
+    });
+    return [...map.entries()].sort((a,b) => b[1]-a[1] || a[0].localeCompare(b[0],'ja'));
+  };
+  const topRank = (selector, rows, title, emptyText) => {
+    const box = $(selector); box.replaceChildren();
+    if (!rows.length) { box.append(h('p','insight-note',emptyText)); return; }
+    const max = rows[0][1];
+    rows.slice(0,5).forEach(([name,count],index) => {
+      const row = h('div','rank-row');
+      row.append(h('span','rank-no',String(index+1)),h('span','rank-name',name),h('span','rank-count',count+'回'));
+      const track = h('div','rank-track'), fill = h('span');
+      fill.style.width = Math.max(4,count/max*100)+'%'; track.append(fill); row.append(track); box.append(row);
+    });
+  };
+  const reportText = (year, rows) => {
+    const monthCounts = Array.from({length:12},(_,i)=>rows.filter(e=>Number(e.date.slice(5,7))===i+1).length);
+    const topArtist = countBy(rows,e=>e.who).slice(0,3).map(x=>x[0]);
+    const topVenue = countBy(rows,e=>e.venue).slice(0,3).map(x=>x[0]);
+    const peak = Math.max(...monthCounts);
+    const peakMonths = monthCounts.map((n,i)=>n===peak&&n>0?(i+1)+'月':null).filter(Boolean);
+    return ['【'+year+'年 イベント参加レポート】','参加イベント：'+rows.length+'件','最多参加月：'+(peakMonths.join('・')||'なし')+(peak?'（'+peak+'件）':''),'よく参加した出演者：'+(topArtist.join('、')||'データなし'),'よく訪れた会場：'+(topVenue.join('、')||'データなし'),'','Event Archiveで作成'].join('\n');
+  };
+  const renderInsights = () => {
+    const years = [...new Set(state.events.map(e=>e.date.slice(0,4)))].sort((a,b)=>b.localeCompare(a));
+    const select = $('#reportYear');
+    const previous = select.value;
+    select.replaceChildren();
+    years.forEach(y=>{const option=document.createElement('option');option.value=y;option.textContent=y+'年';select.append(option);});
+    const chosen = years.includes(previous)?previous:(years.includes(String(today.getFullYear()))?String(today.getFullYear()):(years[0]||''));
+    select.value=chosen;
+    const yearRows=state.events.filter(e=>e.date.startsWith(chosen));
+    const past=yearRows.filter(e=>!isFuture(e)).length;
+    const future=yearRows.length-past;
+    const monthCounts=Array.from({length:12},(_,i)=>yearRows.filter(e=>Number(e.date.slice(5,7))===i+1).length);
+    const maxMonth=Math.max(1,...monthCounts);
+    const stats=[[''+yearRows.length,'年間イベント'],[''+past,'参加済み'],[''+future,'今後の予定'],[''+(yearRows.length?Math.round(past/yearRows.length*100):0)+'%','参加済み割合']];
+    $('#reportStats').replaceChildren(...stats.map(([n,label])=>{const el=h('div','report-stat');el.append(h('b','',n),h('small','',label));return el;}));
+    $('#monthChartTitle').textContent=(chosen||'年間')+'年・月別参加数';
+    const chart=$('#monthChart');chart.replaceChildren();
+    monthCounts.forEach((n,i)=>{
+      const col=h('div','month-col'), value=h('span','month-value',String(n));
+      const wrap=h('div','month-bar-wrap'),bar=h('div','month-bar');
+      bar.style.height=(n?Math.max(5,n/maxMonth*100):2)+'%';bar.dataset.count=String(n);bar.title=(i+1)+'月：'+n+'件';
+      wrap.append(bar);col.append(value,wrap,h('span','month-label',(i+1)+'月'));chart.append(col);
+    });
+    const weekdays=['日','月','火','水','木','金','土'];
+    const weekCounts=Array(7).fill(0);
+    yearRows.forEach(e=>weekCounts[new Date(e.date+'T12:00:00').getDay()]++);
+    const maxWeek=Math.max(1,...weekCounts),weekBox=$('#weekdayChart');weekBox.replaceChildren();
+    weekdays.forEach((day,i)=>{const row=h('div','weekday-row');row.append(h('span','',day));const track=h('div','weekday-track'),fill=h('span');fill.style.width=(weekCounts[i]/maxWeek*100)+'%';track.append(fill);row.append(track,h('span','',String(weekCounts[i])));weekBox.append(row);});
+    $('#performerRankTitle').textContent=(chosen||'年間')+'年・出演者ランキング';
+    $('#venueRankTitle').textContent=(chosen||'年間')+'年・会場ランキング';
+    topRank('#performerRank',countBy(yearRows,e=>e.who),'','出演者情報が登録されていません。');
+    topRank('#venueRank',countBy(yearRows,e=>e.venue),'','会場情報が登録されていません。');
+    $('#reportNote').textContent='全期間では'+state.events.length+'件を取得。年別レポートは選択した年のイベントのみを集計しています。出演者・会場の登録がないイベントはランキング対象外です。';
+  };
+  const exportCsv = () => {
+    const rows=[['日付','イベント名','会場','出演者','開場','開演','終演','イベントURL'],...state.events.map(e=>[e.date,e.title,e.venue,e.who.join(' / '),e.open,e.start,e.end,e.url])];
+    const csv='\uFEFF'+rows.map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');
+    const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+    const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='event-archive-'+state.currentId+'.csv';document.body.append(a);a.click();a.remove();URL.revokeObjectURL(url);
+  };
+
   const render = () => {
-    renderStats(); renderFilters();
+    renderStats(); renderFilters(); renderInsights();
     const rows = getFilterRows();
     const label = state.year === 'all' ? '全期間' : state.year + '年';
     const performerLabel = state.performer === 'all' ? '' : ' ／ ' + state.performer;
@@ -452,6 +576,18 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
       state.busy = false;
     }
   };
+
+  $('#reportYear').addEventListener('change',renderInsights);
+  $('#csvExport').addEventListener('click',exportCsv);
+  $('#copyReport').addEventListener('click',async()=>{
+    const year=$('#reportYear').value;
+    const rows=state.events.filter(e=>e.date.startsWith(year));
+    const value=reportText(year,rows);
+    try{await navigator.clipboard.writeText(value);$('#copyReport').textContent='コピーしました';}
+    catch(_){window.prompt('レポートをコピーしてください',value);}
+    setTimeout(()=>{$('#copyReport').textContent='レポートをコピー';},1800);
+  });
+
   $('#idForm').addEventListener('submit',event => {
     event.preventDefault();
     const id = safeText($('#userId').value);

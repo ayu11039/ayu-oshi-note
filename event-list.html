@@ -111,6 +111,45 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
 .month-label{font-size:.65rem;color:var(--dim)}
 .month-value{font-size:.65rem;color:var(--muted);font-variant-numeric:tabular-nums}
 .rank-list{display:grid;gap:9px}
+.travel-map-panel{grid-column:1/-1;min-width:0;margin-top:2px;padding:16px;border:1px solid var(--line);border-radius:15px;background:rgba(4,9,26,.28)}
+.travel-map-heading,.map-section-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.travel-map-heading h3{margin:0 0 3px;font-size:1rem;color:#fff}.travel-map-heading p,.map-help{font-size:.76rem;color:var(--dim);line-height:1.65}
+.travel-map-summary{display:flex;gap:8px;flex-wrap:wrap;margin:13px 0}
+.travel-summary-chip{padding:7px 11px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.045);font-size:.77rem;color:var(--muted)}
+.travel-summary-chip b{color:#fff;font-variant-numeric:tabular-nums}
+.travel-map-layout{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(260px,.8fr);gap:12px}
+.travel-map-card{min-width:0;padding:13px;border:1px solid var(--line);border-radius:14px;background:rgba(4,9,26,.35)}
+.map-section-heading{margin-bottom:10px;color:#fff;font-size:.9rem}
+.map-section-heading span{font-size:.75rem;color:var(--muted)}
+.japan-map-shell{width:100%;max-width:600px;margin:0 auto;aspect-ratio:1/1;display:grid;place-items:center}
+.japan-map-shell svg{display:block;width:100%;height:100%;overflow:visible}
+.prefecture-shape{fill:#26344d;stroke:#7385a4;stroke-width:5;stroke-linejoin:round;vector-effect:non-scaling-stroke;cursor:default;transition:fill .16s,stroke .16s,opacity .16s;outline:none}
+.prefecture-shape.level1{fill:#42628f;cursor:pointer}.prefecture-shape.level2{fill:#6276c1;cursor:pointer}.prefecture-shape.level3{fill:#a18be8;cursor:pointer}
+.prefecture-shape:hover,.prefecture-shape:focus-visible{stroke:#fff;stroke-width:12;filter:brightness(1.2)}
+.prefecture-shape.is-selected{stroke:#fff;stroke-width:15;filter:drop-shadow(0 0 7px rgba(255,255,255,.5))}
+.map-legend{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin:2px 0 10px;color:var(--dim);font-size:.68rem}
+.map-legend span{display:flex;align-items:center;gap:5px}.legend-swatch{display:inline-block;width:10px;height:10px;border-radius:3px;background:#26344d}.legend-swatch.level1{background:#42628f}.legend-swatch.level2{background:#6276c1}.legend-swatch.level3{background:#a18be8}
+.map-selected-note{min-height:34px;padding:8px 10px;border-radius:9px;background:rgba(255,255,255,.04);color:var(--muted);font-size:.73rem}
+.prefecture-ranking{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.prefecture-chip,.destination-card{border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--ink);cursor:pointer;transition:.15s}
+.prefecture-chip{padding:5px 9px;border-radius:8px;font-size:.72rem}.prefecture-chip:hover,.destination-card:hover{border-color:var(--accent);background:rgba(155,140,255,.1)}
+.overseas-destinations{display:grid;gap:8px}
+.destination-card{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;padding:11px 12px;border-radius:11px;text-align:left}
+.destination-main{display:flex;align-items:center;gap:10px;min-width:0}.destination-flag{font-size:1.45rem;line-height:1}.destination-name{display:grid;min-width:0}.destination-name strong{font-size:.82rem}.destination-name small{font-size:.69rem;color:var(--dim);overflow-wrap:anywhere}
+.destination-count{white-space:nowrap;font-size:.78rem;color:var(--accent-ink);font-weight:700}
+.destination-card.is-selected{border-color:#fff;background:rgba(155,140,255,.17)}
+.map-help{margin-top:10px}
+.location-editor{margin-top:13px;border-top:1px solid var(--line);padding-top:11px}
+.location-editor summary{cursor:pointer;color:var(--accent-ink);font-size:.8rem;font-weight:700}
+.location-editor summary span{margin-left:5px;color:var(--dim);font-weight:500}
+.unknown-venue-list{display:grid;gap:7px;margin-top:10px}
+.unknown-venue-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(190px,.8fr);gap:10px;align-items:center;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.025)}
+.unknown-venue-row strong{display:block;font-size:.77rem;overflow-wrap:anywhere}.unknown-venue-row small{color:var(--dim);font-size:.68rem}
+.unknown-venue-row select{min-width:0;width:100%;height:38px;padding:0 8px;border:1px solid var(--line);border-radius:8px;background:#111b31;color:var(--ink);font-size:.74rem}
+.map-credit{margin-top:11px;color:var(--dim);font-size:.65rem}.map-credit a{color:var(--accent-ink)}
+@media(max-width:760px){.travel-map-layout{grid-template-columns:1fr}.japan-map-shell{max-width:500px}}
+@media(max-width:560px){.unknown-venue-row{grid-template-columns:1fr}.map-legend{gap:8px}.travel-map-panel{padding:12px}}
+
 .rank-row{display:grid;grid-template-columns:24px minmax(0,1fr) auto;align-items:center;gap:8px;font-size:.82rem}
 .rank-no{color:var(--accent-ink);font-weight:700;text-align:center}
 .rank-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)}
@@ -229,10 +268,36 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
     <div class="report-stats" id="reportStats"></div>
     <div class="chart-grid">
       <div class="chart-panel"><h3 id="monthChartTitle">月別イベント参加数</h3><div class="month-chart" id="monthChart"></div></div>
-      <div class="chart-panel"><h3>曜日別の参加傾向</h3><div class="weekday-chart" id="weekdayChart"></div></div>
       <div class="chart-panel"><h3 id="performerRankTitle">よく参加している出演者</h3><div class="rank-list" id="performerRank"></div></div>
       <div class="chart-panel"><h3 id="venueRankTitle">よく訪れている会場</h3><div class="rank-list" id="venueRank"></div></div>
     </div>
+    <section class="travel-map-panel" aria-label="国内・海外の参戦マップ">
+      <div class="travel-map-heading">
+        <div><h3>参戦マップ</h3><p>イベントの会場情報から参加した地域を集計します。判定できない会場は手動で設定できます。</p></div>
+        <button type="button" class="btn soft" id="clearLocationFilter" hidden>地域の絞り込みを解除</button>
+      </div>
+      <div class="travel-map-summary" id="travelMapSummary"></div>
+      <div class="travel-map-layout">
+        <div class="travel-map-card">
+          <div class="map-section-heading"><strong>🇯🇵 国内・47都道府県</strong><span id="japanMapCount">—</span></div>
+          <div class="japan-map-shell"><svg id="japanPrefectureMap" viewBox="0 0 2000 2000" role="group" aria-label="参加した都道府県を選択できる日本地図"></svg></div>
+          <div class="map-legend"><span><i class="legend-swatch level1"></i>1回</span><span><i class="legend-swatch level2"></i>2〜4回</span><span><i class="legend-swatch level3"></i>5回以上</span><span><i class="legend-swatch none"></i>未参加・未判定</span></div>
+          <div class="map-selected-note" id="japanMapNote">地図の色が付いた都道府県を押すと、その地域のイベントに絞り込めます。</div>
+          <div class="prefecture-ranking" id="prefectureRanking"></div>
+        </div>
+        <div class="travel-map-card overseas-card">
+          <div class="map-section-heading"><strong>🌏 海外の参戦先</strong><span id="overseasMapCount">—</span></div>
+          <div class="overseas-destinations" id="overseasDestinations"><p class="insight-note">海外公演の会場が見つかると、ここに表示されます。</p></div>
+          <p class="map-help">台湾・香港など、国や地域ごとにまとめます。都市名や会場名だけで判定できない場合は、下の手動設定をご利用ください。</p>
+        </div>
+      </div>
+      <details class="location-editor">
+        <summary>判定できなかった会場を手動で設定 <span id="unknownVenueCount">0件</span></summary>
+        <p class="map-help">設定はこのブラウザに保存されます。同じ会場名のイベントにはまとめて反映されます。</p>
+        <div id="unknownVenueEditor"><p class="insight-note">未判定の会場はありません。</p></div>
+      </details>
+      <p class="map-credit">地図素材：<a href="https://github.com/lalamalink/japan-map-svg" target="_blank" rel="noopener noreferrer">lalamalink / 日本の都道府県SVG地図</a>（CC0 1.0）。会場情報からの自動判定は目安です。</p>
+    </section>
     <p class="insight-note" id="reportNote">取得できたイベント情報をもとに集計しています。出演者・会場が未登録のイベントはランキングに含まれません。</p>
   </section>
 
@@ -295,7 +360,7 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
   const LEGACY_EVENT_CACHE_PREFIX = 'eventArchiveCache:v2:';
   const $ = (selector) => document.querySelector(selector);
   const params = new URLSearchParams(location.search);
-  const state = { events: [], year: 'all', performer: 'all', search: '', busy: false, compareBusy:false, requests: 0, currentId: '', currentYear: '', availableYears: [], availableMonths: [], profileRows: [], profileTotal: null, selectedDate: '', mode: 'all', personal: {favorites:[],notes:{}}, visibleLimit:50, lastFilterSignature:'' };
+  const state = { events: [], year: 'all', performer: 'all', search: '', busy: false, compareBusy:false, requests: 0, currentId: '', currentYear: '', availableYears: [], availableMonths: [], profileRows: [], profileTotal: null, selectedDate: '', locationFilter:'', locationOverrides:{}, mode: 'all', personal: {favorites:[],notes:{}}, visibleLimit:50, lastFilterSignature:'' };
   const today = new Date();
   const todayStr = [today.getFullYear(), String(today.getMonth()+1).padStart(2,'0'), String(today.getDate()).padStart(2,'0')].join('-');
   const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -329,6 +394,17 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
   const formatSavedAt = value => value
     ? new Date(value).toLocaleString('ja-JP',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})
     : '前回';
+  const locationKey = id => 'eventArchiveLocations:v1:' + id;
+  const readLocationOverrides = id => {
+    try {
+      const value = JSON.parse(localStorage.getItem(locationKey(id)) || '{}');
+      return value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+    } catch (_) { return {}; }
+  };
+  const saveLocationOverrides = () => {
+    try { localStorage.setItem(locationKey(state.currentId), JSON.stringify(state.locationOverrides)); }
+    catch (_) { alert('地域設定を保存できませんでした。ブラウザの保存容量をご確認ください。'); }
+  };
   const personalKey = id => 'eventArchivePersonal:v1:' + id;
   const readPersonal = id => {
     try {
@@ -667,6 +743,7 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
       (state.year==='all'||event.date.startsWith(state.year)) &&
       (state.performer==='all'||event.who.includes(state.performer)) &&
       (!state.selectedDate||event.date===state.selectedDate) &&
+      (!state.locationFilter||(getEventLocation(event)&&getEventLocation(event).id===state.locationFilter)) &&
       (state.mode==='all'||(state.mode==='past'&&!isFuture(event))||(state.mode==='future'&&isFuture(event))||(state.mode==='favorites'&&state.personal.favorites.includes(event.key))) &&
       (!state.search||[event.title,event.venue,event.date,...event.who].some(value=>safeText(value).toLocaleLowerCase().includes(state.search)))
     );
@@ -734,6 +811,33 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
     li.append(dateBox,body); return li;
   };
 
+  const PREFECTURES = [{"code":"01","name":"北海道","aliases":["札幌","函館","旭川","釧路","小樽","帯広","北見","苫小牧","Zepp Sapporo","カナモトホール"]},{"code":"02","name":"青森県","aliases":["青森","弘前","八戸"]},{"code":"03","name":"岩手県","aliases":["盛岡","北上"]},{"code":"04","name":"宮城県","aliases":["仙台","宮城","ゼビオアリーナ仙台","仙台サンプラザ"]},{"code":"05","name":"秋田県","aliases":["秋田"]},{"code":"06","name":"山形県","aliases":["山形","鶴岡","酒田"]},{"code":"07","name":"福島県","aliases":["福島","郡山","いわき","会津若松"]},{"code":"08","name":"茨城県","aliases":["茨城","水戸","つくば","ひたちなか"]},{"code":"09","name":"栃木県","aliases":["栃木","宇都宮","足利"]},{"code":"10","name":"群馬県","aliases":["群馬","高崎","前橋","太田"]},{"code":"11","name":"埼玉県","aliases":["埼玉","さいたま","大宮","川口","所沢","越谷","熊谷","三郷"]},{"code":"12","name":"千葉県","aliases":["千葉","幕張","舞浜","柏","松戸","市川","船橋","浦安","習志野"]},{"code":"13","name":"東京都","aliases":["東京","渋谷","新宿","池袋","有明","日本武道館","東京ドーム","武蔵野の森","代々木","豊洲","日比谷","六本木","品川","Zepp Haneda","Zepp DiverCity","Zepp Shinjuku","LINE CUBE SHIBUYA","立川","八王子"]},{"code":"14","name":"神奈川県","aliases":["神奈川","横浜","川崎","ぴあアリーナ","Kアリーナ","パシフィコ横浜","KT Zepp Yokohama","横須賀","相模原","藤沢"]},{"code":"15","name":"新潟県","aliases":["新潟","長岡","上越"]},{"code":"16","name":"富山県","aliases":["富山","高岡"]},{"code":"17","name":"石川県","aliases":["石川","金沢","小松"]},{"code":"18","name":"福井県","aliases":["福井","敦賀"]},{"code":"19","name":"山梨県","aliases":["山梨","甲府"]},{"code":"20","name":"長野県","aliases":["長野","松本","上田","佐久"]},{"code":"21","name":"岐阜県","aliases":["岐阜","高山","大垣","多治見"]},{"code":"22","name":"静岡県","aliases":["静岡","浜松","沼津","三島","磐田","清水"]},{"code":"23","name":"愛知県","aliases":["愛知","名古屋","豊田","岡崎","刈谷","一宮","安城","豊橋","Zepp Nagoya","愛知県芸術劇場","Niterra","日本特殊陶業市民会館","ダイアモンドホール","DIAMOND HALL"]},{"code":"24","name":"三重県","aliases":["三重","津","四日市","伊勢","松阪"]},{"code":"25","name":"滋賀県","aliases":["滋賀","大津","草津","彦根"]},{"code":"26","name":"京都府","aliases":["京都"]},{"code":"27","name":"大阪府","aliases":["大阪","梅田","難波","なんば","心斎橋","京セラドーム大阪","大阪城ホール","NHK大阪ホール","Zepp Namba","Zepp Osaka Bayside","フェスティバルホール","オリックス劇場","吹田","堺","岸和田"]},{"code":"28","name":"兵庫県","aliases":["兵庫","神戸","西宮","尼崎","姫路","ワールド記念ホール","明石","宝塚"]},{"code":"29","name":"奈良県","aliases":["奈良","橿原"]},{"code":"30","name":"和歌山県","aliases":["和歌山"]},{"code":"31","name":"鳥取県","aliases":["鳥取","米子"]},{"code":"32","name":"島根県","aliases":["島根","松江","出雲"]},{"code":"33","name":"岡山県","aliases":["岡山","倉敷"]},{"code":"34","name":"広島県","aliases":["広島","福山"]},{"code":"35","name":"山口県","aliases":["山口","下関","周南"]},{"code":"36","name":"徳島県","aliases":["徳島"]},{"code":"37","name":"香川県","aliases":["香川","高松","丸亀"]},{"code":"38","name":"愛媛県","aliases":["愛媛","松山","今治"]},{"code":"39","name":"高知県","aliases":["高知"]},{"code":"40","name":"福岡県","aliases":["福岡","博多","北九州","小倉","Zepp Fukuoka","マリンメッセ福岡","福岡サンパレス"]},{"code":"41","name":"佐賀県","aliases":["佐賀","鳥栖"]},{"code":"42","name":"長崎県","aliases":["長崎","佐世保"]},{"code":"43","name":"熊本県","aliases":["熊本"]},{"code":"44","name":"大分県","aliases":["大分","別府"]},{"code":"45","name":"宮崎県","aliases":["宮崎"]},{"code":"46","name":"鹿児島県","aliases":["鹿児島","霧島"]},{"code":"47","name":"沖縄県","aliases":["沖縄","那覇","沖縄アリーナ","宜野湾","石垣"]}];
+  const OVERSEAS_LOCATIONS = [{"id":"world:TW","code":"TW","name":"台湾","flag":"🇹🇼","aliases":["台湾","台北","高雄","台中","Taiwan","Taipei","Kaohsiung","Taichung","Clapper Studio"]},{"id":"world:HK","code":"HK","name":"香港","flag":"🇭🇰","aliases":["香港","Hong Kong","Kowloon","九龍","San Po Kong"]},{"id":"world:KR","code":"KR","name":"韓国","flag":"🇰🇷","aliases":["韓国","Korea","Seoul","ソウル","釜山","Busan","Incheon"]},{"id":"world:CN","code":"CN","name":"中国","flag":"🇨🇳","aliases":["中国","China","Shanghai","上海","Beijing","北京","Guangzhou","広州"]},{"id":"world:SG","code":"SG","name":"シンガポール","flag":"🇸🇬","aliases":["シンガポール","Singapore"]},{"id":"world:TH","code":"TH","name":"タイ","flag":"🇹🇭","aliases":["Thailand","Bangkok","バンコク"]},{"id":"world:MY","code":"MY","name":"マレーシア","flag":"🇲🇾","aliases":["マレーシア","Malaysia","Kuala Lumpur","クアラルンプール"]},{"id":"world:ID","code":"ID","name":"インドネシア","flag":"🇮🇩","aliases":["インドネシア","Indonesia","Jakarta","ジャカルタ"]},{"id":"world:PH","code":"PH","name":"フィリピン","flag":"🇵🇭","aliases":["フィリピン","Philippines","Manila","マニラ"]},{"id":"world:VN","code":"VN","name":"ベトナム","flag":"🇻🇳","aliases":["ベトナム","Vietnam","Hanoi","ハノイ","Ho Chi Minh","ホーチミン"]},{"id":"world:US","code":"US","name":"アメリカ","flag":"🇺🇸","aliases":["アメリカ","米国","USA","United States","New York","ニューヨーク","Los Angeles","ロサンゼルス","San Francisco","サンフランシスコ","Hawaii","ハワイ"]},{"id":"world:CA","code":"CA","name":"カナダ","flag":"🇨🇦","aliases":["カナダ","Canada","Toronto","トロント","Vancouver","バンクーバー"]},{"id":"world:GB","code":"GB","name":"イギリス","flag":"🇬🇧","aliases":["イギリス","英国","United Kingdom","London","ロンドン"]},{"id":"world:FR","code":"FR","name":"フランス","flag":"🇫🇷","aliases":["フランス","France","Paris","パリ"]},{"id":"world:DE","code":"DE","name":"ドイツ","flag":"🇩🇪","aliases":["ドイツ","Germany","Berlin","ベルリン","Cologne","ケルン"]},{"id":"world:IT","code":"IT","name":"イタリア","flag":"🇮🇹","aliases":["イタリア","Italy","Rome","ローマ","Milan","ミラノ"]},{"id":"world:ES","code":"ES","name":"スペイン","flag":"🇪🇸","aliases":["スペイン","Spain","Madrid","マドリード","Barcelona","バルセロナ"]},{"id":"world:AU","code":"AU","name":"オーストラリア","flag":"🇦🇺","aliases":["オーストラリア","Australia","Sydney","シドニー","Melbourne","メルボルン"]},{"id":"world:NZ","code":"NZ","name":"ニュージーランド","flag":"🇳🇿","aliases":["ニュージーランド","New Zealand","Auckland","オークランド"]},{"id":"world:MO","code":"MO","name":"マカオ","flag":"🇲🇴","aliases":["マカオ","Macau","Macao"]}];
+  const LOCATION_OPTIONS = [
+    ...PREFECTURES.map(item => ({id:'jp:'+item.code,name:item.name,group:'国内',flag:'🇯🇵'})),
+    ...OVERSEAS_LOCATIONS.map(item => ({id:item.id,name:item.name,group:'海外',flag:item.flag}))
+  ];
+  const normalizeVenue = value => safeText(value).toLocaleLowerCase().replace(/[\s　・,，.。]/g,'');
+  const getEventLocation = event => {
+    const venue = safeText(event.venue);
+    const key = venue ? normalizeVenue(venue) : '';
+    const overrideKey = key || ('event:' + event.key);
+    if (state.locationOverrides[overrideKey]) {
+      const selected = LOCATION_OPTIONS.find(item => item.id === state.locationOverrides[overrideKey]);
+      if (selected) return selected;
+    }
+    const haystack = normalizeVenue(venue || event.title);
+    if (!haystack) return null;
+    for (const item of OVERSEAS_LOCATIONS) {
+      if (item.aliases.some(alias => haystack.includes(normalizeVenue(alias)))) return item;
+    }
+    for (const item of PREFECTURES) {
+      if ([item.name,...item.aliases].some(alias => haystack.includes(normalizeVenue(alias)))) {
+        return {id:'jp:'+item.code,code:item.code,name:item.name,group:'国内',flag:'🇯🇵'};
+      }
+    }
+    return null;
+  };
   const countBy = (rows, getter) => {
     const map = new Map();
     rows.forEach(row => {
@@ -754,13 +858,121 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
       fill.style.width = Math.max(4,count/max*100)+'%'; track.append(fill); row.append(track); box.append(row);
     });
   };
+  const renderTravelMap = () => {
+    const rows=state.events, prefectureCounts=new Map(), overseasCounts=new Map(), unknownVenues=new Map();
+    let domesticTotal=0,overseasTotal=0,unknownTotal=0;
+    rows.forEach(event=>{
+      const loc=getEventLocation(event);
+      if(!loc){
+        unknownTotal++;
+        if(safeText(event.venue)){
+          const key=safeText(event.venue),item=unknownVenues.get(key)||{count:0};
+          item.count++;unknownVenues.set(key,item);
+        }
+        return;
+      }
+      if(loc.group==='国内'){domesticTotal++;prefectureCounts.set(loc.code,(prefectureCounts.get(loc.code)||0)+1);}
+      else{
+        overseasTotal++;
+        const item=overseasCounts.get(loc.id)||{...loc,count:0,venues:new Map()};
+        item.count++;
+        if(event.venue)item.venues.set(event.venue,(item.venues.get(event.venue)||0)+1);
+        overseasCounts.set(loc.id,item);
+      }
+    });
+    const visitedPrefs=[...prefectureCounts.entries()].sort((a,b)=>b[1]-a[1]);
+    const visitedCountries=[...overseasCounts.values()].sort((a,b)=>b.count-a.count||a.name.localeCompare(b.name,'ja'));
+    const selected=state.locationFilter?LOCATION_OPTIONS.find(x=>x.id===state.locationFilter):null;
+    const summary=[
+      ['国内イベント',domesticTotal+'件'],['訪問都道府県',prefectureCounts.size+'/47'],
+      ['海外イベント',overseasTotal+'件'],['海外の国・地域',overseasCounts.size+'か所'],['所在地未判定',unknownTotal+'件']
+    ];
+    $('#travelMapSummary').replaceChildren(...summary.map(([label,value])=>{
+      const chip=h('span','travel-summary-chip');chip.append(document.createTextNode(label+'：'),h('b','',value));return chip;
+    }));
+    $('#japanMapCount').textContent=prefectureCounts.size+' / 47都道府県';
+    $('#overseasMapCount').textContent=overseasCounts.size+'か国・地域';
+    $('#clearLocationFilter').hidden=!selected;
+    $('#clearLocationFilter').textContent=selected?selected.name+'の絞り込みを解除':'地域の絞り込みを解除';
+    $('#japanMapNote').textContent=selected?selected.name+'で絞り込み中。イベント一覧もこの地域だけを表示しています。':'色付きの都道府県を選ぶと、その地域のイベントだけに絞り込めます。';
+    const svg=$('#japanPrefectureMap');
+    if(!svg.dataset.ready){
+      svg.innerHTML="<g id=\"prefecture-fills\"><path class=\"prefecture-shape\" data-pref-code=\"01\" data-pref-name=\"北海道\" tabindex=\"0\" role=\"button\" aria-label=\"北海道\" title=\"北海道\" d=\"M 1866.0 195.0 L 1671.0 0.0 L 1611.0 0.0 L 1602.0 9.0 L 1602.0 169.0 L 1581.0 190.0 L 1581.0 244.0 L 1532.0 293.0 L 1478.0 293.0 L 1471.0 300.0 L 1471.0 399.0 L 1441.0 429.0 L 1441.0 434.0 L 1472.0 465.0 L 1481.0 465.0 L 1510.0 436.0 L 1570.0 436.0 L 1571.0 435.0 L 1571.0 419.0 L 1550.0 398.0 L 1535.0 398.0 L 1529.0 392.0 L 1529.0 365.0 L 1529.0 364.0 L 1530.0 364.0 L 1583.0 364.0 L 1620.0 401.0 L 1655.0 366.0 L 1663.0 366.0 L 1761.0 464.0 L 1790.0 464.0 L 1894.0 360.0 L 1986.0 360.0 L 1987.0 359.0 L 1987.0 340.0 L 1969.0 322.0 L 1969.0 238.0 L 1988.0 219.0 L 1988.0 202.0 L 1981.0 195.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"02\" data-pref-name=\"青森県\" tabindex=\"0\" role=\"button\" aria-label=\"青森県\" title=\"青森県\" d=\"M 1664.0 514.0 L 1626.0 476.0 L 1569.0 476.0 L 1562.0 483.0 L 1562.0 513.0 L 1569.0 520.0 L 1602.0 520.0 L 1603.0 520.0 L 1603.0 521.0 L 1603.0 571.0 L 1598.0 576.0 L 1530.0 576.0 L 1529.0 576.0 L 1529.0 575.0 L 1529.0 523.0 L 1523.0 517.0 L 1478.0 517.0 L 1470.0 525.0 L 1470.0 573.0 L 1417.0 626.0 L 1417.0 647.0 L 1418.0 648.0 L 1556.0 648.0 L 1563.0 655.0 L 1563.0 690.0 L 1564.0 691.0 L 1571.0 691.0 L 1615.0 647.0 L 1717.0 647.0 L 1718.0 646.0 L 1664.0 592.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"03\" data-pref-name=\"岩手県\" tabindex=\"0\" role=\"button\" aria-label=\"岩手県\" title=\"岩手県\" d=\"M 1719.0 648.0 L 1718.0 647.0 L 1717.0 647.0 L 1615.0 647.0 L 1571.0 691.0 L 1564.0 691.0 L 1563.0 692.0 L 1563.0 841.0 L 1564.0 842.0 L 1718.0 842.0 L 1719.0 841.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"04\" data-pref-name=\"宮城県\" tabindex=\"0\" role=\"button\" aria-label=\"宮城県\" title=\"宮城県\" d=\"M 1719.0 843.0 L 1718.0 842.0 L 1564.0 842.0 L 1563.0 843.0 L 1563.0 860.0 L 1563.0 861.0 L 1563.0 862.0 L 1563.0 997.0 L 1564.0 998.0 L 1690.0 998.0 L 1691.0 997.0 L 1691.0 933.0 L 1719.0 905.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"05\" data-pref-name=\"秋田県\" tabindex=\"0\" role=\"button\" aria-label=\"秋田県\" title=\"秋田県\" d=\"M 1563.0 655.0 L 1556.0 648.0 L 1418.0 648.0 L 1417.0 649.0 L 1417.0 699.0 L 1416.0 700.0 L 1416.0 701.0 L 1397.0 720.0 L 1397.0 745.0 L 1417.0 765.0 L 1417.0 860.0 L 1418.0 861.0 L 1562.0 861.0 L 1563.0 860.0 L 1563.0 843.0 L 1563.0 842.0 L 1563.0 841.0 L 1563.0 692.0 L 1563.0 691.0 L 1563.0 690.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"06\" data-pref-name=\"山形県\" tabindex=\"0\" role=\"button\" aria-label=\"山形県\" title=\"山形県\" d=\"M 1563.0 862.0 L 1562.0 861.0 L 1418.0 861.0 L 1417.0 862.0 L 1417.0 940.0 L 1418.0 941.0 L 1449.0 941.0 L 1454.0 946.0 L 1454.0 1029.0 L 1455.0 1030.0 L 1562.0 1030.0 L 1563.0 1029.0 L 1563.0 999.0 L 1563.0 998.0 L 1563.0 997.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"07\" data-pref-name=\"福島県\" tabindex=\"0\" role=\"button\" aria-label=\"福島県\" title=\"福島県\" d=\"M 1691.0 999.0 L 1690.0 998.0 L 1564.0 998.0 L 1563.0 999.0 L 1563.0 1029.0 L 1563.0 1030.0 L 1562.0 1030.0 L 1455.0 1030.0 L 1454.0 1030.0 L 1413.0 1071.0 L 1413.0 1140.0 L 1414.0 1141.0 L 1498.0 1141.0 L 1499.0 1140.0 L 1499.0 1129.0 L 1505.0 1123.0 L 1612.0 1123.0 L 1617.0 1128.0 L 1617.0 1141.0 L 1618.0 1142.0 L 1690.0 1142.0 L 1691.0 1141.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"08\" data-pref-name=\"茨城県\" tabindex=\"0\" role=\"button\" aria-label=\"茨城県\" title=\"茨城県\" d=\"M 1691.0 1143.0 L 1690.0 1142.0 L 1618.0 1142.0 L 1617.0 1143.0 L 1617.0 1255.0 L 1612.0 1260.0 L 1566.0 1260.0 L 1565.0 1261.0 L 1565.0 1266.0 L 1617.0 1318.0 L 1618.0 1318.0 L 1738.0 1318.0 L 1739.0 1317.0 L 1739.0 1311.0 L 1691.0 1263.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"09\" data-pref-name=\"栃木県\" tabindex=\"0\" role=\"button\" aria-label=\"栃木県\" title=\"栃木県\" d=\"M 1617.0 1128.0 L 1612.0 1123.0 L 1505.0 1123.0 L 1499.0 1129.0 L 1499.0 1140.0 L 1499.0 1141.0 L 1499.0 1142.0 L 1499.0 1198.0 L 1551.0 1250.0 L 1551.0 1259.0 L 1552.0 1260.0 L 1564.0 1260.0 L 1565.0 1260.0 L 1566.0 1260.0 L 1612.0 1260.0 L 1617.0 1255.0 L 1617.0 1143.0 L 1617.0 1142.0 L 1617.0 1141.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"10\" data-pref-name=\"群馬県\" tabindex=\"0\" role=\"button\" aria-label=\"群馬県\" title=\"群馬県\" d=\"M 1499.0 1142.0 L 1498.0 1141.0 L 1414.0 1141.0 L 1413.0 1141.0 L 1354.0 1200.0 L 1343.0 1211.0 L 1343.0 1240.0 L 1411.0 1308.0 L 1413.0 1308.0 L 1414.0 1308.0 L 1415.0 1308.0 L 1417.0 1308.0 L 1465.0 1260.0 L 1550.0 1260.0 L 1551.0 1259.0 L 1551.0 1250.0 L 1499.0 1198.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"11\" data-pref-name=\"埼玉県\" tabindex=\"0\" role=\"button\" aria-label=\"埼玉県\" title=\"埼玉県\" d=\"M 1565.0 1261.0 L 1564.0 1260.0 L 1552.0 1260.0 L 1551.0 1260.0 L 1550.0 1260.0 L 1465.0 1260.0 L 1417.0 1308.0 L 1415.0 1308.0 L 1414.0 1309.0 L 1414.0 1343.0 L 1415.0 1344.0 L 1454.0 1344.0 L 1455.0 1344.0 L 1456.0 1344.0 L 1616.0 1344.0 L 1617.0 1343.0 L 1617.0 1319.0 L 1617.0 1318.0 L 1565.0 1266.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"12\" data-pref-name=\"千葉県\" tabindex=\"0\" role=\"button\" aria-label=\"千葉県\" title=\"千葉県\" d=\"M 1739.0 1319.0 L 1738.0 1318.0 L 1618.0 1318.0 L 1617.0 1319.0 L 1617.0 1343.0 L 1617.0 1344.0 L 1617.0 1345.0 L 1617.0 1393.0 L 1618.0 1394.0 L 1635.0 1377.0 L 1640.0 1377.0 L 1662.0 1399.0 L 1662.0 1406.0 L 1626.0 1442.0 L 1626.0 1525.0 L 1627.0 1526.0 L 1650.0 1526.0 L 1739.0 1437.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"13\" data-pref-name=\"東京都\" tabindex=\"0\" role=\"button\" aria-label=\"東京都\" title=\"東京都\" d=\"M 1617.0 1345.0 L 1616.0 1344.0 L 1456.0 1344.0 L 1455.0 1345.0 L 1455.0 1390.0 L 1456.0 1391.0 L 1579.0 1391.0 L 1600.0 1412.0 L 1617.0 1395.0 L 1617.0 1394.0 L 1617.0 1393.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"14\" data-pref-name=\"神奈川県\" tabindex=\"0\" role=\"button\" aria-label=\"神奈川県\" title=\"神奈川県\" d=\"M 1600.0 1412.0 L 1579.0 1391.0 L 1456.0 1391.0 L 1455.0 1392.0 L 1455.0 1423.0 L 1455.0 1424.0 L 1455.0 1425.0 L 1455.0 1477.0 L 1461.0 1483.0 L 1485.0 1483.0 L 1486.0 1483.0 L 1487.0 1483.0 L 1583.0 1483.0 L 1584.0 1482.0 L 1584.0 1428.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"15\" data-pref-name=\"新潟県\" tabindex=\"0\" role=\"button\" aria-label=\"新潟県\" title=\"新潟県\" d=\"M 1283.0 927.0 L 1277.0 921.0 L 1272.0 921.0 L 1236.0 957.0 L 1236.0 963.0 L 1247.0 974.0 L 1247.0 984.0 L 1241.0 990.0 L 1241.0 993.0 L 1246.0 998.0 L 1249.0 998.0 L 1285.0 962.0 L 1285.0 956.0 L 1275.0 946.0 L 1275.0 941.0 L 1283.0 933.0 Z M 1454.0 946.0 L 1449.0 941.0 L 1418.0 941.0 L 1417.0 941.0 L 1246.0 1112.0 L 1216.0 1112.0 L 1215.0 1113.0 L 1215.0 1152.0 L 1216.0 1153.0 L 1307.0 1153.0 L 1354.0 1200.0 L 1413.0 1141.0 L 1413.0 1140.0 L 1413.0 1071.0 L 1454.0 1030.0 L 1454.0 1029.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"16\" data-pref-name=\"富山県\" tabindex=\"0\" role=\"button\" aria-label=\"富山県\" title=\"富山県\" d=\"M 1107.0 1110.0 L 1106.0 1109.0 L 1066.0 1109.0 L 1061.0 1114.0 L 1061.0 1227.0 L 1062.0 1228.0 L 1188.0 1228.0 L 1189.0 1228.0 L 1190.0 1228.0 L 1214.0 1228.0 L 1215.0 1227.0 L 1215.0 1154.0 L 1215.0 1153.0 L 1215.0 1152.0 L 1215.0 1113.0 L 1214.0 1112.0 L 1193.0 1112.0 L 1155.0 1150.0 L 1108.0 1150.0 L 1107.0 1150.0 L 1107.0 1149.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"17\" data-pref-name=\"石川県\" tabindex=\"0\" role=\"button\" aria-label=\"石川県\" title=\"石川県\" d=\"M 1160.0 1026.0 L 1155.0 1021.0 L 1081.0 1021.0 L 1035.0 1067.0 L 1035.0 1153.0 L 985.0 1203.0 L 986.0 1204.0 L 1003.0 1204.0 L 1045.0 1246.0 L 1060.0 1246.0 L 1061.0 1245.0 L 1061.0 1229.0 L 1061.0 1228.0 L 1061.0 1227.0 L 1061.0 1114.0 L 1066.0 1109.0 L 1106.0 1109.0 L 1107.0 1108.0 L 1107.0 1099.0 L 1160.0 1046.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"18\" data-pref-name=\"福井県\" tabindex=\"0\" role=\"button\" aria-label=\"福井県\" title=\"福井県\" d=\"M 1045.0 1246.0 L 1003.0 1204.0 L 986.0 1204.0 L 985.0 1204.0 L 984.0 1204.0 L 926.0 1262.0 L 926.0 1301.0 L 876.0 1351.0 L 889.0 1364.0 L 911.0 1364.0 L 967.0 1308.0 L 1025.0 1308.0 L 1026.0 1308.0 L 1027.0 1308.0 L 1055.0 1308.0 L 1061.0 1302.0 L 1061.0 1247.0 L 1060.0 1246.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"19\" data-pref-name=\"山梨県\" tabindex=\"0\" role=\"button\" aria-label=\"山梨県\" title=\"山梨県\" d=\"M 1455.0 1345.0 L 1454.0 1344.0 L 1415.0 1344.0 L 1414.0 1344.0 L 1413.0 1344.0 L 1337.0 1344.0 L 1331.0 1350.0 L 1331.0 1410.0 L 1331.0 1411.0 L 1331.0 1412.0 L 1331.0 1436.0 L 1337.0 1442.0 L 1379.0 1442.0 L 1385.0 1436.0 L 1385.0 1425.0 L 1385.0 1424.0 L 1386.0 1424.0 L 1454.0 1424.0 L 1455.0 1423.0 L 1455.0 1392.0 L 1455.0 1391.0 L 1455.0 1390.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"20\" data-pref-name=\"長野県\" tabindex=\"0\" role=\"button\" aria-label=\"長野県\" title=\"長野県\" d=\"M 1354.0 1200.0 L 1307.0 1153.0 L 1216.0 1153.0 L 1215.0 1154.0 L 1215.0 1227.0 L 1215.0 1228.0 L 1214.0 1228.0 L 1190.0 1228.0 L 1189.0 1229.0 L 1189.0 1410.0 L 1190.0 1411.0 L 1247.0 1411.0 L 1248.0 1411.0 L 1249.0 1411.0 L 1330.0 1411.0 L 1331.0 1410.0 L 1331.0 1350.0 L 1337.0 1344.0 L 1413.0 1344.0 L 1414.0 1343.0 L 1414.0 1309.0 L 1413.0 1308.0 L 1411.0 1308.0 L 1343.0 1240.0 L 1343.0 1211.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"21\" data-pref-name=\"岐阜県\" tabindex=\"0\" role=\"button\" aria-label=\"岐阜県\" title=\"岐阜県\" d=\"M 1189.0 1229.0 L 1188.0 1228.0 L 1062.0 1228.0 L 1061.0 1229.0 L 1061.0 1245.0 L 1061.0 1246.0 L 1061.0 1247.0 L 1061.0 1302.0 L 1055.0 1308.0 L 1027.0 1308.0 L 1026.0 1309.0 L 1026.0 1379.0 L 1057.0 1410.0 L 1108.0 1461.0 L 1158.0 1411.0 L 1188.0 1411.0 L 1189.0 1410.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"22\" data-pref-name=\"静岡県\" tabindex=\"0\" role=\"button\" aria-label=\"静岡県\" title=\"静岡県\" d=\"M 1331.0 1412.0 L 1330.0 1411.0 L 1249.0 1411.0 L 1248.0 1412.0 L 1248.0 1537.0 L 1249.0 1538.0 L 1327.0 1538.0 L 1376.0 1489.0 L 1406.0 1489.0 L 1407.0 1489.0 L 1407.0 1490.0 L 1407.0 1585.0 L 1414.0 1592.0 L 1446.0 1592.0 L 1486.0 1552.0 L 1486.0 1484.0 L 1485.0 1483.0 L 1461.0 1483.0 L 1455.0 1477.0 L 1455.0 1425.0 L 1454.0 1424.0 L 1386.0 1424.0 L 1385.0 1425.0 L 1385.0 1436.0 L 1379.0 1442.0 L 1337.0 1442.0 L 1331.0 1436.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"23\" data-pref-name=\"愛知県\" tabindex=\"0\" role=\"button\" aria-label=\"愛知県\" title=\"愛知県\" d=\"M 1108.0 1461.0 L 1127.0 1480.0 L 1127.0 1485.0 L 1128.0 1486.0 L 1157.0 1486.0 L 1158.0 1486.0 L 1158.0 1487.0 L 1158.0 1537.0 L 1159.0 1538.0 L 1247.0 1538.0 L 1248.0 1537.0 L 1248.0 1412.0 L 1247.0 1411.0 L 1190.0 1411.0 L 1189.0 1411.0 L 1188.0 1411.0 L 1158.0 1411.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"24\" data-pref-name=\"三重県\" tabindex=\"0\" role=\"button\" aria-label=\"三重県\" title=\"三重県\" d=\"M 1108.0 1461.0 L 1057.0 1410.0 L 1009.0 1458.0 L 1009.0 1459.0 L 1009.0 1470.0 L 1010.0 1471.0 L 1017.0 1471.0 L 1031.0 1485.0 L 1031.0 1618.0 L 1001.0 1648.0 L 1036.0 1683.0 L 1079.0 1640.0 L 1140.0 1640.0 L 1141.0 1639.0 L 1141.0 1594.0 L 1103.0 1556.0 L 1103.0 1492.0 L 1109.0 1486.0 L 1126.0 1486.0 L 1127.0 1485.0 L 1127.0 1480.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"25\" data-pref-name=\"滋賀県\" tabindex=\"0\" role=\"button\" aria-label=\"滋賀県\" title=\"滋賀県\" d=\"M 1026.0 1309.0 L 1025.0 1308.0 L 967.0 1308.0 L 911.0 1364.0 L 1005.0 1458.0 L 1008.0 1458.0 L 1009.0 1458.0 L 1057.0 1410.0 L 1026.0 1379.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"26\" data-pref-name=\"京都府\" tabindex=\"0\" role=\"button\" aria-label=\"京都府\" title=\"京都府\" d=\"M 876.0 1351.0 L 843.0 1318.0 L 813.0 1318.0 L 812.0 1319.0 L 812.0 1372.0 L 872.0 1432.0 L 873.0 1432.0 L 918.0 1432.0 L 957.0 1471.0 L 958.0 1471.0 L 1008.0 1471.0 L 1009.0 1470.0 L 1009.0 1459.0 L 1008.0 1458.0 L 1005.0 1458.0 L 911.0 1364.0 L 889.0 1364.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"27\" data-pref-name=\"大阪府\" tabindex=\"0\" role=\"button\" aria-label=\"大阪府\" title=\"大阪府\" d=\"M 957.0 1471.0 L 918.0 1432.0 L 873.0 1432.0 L 872.0 1433.0 L 872.0 1480.0 L 873.0 1481.0 L 886.0 1481.0 L 909.0 1504.0 L 909.0 1516.0 L 886.0 1539.0 L 886.0 1568.0 L 887.0 1569.0 L 956.0 1569.0 L 957.0 1568.0 L 957.0 1472.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"28\" data-pref-name=\"兵庫県\" tabindex=\"0\" role=\"button\" aria-label=\"兵庫県\" title=\"兵庫県\" d=\"M 812.0 1319.0 L 811.0 1318.0 L 754.0 1318.0 L 753.0 1319.0 L 753.0 1387.0 L 753.0 1388.0 L 753.0 1389.0 L 753.0 1480.0 L 754.0 1481.0 L 871.0 1481.0 L 872.0 1480.0 L 872.0 1433.0 L 872.0 1432.0 L 812.0 1372.0 Z M 854.0 1509.0 L 845.0 1500.0 L 801.0 1544.0 L 801.0 1549.0 L 822.0 1570.0 L 849.0 1543.0 L 849.0 1522.0 L 854.0 1517.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"29\" data-pref-name=\"奈良県\" tabindex=\"0\" role=\"button\" aria-label=\"奈良県\" title=\"奈良県\" d=\"M 1031.0 1485.0 L 1017.0 1471.0 L 1010.0 1471.0 L 1009.0 1471.0 L 1008.0 1471.0 L 958.0 1471.0 L 957.0 1472.0 L 957.0 1568.0 L 957.0 1569.0 L 957.0 1570.0 L 957.0 1643.0 L 962.0 1648.0 L 1001.0 1648.0 L 1031.0 1618.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"30\" data-pref-name=\"和歌山県\" tabindex=\"0\" role=\"button\" aria-label=\"和歌山県\" title=\"和歌山県\" d=\"M 957.0 1570.0 L 956.0 1569.0 L 887.0 1569.0 L 886.0 1570.0 L 886.0 1655.0 L 953.0 1722.0 L 997.0 1722.0 L 1036.0 1683.0 L 1001.0 1648.0 L 962.0 1648.0 L 957.0 1643.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"31\" data-pref-name=\"鳥取県\" tabindex=\"0\" role=\"button\" aria-label=\"鳥取県\" title=\"鳥取県\" d=\"M 753.0 1319.0 L 752.0 1318.0 L 642.0 1318.0 L 641.0 1319.0 L 611.0 1349.0 L 611.0 1387.0 L 612.0 1388.0 L 626.0 1388.0 L 627.0 1388.0 L 628.0 1388.0 L 752.0 1388.0 L 753.0 1387.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"32\" data-pref-name=\"島根県\" tabindex=\"0\" role=\"button\" aria-label=\"島根県\" title=\"島根県\" d=\"M 641.0 1319.0 L 640.0 1318.0 L 466.0 1318.0 L 425.0 1359.0 L 425.0 1360.0 L 425.0 1383.0 L 430.0 1388.0 L 473.0 1388.0 L 474.0 1388.0 L 475.0 1388.0 L 610.0 1388.0 L 611.0 1387.0 L 611.0 1349.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"33\" data-pref-name=\"岡山県\" tabindex=\"0\" role=\"button\" aria-label=\"岡山県\" title=\"岡山県\" d=\"M 753.0 1389.0 L 752.0 1388.0 L 628.0 1388.0 L 627.0 1389.0 L 627.0 1515.0 L 628.0 1516.0 L 718.0 1516.0 L 753.0 1481.0 L 753.0 1480.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"34\" data-pref-name=\"広島県\" tabindex=\"0\" role=\"button\" aria-label=\"広島県\" title=\"広島県\" d=\"M 627.0 1389.0 L 626.0 1388.0 L 612.0 1388.0 L 611.0 1388.0 L 610.0 1388.0 L 475.0 1388.0 L 474.0 1389.0 L 474.0 1495.0 L 475.0 1496.0 L 502.0 1496.0 L 525.0 1519.0 L 615.0 1519.0 L 618.0 1516.0 L 626.0 1516.0 L 627.0 1515.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"35\" data-pref-name=\"山口県\" tabindex=\"0\" role=\"button\" aria-label=\"山口県\" title=\"山口県\" d=\"M 425.0 1360.0 L 424.0 1359.0 L 350.0 1359.0 L 344.0 1365.0 L 303.0 1365.0 L 299.0 1369.0 L 299.0 1404.0 L 321.0 1426.0 L 341.0 1426.0 L 433.0 1518.0 L 452.0 1518.0 L 474.0 1496.0 L 474.0 1495.0 L 474.0 1389.0 L 473.0 1388.0 L 430.0 1388.0 L 425.0 1383.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"36\" data-pref-name=\"徳島県\" tabindex=\"0\" role=\"button\" aria-label=\"徳島県\" title=\"徳島県\" d=\"M 810.0 1608.0 L 796.0 1594.0 L 795.0 1594.0 L 794.0 1594.0 L 679.0 1594.0 L 678.0 1595.0 L 678.0 1636.0 L 678.0 1637.0 L 756.0 1715.0 L 810.0 1661.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"37\" data-pref-name=\"香川県\" tabindex=\"0\" role=\"button\" aria-label=\"香川県\" title=\"香川県\" d=\"M 795.0 1593.0 L 748.0 1546.0 L 691.0 1546.0 L 654.0 1583.0 L 654.0 1593.0 L 655.0 1594.0 L 677.0 1594.0 L 678.0 1594.0 L 679.0 1594.0 L 794.0 1594.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"38\" data-pref-name=\"愛媛県\" tabindex=\"0\" role=\"button\" aria-label=\"愛媛県\" title=\"愛媛県\" d=\"M 569.0 1594.0 L 517.0 1542.0 L 509.0 1542.0 L 425.0 1626.0 L 425.0 1729.0 L 465.0 1769.0 L 466.0 1768.0 L 466.0 1722.0 L 551.0 1637.0 L 677.0 1637.0 L 678.0 1636.0 L 678.0 1595.0 L 677.0 1594.0 L 655.0 1594.0 L 654.0 1594.0 L 653.0 1594.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"39\" data-pref-name=\"高知県\" tabindex=\"0\" role=\"button\" aria-label=\"高知県\" title=\"高知県\" d=\"M 756.0 1715.0 L 678.0 1637.0 L 677.0 1637.0 L 551.0 1637.0 L 466.0 1722.0 L 466.0 1768.0 L 466.0 1769.0 L 466.0 1770.0 L 473.0 1777.0 L 525.0 1777.0 L 526.0 1776.0 L 526.0 1751.0 L 581.0 1696.0 L 641.0 1696.0 L 708.0 1763.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"40\" data-pref-name=\"福岡県\" tabindex=\"0\" role=\"button\" aria-label=\"福岡県\" title=\"福岡県\" d=\"M 298.0 1452.0 L 264.0 1418.0 L 143.0 1418.0 L 125.0 1436.0 L 165.0 1476.0 L 165.0 1486.0 L 120.0 1531.0 L 120.0 1532.0 L 120.0 1537.0 L 146.0 1563.0 L 147.0 1563.0 L 148.0 1563.0 L 153.0 1563.0 L 180.0 1536.0 L 220.0 1536.0 L 221.0 1535.0 L 221.0 1529.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"41\" data-pref-name=\"佐賀県\" tabindex=\"0\" role=\"button\" aria-label=\"佐賀県\" title=\"佐賀県\" d=\"M 165.0 1476.0 L 125.0 1436.0 L 87.0 1474.0 L 45.0 1474.0 L 44.0 1475.0 L 44.0 1483.0 L 92.0 1531.0 L 93.0 1531.0 L 119.0 1531.0 L 120.0 1531.0 L 165.0 1486.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"42\" data-pref-name=\"長崎県\" tabindex=\"0\" role=\"button\" aria-label=\"長崎県\" title=\"長崎県\" d=\"M 44.0 1475.0 L 43.0 1474.0 L 14.0 1474.0 L 13.0 1475.0 L 13.0 1579.0 L 45.0 1611.0 L 102.0 1611.0 L 106.0 1607.0 L 106.0 1575.0 L 101.0 1570.0 L 93.0 1570.0 L 92.0 1570.0 L 92.0 1569.0 L 92.0 1532.0 L 92.0 1531.0 L 44.0 1483.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"43\" data-pref-name=\"熊本県\" tabindex=\"0\" role=\"button\" aria-label=\"熊本県\" title=\"熊本県\" d=\"M 248.0 1540.0 L 244.0 1536.0 L 222.0 1536.0 L 221.0 1536.0 L 220.0 1536.0 L 180.0 1536.0 L 153.0 1563.0 L 148.0 1563.0 L 147.0 1564.0 L 147.0 1645.0 L 111.0 1681.0 L 112.0 1682.0 L 179.0 1682.0 L 215.0 1718.0 L 248.0 1685.0 L 248.0 1588.0 L 248.0 1587.0 L 248.0 1586.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"44\" data-pref-name=\"大分県\" tabindex=\"0\" role=\"button\" aria-label=\"大分県\" title=\"大分県\" d=\"M 361.0 1515.0 L 298.0 1452.0 L 221.0 1529.0 L 221.0 1535.0 L 222.0 1536.0 L 244.0 1536.0 L 248.0 1540.0 L 248.0 1586.0 L 249.0 1587.0 L 360.0 1587.0 L 361.0 1586.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"45\" data-pref-name=\"宮崎県\" tabindex=\"0\" role=\"button\" aria-label=\"宮崎県\" title=\"宮崎県\" d=\"M 361.0 1588.0 L 360.0 1587.0 L 249.0 1587.0 L 248.0 1588.0 L 248.0 1685.0 L 215.0 1718.0 L 291.0 1794.0 L 314.0 1771.0 L 314.0 1672.0 L 361.0 1625.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"46\" data-pref-name=\"鹿児島県\" tabindex=\"0\" role=\"button\" aria-label=\"鹿児島県\" title=\"鹿児島県\" d=\"M 215.0 1718.0 L 179.0 1682.0 L 112.0 1682.0 L 111.0 1682.0 L 110.0 1683.0 L 110.0 1827.0 L 115.0 1832.0 L 164.0 1832.0 L 169.0 1827.0 L 169.0 1759.0 L 174.0 1754.0 L 204.0 1754.0 L 209.0 1759.0 L 209.0 1839.0 L 214.0 1844.0 L 241.0 1844.0 L 291.0 1794.0 Z\"></path><path class=\"prefecture-shape\" data-pref-code=\"47\" data-pref-name=\"沖縄県\" tabindex=\"0\" role=\"button\" aria-label=\"沖縄県\" title=\"沖縄県\" d=\"M 94.0 1894.0 L 83.0 1883.0 L 75.0 1883.0 L 57.0 1901.0 L 48.0 1901.0 L 42.0 1895.0 L 39.0 1895.0 L 28.0 1906.0 L 28.0 1913.0 L 33.0 1918.0 L 33.0 1928.0 L 1.0 1960.0 L 1.0 1993.0 L 7.0 1999.0 L 24.0 1999.0 L 27.0 1996.0 L 27.0 1968.0 L 94.0 1901.0 Z\"></path></g>";
+      svg.dataset.ready='1';
+      svg.addEventListener('click',event=>{
+        const target=event.target.closest('[data-pref-code]');if(!target)return;
+        const id='jp:'+target.dataset.prefCode;if(!prefectureCounts.has(target.dataset.prefCode))return;
+        state.locationFilter=state.locationFilter===id?'':id;state.selectedDate='';render();
+        if(state.locationFilter)$('#eventList').scrollIntoView({behavior:'smooth',block:'start'});
+      });
+      svg.addEventListener('keydown',event=>{
+        if(event.key!=='Enter'&&event.key!==' ')return;
+        const target=event.target.closest('[data-pref-code]');if(!target)return;
+        event.preventDefault();target.dispatchEvent(new MouseEvent('click',{bubbles:true}));
+      });
+    }
+    svg.querySelectorAll('[data-pref-code]').forEach(path=>{
+      const count=prefectureCounts.get(path.dataset.prefCode)||0;
+      path.setAttribute('data-count',String(count));
+      path.setAttribute('class','prefecture-shape'+(count>=5?' level3':count>=2?' level2':count?' level1':'')+(state.locationFilter==='jp:'+path.dataset.prefCode?' is-selected':''));
+      path.setAttribute('aria-label',path.dataset.prefName+'：'+count+'件');
+      path.setAttribute('title',path.dataset.prefName+'：'+count+'件');
+      path.setAttribute('tabindex',count?'0':'-1');
+      path.setAttribute('role',count?'button':'img');
+    });
+    const rank=$('#prefectureRanking');rank.replaceChildren();
+    if(!visitedPrefs.length)rank.append(h('p','insight-note','この年度の国内会場はまだ判定できていません。'));
+    visitedPrefs.slice(0,12).forEach(([code,count])=>{
+      const item=PREFECTURES.find(x=>x.code===code),button=h('button','prefecture-chip',item.name+' '+count+'件');
+      button.type='button';button.addEventListener('click',()=>{state.locationFilter=state.locationFilter==='jp:'+code?'':'jp:'+code;state.selectedDate='';render();});rank.append(button);
+    });
+    const dest=$('#overseasDestinations');dest.replaceChildren();
+    if(!visitedCountries.length)dest.append(h('p','insight-note','この年度の海外会場はまだ見つかっていません。会場名に国・都市名が含まれていると自動判定しやすくなります。'));
+    visitedCountries.forEach(item=>{
+      const button=h('button','destination-card'),main=h('span','destination-main'),name=h('span','destination-name');
+      main.append(h('span','destination-flag',item.flag));
+      name.append(h('strong','',item.name));
+      name.append(h('small','',[...item.venues.keys()].slice(0,2).join('、')||'会場名未登録'));
+      main.append(name);button.append(main,h('span','destination-count',item.count+'件'));
+      if(state.locationFilter===item.id)button.classList.add('is-selected');
+      button.type='button';button.addEventListener('click',()=>{state.locationFilter=state.locationFilter===item.id?'':item.id;state.selectedDate='';render();});
+      dest.append(button);
+    });
+    const editor=$('#unknownVenueEditor');editor.replaceChildren();
+    const entries=[...unknownVenues.entries()].sort((a,b)=>b[1].count-a[1].count||a[0].localeCompare(b[0],'ja'));
+    $('#unknownVenueCount').textContent=entries.length+'会場';
+    if(!entries.length)editor.append(h('p','insight-note','未判定の会場はありません。会場名が登録されていないイベントは自動判定できません。'));
+    else{
+      const list=h('div','unknown-venue-list');
+      entries.forEach(([venue,data])=>{
+        const row=h('div','unknown-venue-row'),left=h('div'),select=document.createElement('select');
+        left.append(h('strong','',venue),h('small','',data.count+'件のイベント'));
+        select.setAttribute('aria-label',venue+'の所在地');
+        const blank=document.createElement('option');blank.value='';blank.textContent='所在地を選択…';select.append(blank);
+        const domestic=document.createElement('optgroup');domestic.label='国内・都道府県';
+        PREFECTURES.forEach(item=>{const option=document.createElement('option');option.value='jp:'+item.code;option.textContent=item.name;domestic.append(option);});
+        select.append(domestic);
+        const foreign=document.createElement('optgroup');foreign.label='海外・国や地域';
+        OVERSEAS_LOCATIONS.forEach(item=>{const option=document.createElement('option');option.value=item.id;option.textContent=item.flag+' '+item.name;foreign.append(option);});
+        select.append(foreign);
+        const key=normalizeVenue(venue);select.value=state.locationOverrides[key]||'';
+        select.addEventListener('change',()=>{
+          if(select.value)state.locationOverrides[key]=select.value;else delete state.locationOverrides[key];
+          saveLocationOverrides();render();
+        });
+        row.append(left,select);list.append(row);
+      });
+      editor.append(list);
+    }
+  };
+
   const reportText = (year, rows) => {
     const monthCounts = Array.from({length:12},(_,i)=>rows.filter(e=>Number(e.date.slice(5,7))===i+1).length);
     const topArtist = countBy(rows,e=>e.who).slice(0,3).map(x=>x[0]);
     const topVenue = countBy(rows,e=>e.venue).slice(0,3).map(x=>x[0]);
     const peak = Math.max(...monthCounts);
     const peakMonths = monthCounts.map((n,i)=>n===peak&&n>0?(i+1)+'月':null).filter(Boolean);
-    return ['【'+year+'年 イベント参加レポート】','参加イベント：'+rows.length+'件','最多参加月：'+(peakMonths.join('・')||'なし')+(peak?'（'+peak+'件）':''),'よく参加した出演者：'+(topArtist.join('、')||'データなし'),'よく訪れた会場：'+(topVenue.join('、')||'データなし'),'','Event Archiveで作成'].join('\n');
+    return ['【'+year+'年 イベント参加レポート】','参加イベント：'+rows.length+'件','最多参加月：'+(peakMonths.join('・')||'なし')+(peak?'（'+peak+'件）':''),'よく参加した出演者：'+(topArtist.join('、')||'データなし'),'よく訪れた会場：'+(topVenue.join('、')||'データなし'),'参加した都道府県：'+new Set(rows.map(e=>getEventLocation(e)).filter(x=>x&&x.group==='国内').map(x=>x.code)).size+'か所','海外の国・地域：'+new Set(rows.map(e=>getEventLocation(e)).filter(x=>x&&x.group==='海外').map(x=>x.id)).size+'か所','','Event Archiveで作成'].join('\n');
   };
   const renderInsights = () => {
     const years = [...new Set(state.events.map(e=>e.date.slice(0,4)))].sort((a,b)=>b.localeCompare(a));
@@ -785,11 +997,6 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
       bar.style.height=(n?Math.max(5,n/maxMonth*100):2)+'%';bar.dataset.count=String(n);bar.title=(i+1)+'月：'+n+'件';
       wrap.append(bar);col.append(value,wrap,h('span','month-label',(i+1)+'月'));chart.append(col);
     });
-    const weekdays=['日','月','火','水','木','金','土'];
-    const weekCounts=Array(7).fill(0);
-    yearRows.forEach(e=>weekCounts[new Date(e.date+'T12:00:00').getDay()]++);
-    const maxWeek=Math.max(1,...weekCounts),weekBox=$('#weekdayChart');weekBox.replaceChildren();
-    weekdays.forEach((day,i)=>{const row=h('div','weekday-row');row.append(h('span','',day));const track=h('div','weekday-track'),fill=h('span');fill.style.width=(weekCounts[i]/maxWeek*100)+'%';track.append(fill);row.append(track,h('span','',String(weekCounts[i])));weekBox.append(row);});
     $('#performerRankTitle').textContent=(chosen||'年間')+'年・出演者ランキング';
     $('#venueRankTitle').textContent=(chosen||'年間')+'年・会場ランキング';
     topRank('#performerRank',countBy(yearRows,e=>e.who),'','出演者情報が登録されていません。');
@@ -850,7 +1057,9 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
       if(count){ctx.fillStyle='#fff';ctx.font='16px sans-serif';ctx.fillText(String(count),chartX+i*(barW+gap)+barW/2,chartY-h-9);}
     });
     ctx.textAlign='left';ctx.fillStyle='#cbd5e1';ctx.font='19px sans-serif';
-    ctx.fillText('よく参加した出演者：'+(artists.map(x=>x[0]).join(' ／ ')||'データなし'),70,642);
+    const visitedPrefCount=new Set(rows.map(e=>getEventLocation(e)).filter(x=>x&&x.group==='国内').map(x=>x.code)).size;
+    const visitedCountryCount=new Set(rows.map(e=>getEventLocation(e)).filter(x=>x&&x.group==='海外').map(x=>x.id)).size;
+    ctx.fillText('参戦エリア：国内 '+visitedPrefCount+' 都道府県 ／ 海外 '+visitedCountryCount+' か国・地域',70,642);
     ctx.fillStyle='rgba(255,255,255,.45)';ctx.font='14px sans-serif';ctx.fillText('非公式ツール Event Archive',930,642);
     return new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
   };
@@ -918,7 +1127,7 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
   };
 
   const render = () => {
-    renderStats(); renderFilters(); renderInsights(); renderModes(); renderPersonalSummary(); renderCalendar();
+    renderStats(); renderFilters(); renderInsights(); renderModes(); renderPersonalSummary(); renderCalendar(); renderTravelMap();
     const signature=JSON.stringify([state.year,state.performer,state.search,state.selectedDate,state.mode,$('#sortOrder')?$('#sortOrder').value:'desc']);
     if(signature!==state.lastFilterSignature){state.visibleLimit=PAGE_SIZE;state.lastFilterSignature=signature;}
     const rows = getFilterRows();
@@ -926,7 +1135,9 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
     const performerLabel = state.performer === 'all' ? '' : ' ／ ' + state.performer;
     const modeLabel=({all:'',past:' ／ 参戦済み',future:' ／ これから',favorites:' ／ お気に入り'})[state.mode]||'';
     const dateLabel=state.selectedDate?' ／ '+state.selectedDate:'';
-    $('#eventCount').textContent = label + performerLabel + modeLabel + dateLabel + '：' + rows.length + '件';
+    const locationInfo=state.locationFilter?LOCATION_OPTIONS.find(x=>x.id===state.locationFilter):null;
+    const locationLabel=locationInfo?' ／ '+locationInfo.name:'';
+    $('#eventCount').textContent = label + performerLabel + modeLabel + dateLabel + locationLabel + '：' + rows.length + '件';
     $('#activeFilters').textContent=(state.selectedDate?'日付指定あり':'')+(state.search?'　検索中':'')+(state.performer!=='all'?'　出演者指定あり':'')||'すべて表示';
     const list = $('#eventList');
     list.replaceChildren();
@@ -983,7 +1194,7 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
     if (!/^20\d{2}$/.test(yearText)) return;
     state.busy = true;
     state.currentYear = yearText;
-    state.year = 'all'; state.performer = 'all'; state.selectedDate = ''; state.mode = 'all';
+    state.year = 'all'; state.performer = 'all'; state.selectedDate = ''; state.locationFilter = ''; state.mode = 'all';
     state.visibleLimit = PAGE_SIZE; state.lastFilterSignature = '';
     $('#eventYearSelect').value = yearText;
     $('#eventYearSelect').disabled = true;
@@ -1062,6 +1273,8 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
     state.currentYear = '';
     state.events = []; state.year = 'all'; state.performer = 'all'; state.search = ''; state.selectedDate='';state.mode='all';
     state.availableYears = []; state.availableMonths = []; state.profileRows = []; state.profileTotal = null;
+    state.locationFilter = '';
+    state.locationOverrides = readLocationOverrides(id);
     state.personal=readPersonal(id);
     $('#searchBox').value = '';
     $('#eventYearSelect').disabled = true;
@@ -1099,6 +1312,7 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
   $('#reportYear').addEventListener('change',()=>{if(state.selectedDate&&!state.selectedDate.startsWith($('#reportYear').value))state.selectedDate='';renderInsights();renderCalendar();});
   $('#sortOrder').addEventListener('change',render);
   $('#clearCalendarDay').addEventListener('click',()=>{state.selectedDate='';render();});
+  $('#clearLocationFilter').addEventListener('click',()=>{state.locationFilter='';render();});
   $('#backupPersonal').addEventListener('click',backupPersonal);
   $('#restorePersonal').addEventListener('click',()=>$('#restoreFile').click());
   $('#restoreFile').addEventListener('change',async e=>{const file=e.target.files&&e.target.files[0];if(file)await restorePersonal(file);e.target.value='';});

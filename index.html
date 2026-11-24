@@ -1839,8 +1839,20 @@
                     const data = await r.json();
                     loadData(data, 'events.json');
                 } catch (e) {
-                    // 内蔵フォールバックがあるためエラーは静かに処理
-                    console.log('Using builtin data:', e.message);
+                    console.error('Eventernote load failed:', e);
+                    if (isGuestNote) {
+                        events = [];
+                        selectedYear = 'all'; selectedWho = 'all';
+                        years = []; yearBtns = []; whoBtns = [];
+                        renderStats();
+                        renderEvents();
+                        const info = document.getElementById('dataInfo');
+                        if (info) info.textContent = 'イベントを読み込めませんでした：' + (e.message || '時間をおいて再度お試しください。');
+                        const list = document.getElementById('eventList');
+                        if (list) list.textContent = '公開プロフィールを取得できませんでした。ID・公開設定・時間をおいて再度お試しください。';
+                    } else {
+                        console.log('Using builtin data:', e.message);
+                    }
                 }
             }
 

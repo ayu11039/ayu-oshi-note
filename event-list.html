@@ -709,13 +709,19 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
   };
   const calendarEscape = value => String(value||'').replace(/\\/g,'\\\\').replace(/\r?\n/g,'\\n').replace(/,/g,'\\,').replace(/;/g,'\\;');
   const exportCalendar = () => {
-    const rows=state.events.filter(e=>isFuture(e)&&/^\d{4}-\d{2}-\d{2}$/.test(e.date));
+    const rows=state.events.filter(e=>e.date>=todayStr&&/^\d{4}-\d{2}-\d{2}$/.test(e.date));
     if(!rows.length){alert('カレンダーに出力できる今後の予定がありません。');return;}
     const lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Event Archive//JP','CALSCALE:GREGORIAN','METHOD:PUBLISH'];
     rows.forEach((e,i)=>{
-      lines.push('BEGIN:VEVENT','UID:'+calendarEscape(e.key||('event-'+i))+'@event-archive','DTSTAMP:'+todayStr.replace(/-/g,'')+'T000000',
-        'DTSTART;VALUE=DATE:'+e.date.replace(/-/g,''),
-        'SUMMARY:'+calendarEscape(e.title),
+      const date=e.date.replace(/-/g,'');
+      const start=String(e.start||'').match(/^(\d{1,2}):(\d{2})$/);
+      const end=String(e.end||'').match(/^(\d{1,2}):(\d{2})$/);
+      lines.push('BEGIN:VEVENT','UID:'+calendarEscape(e.key||('event-'+i))+'@event-archive','DTSTAMP:'+todayStr.replace(/-/g,'')+'T000000');
+      if(start){
+        lines.push('DTSTART;TZID=Asia/Tokyo:'+date+'T'+String(start[1]).padStart(2,'0')+start[2]+'00');
+        if(end)lines.push('DTEND;TZID=Asia/Tokyo:'+date+'T'+String(end[1]).padStart(2,'0')+end[2]+'00');
+      }else lines.push('DTSTART;VALUE=DATE:'+date);
+      lines.push('SUMMARY:'+calendarEscape(e.title),
         'DESCRIPTION:'+calendarEscape([e.who.join(' / '),e.venue,e.url].filter(Boolean).join(' | ')));
       if(e.venue)lines.push('LOCATION:'+calendarEscape(e.venue));
       lines.push('URL:'+e.url,'END:VEVENT');

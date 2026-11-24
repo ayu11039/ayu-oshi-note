@@ -702,6 +702,113 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
     topRank('#venueRank',countBy(yearRows,e=>e.venue),'','会場情報が登録されていません。');
     $('#reportNote').textContent='全期間では'+state.events.length+'件を取得。年別レポートは選択した年のイベントのみを集計しています。出演者・会場の登録がないイベントはランキング対象外です。';
   };
+  const downloadBlob = (blob, filename) => {
+    const url=URL.createObjectURL(blob),a=document.createElement('a');
+    a.href=url;a.download=filename;document.body.append(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+  };
+  const calendarEscape = value => String(value||'').replace(/\\/g,'\\\\').replace(/\n/g,'\\n').replace(/,/g,'\\,').replace(/;/g,'\\;');
+  const exportCalendar = () => {
+    const rows=state.events.filter(e=>isFuture(e)&&/^\\d{4}-\\d{2}-\\d{2}$/.test(e.date));
+    if(!rows.length){alert('カレンダーに出力できる今後の予定がありません。');return;}
+    const stamp=date=>date.replace(/[-:]/g,'')+'T000000';
+    const lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Event Archive//JP','CALSCALE:GREGORIAN','METHOD:PUBLISH'];
+    rows.forEach((e,i)=>{
+      lines.push('BEGIN:VEVENT','UID:'+calendarEscape(e.key||('event-'+i))+'@event-archive','DTSTAMP:'+stamp(todayStr),
+        'DTSTART;VALUE=DATE:'+e.date.replace(/-/g,''),
+        'SUMMARY:'+calendarEscape(e.title),
+        'DESCRIPTION:'+calendarEscape([e.who.join(' / '),e.venue,e.url].filter(Boolean).join(' | ')));
+      if(e.venue)lines.push('LOCATION:'+calendarEscape(e.venue));
+      lines.push('URL:'+e.url,'END:VEVENT');
+    });
+    lines.push('END:VCALENDAR');
+    downloadBlob(new Blob([lines.join('\\r\\n')],{type:'text/calendar;charset=utf-8'}),'event-archive-'+state.currentId+'.ics');
+  };
+  const buildShareCard = async () => {
+    const year=$('#reportYear').value,rows=state.events.filter(e=>e.date.startsWith(year));
+    const months=Array.from({length:12},(_,i)=>rows.filter(e=>Number(e.date.slice(5,7))===i+1).length);
+    const max=Math.max(1,...months),artists=countBy(rows,e=>e.who).slice(0,3);
+    const canvas=document.createElement('canvas');canvas.width=1200;canvas.height=675;
+    const ctx=canvas.getContext('2d');
+    const bg=ctx.createLinearGradient(0,0,1200,675);bg.addColorStop(0,'#10172d');bg.addColorStop(1,'#25204c');
+    ctx.fillStyle=bg;ctx.fillRect(0,0,1200,675);
+    ctx.fillStyle='rgba(255,255,255,.055)';ctx.beginPath();ctx.arc(1080,80,260,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#a99bff';ctx.font='bold 25px sans-serif';ctx.fillText('EVENT ARCHIVE  /  YEAR IN REVIEW',70,78);
+    ctx.fillStyle='#ffffff';ctx.font='bold 62px sans-serif';ctx.fillText(year+'年の参戦記録',70,160);
+    ctx.fillStyle='#b9c5df';ctx.font='24px sans-serif';ctx.fillText('@'+state.currentId,74,205);
+    const stats=[['参加イベント',rows.length+'件'],['参戦済み',rows.filter(e=>!isFuture(e)).length+'件'],['最多参加月',months.every(x=>!x)?'—':(months.indexOf(Math.max(...months))+1)+'月']];
+    stats.forEach((item,i)=>{
+      const x=70+i*355;ctx.fillStyle='rgba(255,255,255,.085)';ctx.fillRect(x,250,315,115);
+      ctx.fillStyle='#b9c5df';ctx.font='22px sans-serif';ctx.fillText(item[0],x+22,290);
+      ctx.fillStyle='#ffffff';ctx.font='bold 42px sans-serif';ctx.fillText(item[1],x+22,343);
+    });
+    ctx.fillStyle='#ffffff';ctx.font='bold 24px sans-serif';ctx.fillText('月別イベント数',70,425);
+    const chartX=80,chartY=570,barW=48,gap=38;
+    months.forEach((count,i)=>{
+      const h=Math.round(count/max*105);
+      ctx.fillStyle='#9c8cff';ctx.fillRect(chartX+i*(barW+gap),chartY-h,barW,h);
+      ctx.fillStyle='#cbd5e1';ctx.font='17px sans-serif';ctx.textAlign='center';ctx.fillText(String(i+1),chartX+i*(barW+gap)+barW/2,600);
+      if(count){ctx.fillStyle='#fff';ctx.font='16px sans-serif';ctx.fillText(String(count),chartX+i*(barW+gap)+barW/2,chartY-h-9);}
+    });
+    ctx.textAlign='left';ctx.fillStyle='#cbd5e1';ctx.font='19px sans-serif';
+    ctx.fillText('よく参加した出演者：'+(artists.map(x=>x[0]).join(' ／ ')||'データなし'),70,642);
+    ctx.fillStyle='rgba(255,255,255,.45)';ctx.font='14px sans-serif';ctx.fillText('非公式ツール Event Archive',930,642);
+    return new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
+  };
+  const saveShareCard = async () => {
+    const blob=await buildShareCard();if(!blob){alert('画像を作成できませんでした。');return;}
+    downloadBlob(blob,'event-archive-'+state.currentId+'-'+$('#reportYear').value+'.png');
+  };
+  const shareToX = () => {
+    const year=$('#reportYear').value,rows=state.events.filter(e=>e.date.startsWith(year));
+    const text='【'+year+'年の参戦記録】\\n参加イベント：'+rows.length+'件\\n'+reportText(year,rows).split('\\n').slice(2,4).join('\\n')+'\\n\\n#EventArchive #イベンターノート';
+    const url=location.origin+location.pathname+'?id='+encodeURIComponent(state.currentId);
+    window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(text)+'&url='+encodeURIComponent(url),'_blank','noopener,noreferrer');
+  };
+  const compareUsers = async otherId => {
+    if(!validateId(otherId)){alert('比較するIDは半角英数字・アンダースコア・ハイフンで入力してください。');return;}
+    if(otherId===state.currentId){alert('現在表示中のIDとは別のIDを入力してください。');return;}
+    if(state.compareBusy||state.busy)return;
+    state.compareBusy=true;
+    const button=$('#compareButton');button.disabled=true;button.textContent='取得中…';
+    const output=$('#compareOutput');output.replaceChildren(h('p','compare-status','@'+otherId+' の公開イベントを確認しています。イベント数によって時間がかかる場合があります。'));
+    try{
+      let otherRows=[];
+      const cached=readEventCache(otherId);
+      if(cached&&cached.rows.length)otherRows=cached.rows;
+      else{
+        const result=await collectAll(otherId);
+        otherRows=result.rows;
+        if(otherRows.length)writeEventCache(otherId,otherRows,result.total,result.verified);
+      }
+      if(!otherRows.length)throw new Error('公開イベントを取得できませんでした。IDや公開設定を確認してください。');
+      const mine=new Map(state.events.map(e=>[e.key,e]));
+      const common=otherRows.filter(e=>mine.has(e.key)).sort((a,b)=>b.date.localeCompare(a.date));
+      const sharedArtists=new Set(state.events.flatMap(e=>e.who));
+      const commonArtists=new Set(otherRows.flatMap(e=>e.who).filter(x=>sharedArtists.has(x)));
+      output.replaceChildren();
+      const stats=h('div','compare-summary');
+      [['共通イベント',common.length+'件'],['自分の登録',state.events.length+'件'],['相手の登録',otherRows.length+'件']].forEach(([label,value])=>{
+        const card=h('div','compare-stat');card.append(h('b','',value),h('small','',label));stats.append(card);
+      });
+      output.append(stats);
+      const artistLine=h('p','compare-status','共通出演者：'+(Array.from(commonArtists).slice(0,12).join('、')||'見つかりませんでした。'));
+      output.append(artistLine);
+      const title=h('h3','','一緒に参加したイベント');title.style.margin='10px 0';output.append(title);
+      const list=h('div','compare-results');
+      if(!common.length)list.append(h('p','insight-note','共通イベントは見つかりませんでした。イベント名や日付の登録状況によって照合できない場合があります。'));
+      common.slice(0,30).forEach(e=>{
+        const row=h('div','compare-event'),left=h('div');
+        left.append(h('strong','',e.title),h('small','',e.date+' ・ '+(e.venue||'会場未登録')));
+        const link=h('a','','詳細 ↗');link.href=e.url;link.target='_blank';link.rel='noopener noreferrer';
+        row.append(left,link);list.append(row);
+      });
+      output.append(list);
+      if(common.length>30)output.append(h('p','compare-status','ほか '+(common.length-30)+' 件'));
+      output.append(h('p','compare-status','※イベント名・日付などの公開情報を使った照合です。登録内容の違いにより一致しないことがあります。'));
+    }catch(error){output.replaceChildren(h('p','error',error.message||'比較に失敗しました。'));}
+    finally{state.compareBusy=false;button.disabled=false;button.textContent='共通イベントを調べる';}
+  };
   const exportCsv = () => {
     const rows=[['日付','イベント名','会場','出演者','開場','開演','終演','イベントURL'],...state.events.map(e=>[e.date,e.title,e.venue,e.who.join(' / '),e.open,e.start,e.end,e.url])];
     const csv='\uFEFF'+rows.map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');
@@ -762,6 +869,7 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
     state.personal=readPersonal(id);
     $('#searchBox').value = '';
     const cached = readEventCache(id);
+    $('#cacheStatus').textContent=cached&&cached.rows.length?'前回取得：'+formatSavedAt(cached.savedAt):'保存データなし';
     if (cached && cached.rows.length) {
       state.events = cached.rows;
       render();
@@ -790,6 +898,7 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
         return;
       }
       writeEventCache(id,result.rows,result.total,result.verified);
+      $('#cacheStatus').textContent='最終更新：'+formatSavedAt(Date.now())+(result.verified?'（件数確認済み）':'（取得件数は未確認）');
       render();
       if (result.verified) {
         setStatus('取得完了：' + result.rows.length + ' / ' + result.total + '件を確認しました（' + result.requests + 'ページ取得）','good',100);
@@ -822,6 +931,22 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
   $('#restoreFile').addEventListener('change',async e=>{const file=e.target.files&&e.target.files[0];if(file)await restorePersonal(file);e.target.value='';});
   $('#clearPersonal').addEventListener('click',()=>{if(!confirm('このIDのお気に入りとメモをすべて削除しますか？'))return;state.personal={favorites:[],notes:{}};savePersonal();render();});
   $('#csvExport').addEventListener('click',exportCsv);
+  $('#saveShareCard').addEventListener('click',saveShareCard);
+  $('#shareToX').addEventListener('click',shareToX);
+  $('#calendarExport').addEventListener('click',exportCalendar);
+  $('#compareForm').addEventListener('submit',event=>{event.preventDefault();compareUsers(safeText($('#compareId').value));});
+  $('#refreshData').addEventListener('click',()=>{
+    if(!state.currentId)return;
+    try{localStorage.removeItem(eventCacheKey(state.currentId));}catch(_){}
+    load(state.currentId);
+  });
+  $('#clearCache').addEventListener('click',()=>{
+    if(!state.currentId)return;
+    if(!confirm('@'+state.currentId+' の取得済みイベントデータをこのブラウザから削除します。個人メモは削除されません。よろしいですか？'))return;
+    try{localStorage.removeItem(eventCacheKey(state.currentId));}catch(_){}
+    $('#cacheStatus').textContent='保存データを削除しました';
+    alert('イベントの保存データを削除しました。表示中の一覧はそのままです。');
+  });
   $('#copyReport').addEventListener('click',async()=>{
     const year=$('#reportYear').value;
     const rows=state.events.filter(e=>e.date.startsWith(year));

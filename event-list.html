@@ -674,12 +674,6 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
       list.append(h('p','empty',state.events.length ? '条件に一致するイベントは見つかりませんでした。' : '表示できるイベントがありません。'));
       return;
     }
-    const groups = new Map();
-    rows.forEach(event => {
-      const year = event.date.slice(0,4);
-      if (!groups.has(year)) groups.set(year,[]);
-      groups.get(year).push(event);
-    });
     const shown=rows.slice(0,state.visibleLimit);
     const groups = new Map();
     shown.forEach(event => {

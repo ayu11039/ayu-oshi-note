@@ -106,7 +106,7 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
 .month-label{font-size:.65rem;color:var(--dim)}
 .month-value{font-size:.65rem;color:var(--muted);font-variant-numeric:tabular-nums}
 .rank-list{display:grid;gap:9px}
-.rank-row{display:grid;grid-template-columns:24px:minmax(0,1fr) auto;align-items:center;gap:8px;font-size:.82rem}
+.rank-row{display:grid;grid-template-columns:24px minmax(0,1fr) auto;align-items:center;gap:8px;font-size:.82rem}
 .rank-no{color:var(--accent-ink);font-weight:700;text-align:center}
 .rank-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)}
 .rank-count{color:#fff;font-weight:700;font-variant-numeric:tabular-nums}
@@ -445,8 +445,9 @@ footer{padding:28px 0 40px;border-top:1px solid var(--line);text-align:center;co
   const countBy = (rows, getter) => {
     const map = new Map();
     rows.forEach(row => {
-      const value = safeText(getter(row));
-      if (value) map.set(value, (map.get(value) || 0) + 1);
+      const raw = getter(row);
+      const values = Array.isArray(raw) ? raw : [raw];
+      [...new Set(values.map(safeText).filter(Boolean))].forEach(value => map.set(value, (map.get(value) || 0) + 1));
     });
     return [...map.entries()].sort((a,b) => b[1]-a[1] || a[0].localeCompare(b[0],'ja'));
   };
